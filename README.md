@@ -25,6 +25,29 @@ This makes it possible to nest backticks:
 
     read `replace http://aqnichol.com \`cat old_domain.txt\` google`
 
+## Comments
+
+Comments are ignored by the parser and runtime. A line is marked as a comment if its first non-whitespace character is a `#`. Here are some examples:
+
+    # This is a top level comment
+    if ... {
+        # This is an indented comment
+    }
+
+Pragmash does not support block comments. Generally, this is a good thing.
+
+## Line continuations
+
+Sometimes, you might want to run a command with a long set of arguments. You can continue a line onto the next line using a backslash. For example:
+
+    puts hey there this is a long string \
+        and now i'm making it even longer.
+
+It is recommended that you indent continuations, but it is not required. Note, however, that any whitespace on the next line is counted when the continuation is inside quotes or backticks. For example, the following code would output "hey&nbsp;&nbsp;&nbsp;&nbsp;there":
+
+    puts "hey\
+        there"
+
 ## Variables
 
 Variables exist in a global scope, just like environment variables in Bash scripts.
@@ -40,6 +63,11 @@ The `get` pseudo-command gets a variable:
 As a shorthand for `get`, you can use a `$` followed by the variable name:
 
     write ./home.html $x
+
+This means that, in order to pass the "$" character to a command, you must escape it or include it in quotes:
+
+    puts \$100.00 is your account balance.
+    puts "$100.00 is your account balance."
 
 ## If conditionals
 
