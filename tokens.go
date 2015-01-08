@@ -40,6 +40,7 @@ func Tokenize(line string) ([]Token, error) {
 		} else if next == '`' {
 			str, err = readNestedCommand(reader)
 		} else {
+			reader.UnreadRune()
 			str, err = readBare(reader)
 		}
 
@@ -63,6 +64,8 @@ func readBare(r *strings.Reader) (string, error) {
 				return "", err
 			}
 			buffer.WriteString(str)
+		} else if unicode.IsSpace(next) {
+			break
 		} else {
 			buffer.WriteRune(next)
 		}
