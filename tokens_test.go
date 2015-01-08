@@ -13,6 +13,22 @@ func TestTokenize(t *testing.T) {
 		Token{false, "foo\\ bar"}, Token{false, "c"}}, t)
 	testTokenizeCase("a \\\"hey there\\\" c", []Token{Token{false, "a"},
 		Token{false, "\"hey"}, Token{false, "there\""}, Token{false, "c"}}, t)
+	testTokenizeCase("alex `nichol is` cool", []Token{Token{false, "alex"},
+		Token{true, "nichol is"}, Token{false, "cool"}}, t)
+	testTokenizeCase("alex `nichol \\`is\\`` cool", []Token{Token{false, "alex"},
+		Token{true, "nichol `is`"}, Token{false, "cool"}}, t)
+	testTokenizeCase("alex `nichol \\`is\\` ` cool", []Token{Token{false, "alex"},
+		Token{true, "nichol `is` "}, Token{false, "cool"}}, t)
+	testTokenizeCase("`test\\``", []Token{Token{true, "test`"}}, t)
+	testTokenizeCase("\"yo\\\"\"", []Token{Token{false, "yo\""}}, t)
+	testTokenizeError("\"yo", t)
+	testTokenizeError("a \"yo hey", t)
+	testTokenizeError("\"yo hey", t)
+	testTokenizeError("a b\\", t)
+	testTokenizeError("a \"b\\\"", t)
+	testTokenizeError("\"b\\\"", t)
+	testTokenizeError("`foo", t)
+	testTokenizeError("`foo``bar`", t)
 }
 
 func testTokenizeCase(raw string, toks []Token, t *testing.T) {
@@ -31,5 +47,12 @@ func testTokenizeCase(raw string, toks []Token, t *testing.T) {
 			t.Error("Bad result for:", raw, "got", parsed)
 			return
 		}
+	}
+}
+
+func testTokenizeError(raw string, t *testing.T) {
+	_, err := Tokenize(raw)
+	if err == nil {
+		t.Error("Expected error for:", raw)
 	}
 }

@@ -21,9 +21,9 @@ In addition, a command's output can be used as an argument to another command us
 
     read `replace http://aqnichol.com aqnichol google`
 
-No whitespace is allowed directly after an opening backtick; the command's name must directly follow the opening backtick. Conversely, a closing backtick must be followed by a space, a newline, or an EOF. This makes it possible to nest backticks:
+This makes it possible to nest backticks:
 
-    read `replace http://aqnichol.com `cat old_domain.txt` google`
+    read `replace http://aqnichol.com \`cat old_domain.txt\` google`
 
 ## Variables
 
