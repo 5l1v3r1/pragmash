@@ -146,4 +146,3 @@ func readString(r *strings.Reader) (string, error) {
 	}
 	return buffer.String(), nil
 }
-

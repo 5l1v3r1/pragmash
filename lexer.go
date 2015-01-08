@@ -7,12 +7,6 @@ const (
 	BlockTypeWhile   = iota
 )
 
-// ParseScript parses a script and returns an array of blocks.
-func ParseScript(script string) ([]Block, error) {
-	// TODO: this
-	return nil, nil
-}
-
 // Argument is an argument for a command.
 // An argument is either a raw string or a sub-command.
 type Argument struct {
