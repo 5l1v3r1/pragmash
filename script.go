@@ -46,13 +46,13 @@ func ParseScript(script string) (*Script, error) {
 				}
 				buffer.UnreadRune()
 			} else if next == '\n' {
-				realLine++
 				break
 			}
 			logLine.WriteRune(next)
 		}
+		realLine++
 		res.LogicalLines = append(res.LogicalLines, logLine.String())
-		res.LineStarts = append(res.LineStarts, realLine)
+		res.LineStarts = append(res.LineStarts, start)
 		res.LineLens = append(res.LineLens, realLine-start)
 	}
 	return &res, nil
