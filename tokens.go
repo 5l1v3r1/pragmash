@@ -18,40 +18,44 @@ type Token struct {
 func Tokenize(line string) ([]Token, error) {
 	reader := strings.NewReader(line)
 	result := make([]Token, 0)
-	for reader.Len() > 0 {
-		// Consume whitespace.
-		for {
-			rune, _, _ := reader.ReadRune()
-			if !unicode.IsSpace(rune) {
-				reader.UnreadRune()
-				break
-			} else if reader.Len() == 0 {
-				return result, nil
-			}
-		}
-
-		// Read the next argument according to its enclosing context
-		// (i.e. whether it's quoted, ticked, or bare).
-		next, _, _ := reader.ReadRune()
-		var str string
-		var err error
-		if next == '"' {
-			str, err = readString(reader)
-		} else if next == '`' {
-			str, err = readNestedCommand(reader)
-		} else {
-			reader.UnreadRune()
-			str, err = readBare(reader)
-		}
-
-		// Add the argument to the result or fail.
-		if err != nil {
+	
+	for {
+		if token, err := readArgument(reader); err != nil {
 			return nil, err
+		} else if token == nil {
+			break
+		} else {
+			result = append(result, *token)
 		}
-		result = append(result, Token{next == '`', str})
 	}
 
 	return result, nil
+}
+
+func readArgument(r *strings.Reader) (*Token, error) {
+	discardWhitespace(r, false)
+	
+	next, _, err := r.ReadRune()
+	if err != nil {
+		return nil, nil
+	}
+	
+	var str string
+	if next == '"' {
+		str, err = readString(r)
+	} else if next == '`' {
+		str, err = readNestedCommand(r)
+	} else {
+		r.UnreadRune()
+		str, err = readBare(r)
+	}
+
+	// Add the argument to the result or fail.
+	if err != nil {
+		return nil, err
+	}
+	
+	return &Token{next == '`', str}, nil
 }
 
 func readBare(r *strings.Reader) (string, error) {
