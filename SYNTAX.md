@@ -47,6 +47,11 @@ Line continuations are evaluated before comments. This means that the following 
     puts hey\
     #there
 
+However, comments may not themselves have line continuations. For example, this would print "hey there":
+
+    # this is a comment \
+    puts hey there
+
 ## Variables
 
 Variables exist in a global scope, just like environment variables in Bash scripts.

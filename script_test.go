@@ -15,6 +15,19 @@ func TestParseScript(t *testing.T) {
 		[]string{"foo", "heytheretesting"}, []int{0, 1}, []int{1, 3})
 	testParseScriptCase(t, "foo\nhey\\\nthere\\\ntesting\n", "twowrap2",
 		[]string{"foo", "heytheretesting"}, []int{0, 1}, []int{1, 3})
+	testParseScriptCase(t, "foo\n\nbar", "removeblank1",
+		[]string{"foo", "bar"}, []int{0, 2}, []int{1, 1})
+	testParseScriptCase(t, "foo\n \nbar", "removeblank2",
+		[]string{"foo", "bar"}, []int{0, 2}, []int{1, 1})
+	testParseScriptCase(t, "foo\\\n \n\nbar", "removeblank3",
+		[]string{"foo ", "bar"}, []int{0, 3}, []int{2, 1})
+	testParseScriptCase(t, "#foo", "comment1", []string{}, []int{}, []int{})
+	testParseScriptCase(t, "flu\n#foo\nbar", "comment2",
+		[]string{"flu", "bar"}, []int{0, 2}, []int{1, 1})
+	testParseScriptCase(t, "flu\n#foo\\\nbar", "comment3",
+		[]string{"flu", "bar"}, []int{0, 2}, []int{1, 1})
+	testParseScriptCase(t, "flu\\\n#foo\nbar", "comment3",
+		[]string{"flu#foo", "bar"}, []int{0, 2}, []int{2, 1})
 }
 
 func testParseScriptCase(t *testing.T, script, scriptId string, lines []string,
