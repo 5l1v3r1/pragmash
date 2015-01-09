@@ -28,6 +28,10 @@ func TestParseScript(t *testing.T) {
 		[]string{"flu", "bar"}, []int{0, 2}, []int{1, 1})
 	testParseScriptCase(t, "flu\\\n#foo\nbar", "comment3",
 		[]string{"flu#foo", "bar"}, []int{0, 2}, []int{2, 1})
+	_, err := ParseScript("hey\\")
+	if err == nil {
+		t.Error("Didn't get error when script ended in backslash.")
+	}
 }
 
 func testParseScriptCase(t *testing.T, script, scriptId string, lines []string,
