@@ -73,7 +73,7 @@ func (c Condition) Evaluate(ctx Context) (bool, error) {
 	if len(c) == 0 {
 		return true, nil
 	}
-	
+
 	// We will need the first argument regardless.
 	val, err := c[0].Run(ctx)
 	if err != nil {
@@ -107,7 +107,7 @@ type Context interface {
 type ForBlock struct {
 	Variable   *Argument
 	Expression Argument
-	Blocks     Blocks
+	Block      Block
 }
 
 // Run executes the "for" loop.
@@ -120,7 +120,7 @@ func (f *ForBlock) Run(c Context) (string, error) {
 	if f.Variable == nil {
 		count := strings.Count(body, "\n") + 1
 		for i := 0; i < count; i++ {
-			if _, err := f.Blocks.Run(c); err != nil {
+			if _, err := f.Block.Run(c); err != nil {
 				return "", err
 			}
 		}
@@ -137,7 +137,7 @@ func (f *ForBlock) Run(c Context) (string, error) {
 		if _, err := c.Run("set", []string{varName, line}); err != nil {
 			return "", err
 		}
-		if _, err := f.Blocks.Run(c); err != nil {
+		if _, err := f.Block.Run(c); err != nil {
 			return "", err
 		}
 	}

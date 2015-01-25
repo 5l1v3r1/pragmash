@@ -10,7 +10,7 @@ func ParseProgram(scriptStr string) (Blocks, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Let's just make the line numbers start at 1.
 	for i, x := range script.LineStarts {
 		script.LineStarts[i] = x + 1
