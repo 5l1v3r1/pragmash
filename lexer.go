@@ -63,6 +63,10 @@ func (p *parseContext) nextBlock() (Block, error) {
 		var err error
 		if name == "for" {
 			special, err = p.readForLoop(tokens)
+		} else if name == "if" {
+			special, err = p.readIf(tokens)
+		} else if name == "try" {
+			special, err = p.readTryCatch(tokens)
 		} else if name == "while" {
 			special, err = p.readWhileLoop(tokens)
 		}
@@ -73,8 +77,9 @@ func (p *parseContext) nextBlock() (Block, error) {
 		}
 	}
 
+	// Read a regular command and return it.
 	if cmd, err := tokensToCommand(tokens); err != nil {
-		return nil, err
+		return nil, errors.New(errorPrefix + err.Error())
 	} else {
 		return cmd, nil
 	}
@@ -88,7 +93,9 @@ func (p *parseContext) readBlockBody(allowExtra bool) (Blocks, error) {
 		if err == nil && len(tokens) > 0 {
 			if !tokens[0].Command && tokens[0].Text == "}" {
 				if !allowExtra && len(tokens) > 1 {
-					return nil, errors.New("Unexpected tokens after }.")
+					lineNum := p.script.LineStarts[p.current]
+					return nil, errors.New("Unexpected tokens after } " +
+						"on line " + strconv.Itoa(lineNum))
 				}
 				p.current++
 				return res, nil
@@ -104,7 +111,7 @@ func (p *parseContext) readBlockBody(allowExtra bool) (Blocks, error) {
 		}
 		res = append(res, next)
 	}
-	return nil, errors.New("Missing }.")
+	return nil, errors.New("Missing } (at EOF).")
 }
 
 func (p *parseContext) readForLoop(t []Token) (Block, error) {
@@ -136,6 +143,74 @@ func (p *parseContext) readForLoop(t []Token) (Block, error) {
 	} else {
 		return &ForBlock{&args[0], args[1], body}, nil
 	}
+}
+
+func (p *parseContext) readIf(t []Token) (Block, error) {
+	if !endsWithOpenCurly(t) {
+		return nil, errors.New("Missing { in if-statement.")
+	}
+
+	res := IfBlock{make([]Condition, 1), make([]Block, 1)}
+
+	// Read the first condition and body
+	var err error
+	res.Conditions[0], err = tokensToCondition(t[1 : len(t)-1])
+	if err != nil {
+		return nil, err
+	}
+	res.Branches[0], err = p.readBlockBody(true)
+	if err != nil {
+		return nil, err
+	}
+
+	// Read the rest of the "else if" and "else" sections.
+	for {
+		tokens, _ := Tokenize(p.script.LogicalLines[p.current-1])
+		errLine := strconv.Itoa(p.script.LineStarts[p.current-1])
+
+		// Handle trivial errors and endings.
+		if len(tokens) == 1 {
+			break
+		} else if !endsWithOpenCurly(tokens) || len(tokens) == 2 ||
+			len(tokens) == 4 {
+			return nil, errors.New("Unexpected tokens after } on line " +
+				errLine)
+		}
+
+		// Read else clause.
+		if len(tokens) == 3 {
+			if tokens[1].Command || tokens[1].Text != "else" {
+				return nil, errors.New("Unexpected token after } on line " +
+					errLine)
+			}
+			elseBlock, err := p.readBlockBody(false)
+			if err != nil {
+				return nil, err
+			}
+			res.Branches = append(res.Branches, elseBlock)
+			break
+		}
+
+		// Make sure it's an "else if"
+		if tokens[1].Command || tokens[1].Text != "else" ||
+			tokens[2].Command || tokens[2].Text != "if" {
+			return nil, errors.New("Unexpected tokens after } on line " +
+				errLine)
+		}
+		condition, err := tokensToCondition(tokens[3 : len(tokens)-1])
+		if err != nil {
+			return nil, errors.New("Invalid condition on line " + errLine +
+				": " + err.Error())
+		}
+		branch, err := p.readBlockBody(true)
+		if err != nil {
+			return nil, err
+		}
+		res.Conditions = append(res.Conditions, condition)
+		res.Branches = append(res.Branches, branch)
+	}
+
+	return &res, nil
 }
 
 func (p *parseContext) readTryCatch(t []Token) (Block, error) {
@@ -194,13 +269,9 @@ func (p *parseContext) readWhileLoop(t []Token) (Block, error) {
 	}
 
 	// Parse the condition.
-	args := make(Condition, len(t)-2)
-	for i := 1; i < len(t)-1; i++ {
-		arg, err := tokenToArgument(t[i])
-		if err != nil {
-			return nil, err
-		}
-		args[i-1] = *arg
+	cond, err := tokensToCondition(t[1 : len(t)-1])
+	if err != nil {
+		return nil, err
 	}
 
 	// Read the body of the loop.
@@ -209,7 +280,7 @@ func (p *parseContext) readWhileLoop(t []Token) (Block, error) {
 		return nil, err
 	}
 
-	return &WhileBlock{args, body}, nil
+	return &WhileBlock{cond, body}, nil
 }
 
 func endsWithOpenCurly(t []Token) bool {
@@ -250,4 +321,16 @@ func tokensToCommand(t []Token) (*Command, error) {
 		args[i] = *arg
 	}
 	return &Command{args[0], args[1:]}, nil
+}
+
+func tokensToCondition(t []Token) (Condition, error) {
+	args := make(Condition, len(t))
+	for i, x := range t {
+		arg, err := tokenToArgument(x)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = *arg
+	}
+	return args, nil
 }
