@@ -47,7 +47,7 @@ func (p *parseContext) nextBlock() (Block, error) {
 
 	// This prefix will be used from all errors which are returned from this
 	// block.
-	errorPrefix := "Error at line " +
+	errorPrefix := "From line " +
 		strconv.Itoa(p.script.LineStarts[p.current]) + ": "
 
 	// Tokenize the next line
