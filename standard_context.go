@@ -70,7 +70,7 @@ func (s *StandardContext) Add(args []string) (string, error) {
 
 // Divide divides one floating point by another one.
 func (s *StandardContext) Divide(args []string) (string, error) {
-	if len(args) != 0 {
+	if len(args) != 2 {
 		return "", errors.New("Division takes exactly two arguments.")
 	}
 	
@@ -121,7 +121,7 @@ func (s *StandardContext) Multiply(args []string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		product := 0.0
+		product := 1.0
 		for _, x := range floats {
 			product *= x
 		}
