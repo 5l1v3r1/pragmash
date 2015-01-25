@@ -72,7 +72,7 @@ func (p *parseContext) nextBlock() (Block, error) {
 			return special, nil
 		}
 	}
-	
+
 	if cmd, err := tokensToCommand(tokens); err != nil {
 		return nil, err
 	} else {
@@ -136,6 +136,56 @@ func (p *parseContext) readForLoop(t []Token) (Block, error) {
 	} else {
 		return &ForBlock{&args[0], args[1], body}, nil
 	}
+}
+
+func (p *parseContext) readTryCatch(t []Token) (Block, error) {
+	if !endsWithOpenCurly(t) {
+		return nil, errors.New("Missing { in try-catch block.")
+	} else if len(t) != 2 {
+		return nil, errors.New("Invalid extra arguments for try-catch block.")
+	}
+
+	// Read the body of the try block
+	body, err := p.readBlockBody(true)
+	if err != nil {
+		return nil, err
+	}
+
+	// Handle empty or invalid catch blocks.
+	lastLine, _ := Tokenize(p.script.LogicalLines[p.current-1])
+	invalMessage := errors.New("Invalid arguments after } on line " +
+		strconv.Itoa(p.script.LineStarts[p.current-1]))
+	if len(lastLine) == 1 {
+		// No catch block.
+		return &TryBlock{body, Blocks{}, nil}, nil
+	} else if len(lastLine) != 3 && len(lastLine) != 4 {
+		return nil, invalMessage
+	}
+
+	// Line must be "} catch [variable] {"
+	if !endsWithOpenCurly(lastLine) || lastLine[1].Command ||
+		lastLine[1].Text != "catch" {
+		return nil, invalMessage
+	}
+
+	// Get the optional variable argument.
+	var variable *Argument
+	if len(lastLine) == 4 {
+		variable, err = tokenToArgument(lastLine[2])
+		if err != nil {
+			return nil, errors.New("Invalid variable argument at line " +
+				strconv.Itoa(p.script.LineStarts[p.current-1]) + ": " +
+				err.Error())
+		}
+	}
+
+	// Read the catch body
+	catchBody, err := p.readBlockBody(false)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TryBlock{body, catchBody, variable}, nil
 }
 
 func (p *parseContext) readWhileLoop(t []Token) (Block, error) {

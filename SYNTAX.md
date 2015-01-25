@@ -97,11 +97,11 @@ But checking if a command outputs an empty string only goes so far. You can also
         puts It works!
     }
 
-Finally, you can also use the `elif` and `else` keywords as expected:
+Finally, you can also use the `else if` and `else` keywords as expected:
 
     if "a" $x {
         echo It's A.
-    } elif "b" $x {
+    } else if "b" $x {
         echo It's B.
     } else {
         echo It's not A or B.
