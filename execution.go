@@ -70,6 +70,10 @@ type Condition []Argument
 // Evaluate runs the condition and returns true if the condition is true.
 // An error is returned if any commands in the condition failed to run.
 func (c Condition) Evaluate(ctx Context) (bool, error) {
+	if len(c) == 0 {
+		return true, nil
+	}
+	
 	// We will need the first argument regardless.
 	val, err := c[0].Run(ctx)
 	if err != nil {
