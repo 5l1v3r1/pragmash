@@ -37,14 +37,14 @@ func ParseScript(script string) (*Script, error) {
 		if err != nil {
 			return nil, err
 		}
-		
+
 		// Add the line to the result if it's not blank.
 		if len(line) > 0 {
 			res.LogicalLines = append(res.LogicalLines, line)
 			res.LineStarts = append(res.LineStarts, realLine)
 			res.LineLens = append(res.LineLens, count)
 		}
-		
+
 		realLine += count
 	}
 	return &res, nil
@@ -91,6 +91,6 @@ func readLogicalLine(r io.RuneScanner) (string, int, error) {
 		}
 		res.WriteRune(next)
 	}
-	
+
 	return res.String(), count, nil
 }

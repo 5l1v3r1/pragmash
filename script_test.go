@@ -42,7 +42,7 @@ func testParseScriptCase(t *testing.T, script, scriptId string, lines []string,
 		return
 	}
 	if s.Len() != len(lines) || len(s.LineStarts) != len(starts) ||
-		 len(s.LineLens) != len(lens) {
+		len(s.LineLens) != len(lens) {
 		t.Error("Unexpected result for script", scriptId)
 		return
 	}

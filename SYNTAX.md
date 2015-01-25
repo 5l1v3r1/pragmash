@@ -132,3 +132,20 @@ This could be used for other purposes as well, such as iterating through a small
         puts $x
     }
     puts Lift-off!
+
+## Try blocks
+
+Some commands might trigger errors. You can catch errors using a try-catch block:
+
+    try {
+        die "Error, yo."
+    } catch {
+    }
+
+You can optionally capture the error message in a variable:
+
+    try {
+        die "Error, yo."
+    } catch e {
+        puts Got error $e
+    }

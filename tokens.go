@@ -18,7 +18,7 @@ type Token struct {
 func Tokenize(line string) ([]Token, error) {
 	reader := strings.NewReader(line)
 	result := make([]Token, 0)
-	
+
 	for {
 		if token, err := readArgument(reader); err != nil {
 			return nil, err
@@ -34,28 +34,33 @@ func Tokenize(line string) ([]Token, error) {
 
 func readArgument(r *strings.Reader) (*Token, error) {
 	discardWhitespace(r, false)
-	
+
 	next, _, err := r.ReadRune()
 	if err != nil {
 		return nil, nil
 	}
-	
-	var str string
+
+	var res Token
 	if next == '"' {
-		str, err = readString(r)
+		res.Text, err = readString(r)
 	} else if next == '`' {
-		str, err = readNestedCommand(r)
+		res.Text, err = readNestedCommand(r)
+		res.Command = true
+	} else if next == '$' {
+		res.Text, err = readBare(r)
+		res.Text = "get " + res.Text
+		res.Command = true
 	} else {
 		r.UnreadRune()
-		str, err = readBare(r)
+		res.Text, err = readBare(r)
 	}
 
 	// Add the argument to the result or fail.
 	if err != nil {
 		return nil, err
 	}
-	
-	return &Token{next == '`', str}, nil
+
+	return &res, nil
 }
 
 func readBare(r *strings.Reader) (string, error) {
