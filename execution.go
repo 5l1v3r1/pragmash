@@ -82,7 +82,7 @@ func (c Condition) Evaluate(ctx Context) (bool, error) {
 
 	// Single argument conditional uses stringy booleans.
 	if len(c) == 1 {
-		return val == "", nil
+		return val != "", nil
 	}
 
 	// Make sure the rest of the arguments equal the first one.

@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"math/big"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -26,15 +28,21 @@ func NewStandardContext() *StandardContext {
 		"+":     res.Add,
 		"/":     res.Divide,
 		"echo":  res.Echo,
+		"exit":  res.Exit,
 		"get":   res.Get,
+		"[]":    res.GetAt,
 		"gets":  res.Gets,
+		"len":   res.Len,
 		"*":     res.Multiply,
+		"!":     res.Not,
 		"print": res.Print,
 		"puts":  res.Puts,
 		"range": res.Range,
+		"read":  res.Read,
 		"set":   res.Set,
 		"-":     res.Subtract,
 		"throw": res.Throw,
+		"write": res.Write,
 	}
 	return res
 }
@@ -89,6 +97,20 @@ func (s *StandardContext) Echo(args []string) (string, error) {
 	return strings.Join(args, " "), nil
 }
 
+// Exit exits the program with an optional return code.
+func (s *StandardContext) Exit(args []string) (string, error) {
+	if len(args) == 0 {
+		os.Exit(0)
+	} else if len(args) == 1 {
+		num, err := strconv.Atoi(args[0])
+		if err != nil {
+			return "", err
+		}
+		os.Exit(num)
+	}
+	return "", errors.New("Exit command takes 0 or 1 argument(s).")
+}
+
 // Get returns the value of a given variable or an error if the variable is
 // undefined.
 func (s *StandardContext) Get(args []string) (string, error) {
@@ -102,12 +124,44 @@ func (s *StandardContext) Get(args []string) (string, error) {
 	}
 }
 
+// GetAt returns an entry in an array, or throws an error if the index is out of
+// bounds.
+func (s *StandardContext) GetAt(args []string) (string, error) {
+	if len(args) != 2 {
+		return "", errors.New("The subscirpt operator takes two arguments.")
+	}
+	if len(args[0]) == 0 {
+		return "", errors.New("List is empty.")
+	}
+	list := strings.Split(args[0], "\n")
+	idx, err := strconv.Atoi(args[1])
+	if err != nil {
+		return "", err
+	}
+	if idx < 0 || idx >= len(list) {
+		return "", errors.New("Index out of bounds: " + args[1])
+	}
+	return list[idx], nil
+}
+
 // Gets reads a line from the console and returns it without a newline
 // character.
 func (s *StandardContext) Gets(args []string) (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text(), nil
+}
+
+// Len returns the number of lines in a string, or 0 if it's empty.
+func (s *StandardContext) Len(args []string) (string, error) {
+	count := 0
+	for _, arg := range args {
+		if len(arg) == 0 {
+			continue
+		}
+		count += strings.Count(arg, "\n") + 1
+	}
+	return strconv.Itoa(count), nil
 }
 
 // Multiply multiplies a list of big integers or floating points.
@@ -137,6 +191,26 @@ func (s *StandardContext) Multiply(args []string) (string, error) {
 		}
 		return ints[0].String(), nil
 	}
+}
+
+// Not inverts a conditional.
+func (s *StandardContext) Not(args []string) (string, error) {
+	if len(args) == 0 {
+		return "", nil
+	}
+	if len(args) == 1 {
+		if len(args[0]) == 0 {
+			return "true", nil
+		} else {
+			return "", nil
+		}
+	}
+	for i := 1; i < len(args); i++ {
+		if args[i] != args[0] {
+			return "true", nil
+		}
+	}
+	return "", nil
 }
 
 // Print prints text to the console without a newline and returns an empty
@@ -210,6 +284,35 @@ func (s *StandardContext) Range(args []string) (string, error) {
 	}
 }
 
+// Read reads the contents of a file or URL.
+func (s *StandardContext) Read(args []string) (string, error) {
+	if len(args) != 1 {
+		return "", errors.New("The read command expects one argument.")
+	}
+	
+	// Read a web URL if applicable.
+	if strings.HasPrefix(args[0], "http://") ||
+		strings.HasPrefix(args[0], "https://") {
+		resp, err := http.Get(args[0])
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return "", err
+		}
+		return string(body), nil
+	}
+	
+	// Read a path.
+	contents, err := ioutil.ReadFile(args[0])
+	if err != nil {
+		return "", err
+	}
+	return string(contents), nil
+}
+
 // Run runs a command to satisfy the Context interface.
 func (s *StandardContext) Run(command string, args []string) (string, error) {
 	if cmd, ok := s.Commands[command]; ok {
@@ -254,6 +357,20 @@ func (s *StandardContext) Subtract(args []string) (string, error) {
 // Throw generates an error.
 func (s *StandardContext) Throw(args []string) (string, error) {
 	return "", errors.New(strings.Join(args, " "))
+}
+
+// Write writes a string to a file.
+func (s *StandardContext) Write(args []string) (string, error) {
+	if len(args) != 2 {
+		return "", errors.New("The write command expects two arguments.")
+	}
+	path := args[0]
+	data := args[1]
+	if err := ioutil.WriteFile(path, []byte(data), os.FileMode(0600));
+		err != nil {
+		return "", err
+	}
+	return "", nil
 }
 
 func numsUseFloat(nums []string) bool {

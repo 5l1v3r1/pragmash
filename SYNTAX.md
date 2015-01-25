@@ -138,14 +138,14 @@ This could be used for other purposes as well, such as iterating through a small
 Some commands might trigger errors. You can catch errors using a try-catch block:
 
     try {
-        die "Error, yo."
+        throw "Error, yo."
     } catch {
     }
 
 You can optionally capture the error message in a variable:
 
     try {
-        die "Error, yo."
+        throw "Error, yo."
     } catch e {
         puts Got error $e
     }
