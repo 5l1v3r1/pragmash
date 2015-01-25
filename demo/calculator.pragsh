@@ -3,7 +3,7 @@ print "Enter number: "
 set x `gets`
 print "Enter number: "
 set y `gets`
-print "Enter operator: "
+print "Enter operator (*, /, +, -): "
 set op `gets`
 
 # Compute the answer
