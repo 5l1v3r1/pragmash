@@ -10,6 +10,11 @@ func ParseProgram(scriptStr string) (Blocks, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	// Let's just make the line numbers start at 1.
+	for i, x := range script.LineStarts {
+		script.LineStarts[i] = x + 1
+	}
 
 	// Read all the blocks in the script and return it.
 	res := Blocks{}
@@ -148,6 +153,8 @@ func (p *parseContext) readForLoop(t []Token) (Block, error) {
 func (p *parseContext) readIf(t []Token) (Block, error) {
 	if !endsWithOpenCurly(t) {
 		return nil, errors.New("Missing { in if-statement.")
+	} else if len(t) == 2 {
+		return nil, errors.New("Missing conditional in if-statement.")
 	}
 
 	res := IfBlock{make([]Condition, 1), make([]Block, 1)}
@@ -288,7 +295,7 @@ func endsWithOpenCurly(t []Token) bool {
 		return false
 	}
 	last := t[len(t)-1]
-	return !last.Command && last.Text == "}"
+	return !last.Command && last.Text == "{"
 }
 
 func tokenToArgument(t Token) (*Argument, error) {
