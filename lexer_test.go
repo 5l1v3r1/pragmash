@@ -313,3 +313,58 @@ func TestLexTryVarCatch(t *testing.T) {
 		t.Error("Expected one catch block.")
 	}
 }
+
+func TestLexWhileCondition(t *testing.T) {
+	// Test some invalid cases
+	if _, err := ParseProgram("while foo {\n"); err == nil {
+		t.Error("Missing } should trigger error.")
+	}
+	if _, err := ParseProgram("while foo {\n} foobar"); err == nil {
+		t.Error("Trailing text after } should trigger error.")
+	}
+	
+	res, err := ParseProgram("while foo {\necho hey\n}")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res) != 1 {
+		t.Fatal("Invalid result length.")
+	}
+	
+	block, ok := res[0].(*WhileBlock)
+	if !ok {
+		t.Fatal("Invalid block type.")
+	}
+	
+	if len(block.Condition) != 1 || block.Condition[0].Command != nil ||
+		block.Condition[0].Text != "foo" {
+		t.Error("Unexpected condition.")
+	}
+}
+
+func TestLexWhileEmpty(t *testing.T) {
+	// Test some invalid cases
+	if _, err := ParseProgram("while {\n"); err == nil {
+		t.Error("Missing } should trigger error.")
+	}
+	if _, err := ParseProgram("while {\n} foobar"); err == nil {
+		t.Error("Trailing text after } should trigger error.")
+	}
+	
+	res, err := ParseProgram("while {\necho hey\n}")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res) != 1 {
+		t.Fatal("Invalid result length.")
+	}
+	
+	block, ok := res[0].(*WhileBlock)
+	if !ok {
+		t.Fatal("Invalid block type.")
+	}
+	
+	if len(block.Condition) != 0 {
+		t.Error("Unexpected condition count.")
+	}
+}
