@@ -3,6 +3,7 @@ package pragmash
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -19,10 +20,12 @@ type StandardContext struct {
 func NewStandardContext() *StandardContext {
 	res := &StandardContext{Variables: map[string]string{}}
 	res.Commands = map[string]CommandFunc{
-		"echo": res.Echo,
-		"get":  res.Get,
-		"puts": res.Puts,
-		"set":  res.Set,
+		"echo":  res.Echo,
+		"get":   res.Get,
+		"puts":  res.Puts,
+		"range": res.Range,
+		"set":   res.Set,
+		"throw": res.Throw,
 	}
 	return res
 }
@@ -51,6 +54,64 @@ func (s *StandardContext) Puts(args []string) (string, error) {
 	return "", nil
 }
 
+// Range returns a newline-delimited list of integers in a given range.
+func (s *StandardContext) Range(args []string) (string, error) {
+	// Validate argument count.
+	if len(args) == 0 || len(args) > 3 {
+		return "", errors.New("Range takes 1, 2, or 3 arguments, got " +
+			strconv.Itoa(len(args)))
+	}
+	
+	// Parse arguments.
+	numArgs := make([]int, len(args))
+	for i, x := range args {
+		var err error
+		numArgs[i], err = strconv.Atoi(x)
+		if err != nil {
+			return "", err
+		}
+	}
+	start := 0
+	end := numArgs[0]
+	step := 1
+	if len(args) >= 2 {
+		start, end = end, numArgs[1]
+	}
+	if len(args) == 3 {
+		step = numArgs[2]
+		if step == 0 {
+			return "", errors.New("Step cannot be zero.")
+		}
+	}
+	
+	// Generate the range.
+	if step > 0 {
+		if end < start {
+			return "", nil
+		}
+		res := ""
+		for i := start; i < end; i += step {
+			res += strconv.Itoa(i)
+			if i + step < end {
+				res += "\n"
+			}
+		}
+		return res, nil
+	} else {
+		if end > start {
+			return "", nil
+		}
+		res := ""
+		for i := start; i > end; i += step {
+			res += strconv.Itoa(i)
+			if i + step > end {
+				res += "\n"
+			}
+		}
+		return res, nil
+	}
+}
+
 // Run runs a command to satisfy the Context interface.
 func (s *StandardContext) Run(command string, args []string) (string, error) {
 	if cmd, ok := s.Commands[command]; ok {
@@ -67,4 +128,9 @@ func (s *StandardContext) Set(args []string) (string, error) {
 	}
 	s.Variables[args[0]] = args[1]
 	return "", nil
+}
+
+// Throw generates an error.
+func (s *StandardContext) Throw(args []string) (string, error) {
+	return "", errors.New(strings.Join(args, " "))
 }

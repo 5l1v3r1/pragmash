@@ -114,6 +114,8 @@ type ForBlock struct {
 func (f *ForBlock) Run(c Context) (string, error) {
 	body, err := f.Expression.Run(c)
 	if err != nil {
+		return "", err
+	} else if len(body) == 0 {
 		return "", nil
 	}
 
