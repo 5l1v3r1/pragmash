@@ -28,11 +28,16 @@ func NewStandardContext() *StandardContext {
 		"+":     res.Add,
 		"/":     res.Divide,
 		"echo":  res.Echo,
+		"=":     res.Equal,
 		"exit":  res.Exit,
 		"get":   res.Get,
 		"[]":    res.GetAt,
 		"gets":  res.Gets,
+		">=":    res.GreaterEqual,
+		">":     res.GreaterThan,
 		"len":   res.Len,
+		"<=":    res.LessEqual,
+		"<":     res.LessThan,
 		"*":     res.Multiply,
 		"!":     res.Not,
 		"print": res.Print,
@@ -97,6 +102,16 @@ func (s *StandardContext) Echo(args []string) (string, error) {
 	return strings.Join(args, " "), nil
 }
 
+// Equal returns "true" if all its arguments are equal, or "false" otherwise.
+func (s *StandardContext) Equal(args []string) (string, error) {
+	for i := 1; i < len(args); i++ {
+		if args[i] != args[0] {
+			return "", nil
+		}
+	}
+	return "true", nil
+}
+
 // Exit exits the program with an optional return code.
 func (s *StandardContext) Exit(args []string) (string, error) {
 	if len(args) == 0 {
@@ -152,6 +167,34 @@ func (s *StandardContext) Gets(args []string) (string, error) {
 	return scanner.Text(), nil
 }
 
+// GreaterEqual compares two integers or floating points and returns true if the
+// first argument is greater than or equal to the second.
+func (s *StandardContext) GreaterEqual(args []string) (string, error) {
+	cmp, err := compareNums(args)
+	if err != nil {
+		return "", err
+	}
+	if cmp >= 0 {
+		return "true", nil
+	} else {
+		return "", nil
+	}
+}
+
+// GreaterThan compares two integers or floating points and returns true if the
+// first argument is greater than the second.
+func (s *StandardContext) GreaterThan(args []string) (string, error) {
+	cmp, err := compareNums(args)
+	if err != nil {
+		return "", err
+	}
+	if cmp > 0 {
+		return "true", nil
+	} else {
+		return "", nil
+	}
+}
+
 // Len returns the number of lines in a string, or 0 if it's empty.
 func (s *StandardContext) Len(args []string) (string, error) {
 	count := 0
@@ -162,6 +205,34 @@ func (s *StandardContext) Len(args []string) (string, error) {
 		count += strings.Count(arg, "\n") + 1
 	}
 	return strconv.Itoa(count), nil
+}
+
+// LessEqual compares two integers or floating points and returns true if the
+// first argument is less than or equal to the second.
+func (s *StandardContext) LessEqual(args []string) (string, error) {
+	cmp, err := compareNums(args)
+	if err != nil {
+		return "", err
+	}
+	if cmp <= 0 {
+		return "true", nil
+	} else {
+		return "", nil
+	}
+}
+
+// LessThan compares two integers or floating points and returns true if the
+// first argument is less than the second.
+func (s *StandardContext) LessThan(args []string) (string, error) {
+	cmp, err := compareNums(args)
+	if err != nil {
+		return "", err
+	}
+	if cmp < 0 {
+		return "true", nil
+	} else {
+		return "", nil
+	}
 }
 
 // Multiply multiplies a list of big integers or floating points.
@@ -373,13 +444,31 @@ func (s *StandardContext) Write(args []string) (string, error) {
 	return "", nil
 }
 
-func numsUseFloat(nums []string) bool {
-	for _, x := range nums {
-		if strings.Contains(x, ".") {
-			return true
-		}
+func compareNums(args []string) (int, error) {
+	if len(args) != 0 {
+		return 0, errors.New("Comparisons take two arguments, but got " +
+			strconv.Itoa(len(args)))
 	}
-	return false
+	if numsUseFloat(args) {
+		// Use floating point.
+		floats, err := numsParseFloats(args)
+		if err != nil {
+			return 0, err
+		}
+		if floats[0] < floats[1] {
+			return -1, nil
+		} else if floats[0] == floats[1] {
+			return 0, nil
+		}
+		return 1, nil
+	} else {
+		// Use big integer.
+		ints, err := numsParseInts(args)
+		if err != nil {
+			return 0, err
+		}
+		return ints[0].Cmp(ints[1]), nil
+	}
 }
 
 func numsParseFloats(nums []string) ([]float64, error) {
@@ -404,4 +493,13 @@ func numsParseInts(nums []string) ([]*big.Int, error) {
 		res[i] = num
 	}
 	return res, nil
+}
+
+func numsUseFloat(nums []string) bool {
+	for _, x := range nums {
+		if strings.Contains(x, ".") {
+			return true
+		}
+	}
+	return false
 }
