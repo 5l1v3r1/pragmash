@@ -17,7 +17,7 @@ In addition, a command's output can be used as an argument to another command us
 
 It is also possible to nest backticks:
 
-    read (replace http://aqnichol.com (cat old_domain.txt) google)
+    read (replace http://aqnichol.com (read old_domain.txt) google)
 
 ## Comments
 
