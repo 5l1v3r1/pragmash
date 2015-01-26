@@ -41,6 +41,26 @@ The subscript operator (denoted with two brackets `[]`) is used to access an ele
  * `[] "hey\nthere" 1` yields "there"
  * `[] "hey\nthere" 2` throws an exception.
 
+### The <= operator
+
+This operator checks if the first numerical argument is less than or equal to the second. It returns "true" in such a case, and "" otherwise.
+
+### The >= operator
+
+This operator checks if the first numerical argument is greater than or equal to the second. It returns "true" in such a case, and "" otherwise.
+
+### The < operator
+
+This operator checks if the first numerical argument is less than the second. It returns "true" in such a case, and "" otherwise.
+
+### The > operator
+
+This operator checks if the first numerical argument is greater than the second. It returns "true" in such a case, and "" otherwise.
+
+### The = operator
+
+This returns "true" if all its arguments are equal (when compared as strings). Returns "" otherwise.
+
 # I/O
 
 ## The console

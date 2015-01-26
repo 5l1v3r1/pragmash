@@ -25,12 +25,12 @@ func TestTokenize(t *testing.T) {
 		Token{[]Token{
 			Token{nil, "nichol"},
 			Token{[]Token{Token{nil, "is"}}, ""}}, ""},
-			Token{nil, "cool"}}, t)
+		Token{nil, "cool"}}, t)
 	testTokenizeCase("alex (nichol (is)) cool", []Token{Token{nil, "alex"},
 		Token{[]Token{
 			Token{nil, "nichol"},
 			Token{[]Token{Token{nil, "is"}}, ""}}, ""},
-			Token{nil, "cool"}}, t)
+		Token{nil, "cool"}}, t)
 	testTokenizeCase("test\\ \\)", []Token{Token{nil, "test )"}}, t)
 	testTokenizeCase("\"yo\\\"\"", []Token{Token{nil, "yo\""}}, t)
 	testTokenizeError("\"yo", t)

@@ -179,7 +179,7 @@ func (s *StandardContext) Read(args []string) (string, error) {
 	if len(args) != 1 {
 		return "", errors.New("The read command expects one argument.")
 	}
-	
+
 	// Read a web URL if applicable.
 	if strings.HasPrefix(args[0], "http://") ||
 		strings.HasPrefix(args[0], "https://") {
@@ -194,7 +194,7 @@ func (s *StandardContext) Read(args []string) (string, error) {
 		}
 		return string(body), nil
 	}
-	
+
 	// Read a path.
 	contents, err := ioutil.ReadFile(args[0])
 	if err != nil {
@@ -233,8 +233,7 @@ func (s *StandardContext) Write(args []string) (string, error) {
 	}
 	path := args[0]
 	data := args[1]
-	if err := ioutil.WriteFile(path, []byte(data), os.FileMode(0600));
-		err != nil {
+	if err := ioutil.WriteFile(path, []byte(data), os.FileMode(0600)); err != nil {
 		return "", err
 	}
 	return "", nil

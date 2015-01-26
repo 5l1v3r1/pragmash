@@ -41,7 +41,7 @@ func (s *StandardContext) Divide(args []string) (string, error) {
 	if len(args) != 2 {
 		return "", errors.New("Division takes exactly two arguments.")
 	}
-	
+
 	floats, err := numsParseFloats(args)
 	if err != nil {
 		return "", err
@@ -49,7 +49,7 @@ func (s *StandardContext) Divide(args []string) (string, error) {
 	if floats[1] == 0.0 {
 		return "", errors.New("Division by zero.")
 	}
-	return strconv.FormatFloat(floats[0] / floats[1], 'f', 10, 64), nil
+	return strconv.FormatFloat(floats[0]/floats[1], 'f', 10, 64), nil
 }
 
 // Equal returns "true" if all its arguments are equal, or "false" otherwise.
@@ -198,7 +198,7 @@ func (s *StandardContext) Subtract(args []string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return strconv.FormatFloat(floats[0] - floats[1], 'f', 10, 64), nil
+		return strconv.FormatFloat(floats[0]-floats[1], 'f', 10, 64), nil
 	} else {
 		// Use big integer.
 		ints, err := numsParseInts(args)
