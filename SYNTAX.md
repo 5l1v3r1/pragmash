@@ -11,13 +11,13 @@ Scripts in pragmash run a series of commands. Each command has a string output. 
     ls /this/path\ has\ spaces\ without\ quotes
     ls /this/path\\has\\backslashes\nand\nnewlines
 
-In addition, a command's output can be used as an argument to another command using backticks:
+In addition, a command's output can be used as an argument to another command using parentheses:
 
-    read `replace http://aqnichol.com aqnichol google`
+    read (replace http://aqnichol.com aqnichol google)
 
 It is also possible to nest backticks:
 
-    read `replace http://aqnichol.com \`cat old_domain.txt\` google`
+    read (replace http://aqnichol.com (cat old_domain.txt) google)
 
 ## Comments
 
@@ -58,11 +58,11 @@ Variables exist in a global scope, just like environment variables in Bash scrip
 
 The `set` pseudo-command sets a variable. The following example would set the variable "x" to the contents of a URL:
 
-    set x `read http://aqnichol.com`
+    set x (read http://aqnichol.com)
 
 The `get` pseudo-command gets a variable. For example, this would write the contents of a variable "x" to a file:
 
-    write ./home.html `get x`
+    write ./home.html (get x)
 
 As a shorthand for `get`, you can use a `$` followed by the variable name:
 
@@ -77,23 +77,23 @@ This means that, in order to pass the "$" character to a command, you must escap
 
 An empty string is considered "false" in pragmash. Thus, you can use a basic `if` statement to check if a command outputs a non-empty string like this:
 
-    if `read /might/be/empty` {
+    if (read /might/be/empty) {
         puts The file wasn't empty.
     }
 
 Certain commands might be crafted to output some sort of boolean result in this manner. For instance, an `exists` command might return "" if a file doesn't exist and "true" if it does:
 
-    if `exists /some/path` {
+    if (exists /some/path) {
         puts The file exists.
     }
 
 But checking if a command outputs an empty string only goes so far. You can also check if any number of arguments are equal:
 
-    if "Not found." `read http://google.com` {
+    if "Not found." (read http://google.com) {
         puts The page couldn't be found.
     }
     ...
-    if "a" `echo a` a {
+    if "a" (echo a) a {
         puts It works!
     }
 
@@ -112,8 +112,8 @@ Finally, you can also use the `else if` and `else` keywords as expected:
 A `while` loop repeats a block as long as a condition remains true. Conditions for `while` loops work exactly the same way as conditions for `if` statements.
 
     set x 0
-    while `less $x 10` {
-        set x `add $x 1`
+    while (< $x 10) {
+        set x (+ $x 1)
         puts $x
     }
     puts Lift-off!
@@ -122,13 +122,13 @@ A `while` loop repeats a block as long as a condition remains true. Conditions f
 
 There are no array types in pragmash; instead, arrays are represented as strings with newline delimiters. You can loop over the lines in a string like this:
 
-    for x `ls /foo/bar` {
+    for x (ls /foo/bar) {
         puts Found file called $x
     }
 
 This could be used for other purposes as well, such as iterating through a small range of numbers:
 
-    for x `range 1 11` {
+    for x (range 1 11) {
         puts $x
     }
     puts Lift-off!

@@ -1,13 +1,13 @@
 # Read inputs
 print "Enter number: "
-set x `gets`
+set x (gets)
 print "Enter number: "
-set y `gets`
+set y (gets)
 print "Enter operator (*, /, +, -): "
-set op `gets`
+set op (gets)
 
 # Compute the answer
-set res `$op $x $y`
+set res ($op $x $y)
 
 # Print out the answer
 puts $x $op $y = $res
