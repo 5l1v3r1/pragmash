@@ -9,7 +9,7 @@ import (
 
 // Token represents a string or an embedded command.
 type Token struct {
-	Command bool
+	Command []Token
 	Text    string
 }
 
@@ -20,7 +20,7 @@ func Tokenize(line string) ([]Token, error) {
 	result := make([]Token, 0)
 
 	for {
-		if token, err := readArgument(reader); err != nil {
+		if token, err := readArgument(reader, false); err != nil {
 			return nil, err
 		} else if token == nil {
 			break
@@ -32,24 +32,33 @@ func Tokenize(line string) ([]Token, error) {
 	return result, nil
 }
 
-func readArgument(r *strings.Reader) (*Token, error) {
+func readArgument(r *strings.Reader, nested bool) (*Token, error) {
 	discardWhitespace(r, false)
 
 	next, _, err := r.ReadRune()
 	if err != nil {
-		return nil, nil
+		if nested {
+			return nil, errors.New("Missing ).")
+		} else {
+			return nil, nil
+		}
 	}
 
 	var res Token
 	if next == '"' {
 		res.Text, err = readString(r)
-	} else if next == '`' {
-		res.Text, err = readNestedCommand(r)
-		res.Command = true
+	} else if next == '(' {
+		res.Command, err = readNestedCommand(r)
+	} else if next == ')' {
+		if nested {
+			return nil, nil
+		} else {
+			return nil, errors.New("Unexpected ).")
+		}
 	} else if next == '$' {
-		res.Text, err = readBare(r)
-		res.Text = "get " + res.Text
-		res.Command = true
+		var name string
+		name, err = readBare(r)
+		res.Command = []Token{Token{nil, "get"}, Token{nil, name}}
 	} else {
 		r.UnreadRune()
 		res.Text, err = readBare(r)
@@ -74,6 +83,9 @@ func readBare(r *strings.Reader) (string, error) {
 			}
 			buffer.WriteString(str)
 		} else if unicode.IsSpace(next) {
+			break
+		} else if next == ')' {
+			r.UnreadRune()
 			break
 		} else {
 			buffer.WriteRune(next)
@@ -100,36 +112,19 @@ func readEscape(r *strings.Reader) (string, error) {
 	return string(next), nil
 }
 
-func readNestedCommand(r *strings.Reader) (string, error) {
-	var buffer bytes.Buffer
-	closed := false
-	for r.Len() > 0 {
-		next, _, _ := r.ReadRune()
-		if next == '`' {
-			if r.Len() != 0 {
-				following, _, _ := r.ReadRune()
-				r.UnreadRune()
-				if !unicode.IsSpace(following) {
-					return "", errors.New("Unexpected character following " +
-						"close-tick: '" + string(following) + "'")
-				}
-			}
-			closed = true
+func readNestedCommand(r *strings.Reader) ([]Token, error) {
+	// Read arguments, allowing for close parentheses to close everything.
+	result := make([]Token, 0)
+	for {
+		if token, err := readArgument(r, true); err != nil {
+			return nil, err
+		} else if token == nil {
 			break
-		} else if next == '\\' {
-			str, err := readEscape(r)
-			if err != nil {
-				return "", err
-			}
-			buffer.WriteString(str)
 		} else {
-			buffer.WriteRune(next)
+			result = append(result, *token)
 		}
 	}
-	if !closed {
-		return "", errors.New("Unexpected end of line before `.")
-	}
-	return buffer.String(), nil
+	return result, nil
 }
 
 func readString(r *strings.Reader) (string, error) {

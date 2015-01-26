@@ -1,13 +1,13 @@
-if `! \`len $ARGV\` 2` {
+if (! 2 (len $ARGV)) {
   puts "Usage: wget <url> <path>"
   exit 1
 }
 
-set url `[] $ARGV 0`
-set path `[] $ARGV 1`
+set url ([] $ARGV 0)
+set path ([] $ARGV 1)
 
 try {
-  set data `read $url`
+  set data (read $url)
 } catch e {
   puts Failed to download your file: $e
   exit 1

@@ -62,7 +62,7 @@ func (p *parseContext) nextBlock() (Block, error) {
 	}
 
 	// Handle control blocks.
-	if !tokens[0].Command {
+	if tokens[0].Command == nil {
 		name := tokens[0].Text
 		var special Block
 		var err error
@@ -96,7 +96,7 @@ func (p *parseContext) readBlockBody(allowExtra bool) (Blocks, error) {
 		// Attempt to parse the line to check if it's a close curly-brace.
 		tokens, err := Tokenize(p.script.LogicalLines[p.current])
 		if err == nil && len(tokens) > 0 {
-			if !tokens[0].Command && tokens[0].Text == "}" {
+			if tokens[0].Text == "}" {
 				if !allowExtra && len(tokens) > 1 {
 					lineNum := p.script.LineStarts[p.current]
 					return nil, errors.New("Unexpected tokens after } " +
@@ -186,7 +186,7 @@ func (p *parseContext) readIf(t []Token) (Block, error) {
 
 		// Read else clause.
 		if len(tokens) == 3 {
-			if tokens[1].Command || tokens[1].Text != "else" {
+			if tokens[1].Text != "else" {
 				return nil, errors.New("Unexpected token after } on line " +
 					errLine)
 			}
@@ -199,8 +199,7 @@ func (p *parseContext) readIf(t []Token) (Block, error) {
 		}
 
 		// Make sure it's an "else if"
-		if tokens[1].Command || tokens[1].Text != "else" ||
-			tokens[2].Command || tokens[2].Text != "if" {
+		if tokens[1].Text != "else" || tokens[2].Text != "if" {
 			return nil, errors.New("Unexpected tokens after } on line " +
 				errLine)
 		}
@@ -245,8 +244,7 @@ func (p *parseContext) readTryCatch(t []Token) (Block, error) {
 	}
 
 	// Line must be "} catch [variable] {"
-	if !endsWithOpenCurly(lastLine) || lastLine[1].Command ||
-		lastLine[1].Text != "catch" {
+	if !endsWithOpenCurly(lastLine) || lastLine[1].Text != "catch" {
 		return nil, invalMessage
 	}
 
@@ -295,20 +293,16 @@ func endsWithOpenCurly(t []Token) bool {
 		return false
 	}
 	last := t[len(t)-1]
-	return !last.Command && last.Text == "{"
+	return last.Text == "{"
 }
 
 func tokenToArgument(t Token) (*Argument, error) {
-	if !t.Command {
+	if t.Command == nil {
 		return &Argument{t.Text, nil}, nil
 	}
 
 	// Parse the sub-command.
-	tokens, err := Tokenize(t.Text)
-	if err != nil {
-		return nil, err
-	}
-	command, err := tokensToCommand(tokens)
+	command, err := tokensToCommand(t.Command)
 	if err != nil {
 		return nil, err
 	}

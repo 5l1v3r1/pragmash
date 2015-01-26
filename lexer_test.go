@@ -5,7 +5,7 @@ import (
 )
 
 func TestLexCommand(t *testing.T) {
-	res, err := ParseProgram("echo yo `echo there \\`echo bro\\``")
+	res, err := ParseProgram("echo yo (echo there (echo bro))")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestLexForSimple(t *testing.T) {
 		t.Error("Missing { should trigger error.")
 	}
 
-	res, err := ParseProgram("for `echo yo\\\\nthere` {\necho hey\n}")
+	res, err := ParseProgram("for (echo yo\\nthere) {\necho hey\n}")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,7 +103,7 @@ func TestLexForVariable(t *testing.T) {
 		t.Error("Missing { should trigger error.")
 	}
 
-	res, err := ParseProgram("for x `echo yo\\\\nthere` {\necho hey\n}")
+	res, err := ParseProgram("for x (echo yo\\nthere) {\necho hey\n}")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,7 +154,7 @@ func TestLexIf(t *testing.T) {
 
 	// Test parsing a full-blown if statement.
 	res, err := ParseProgram("if hey {\necho yo\necho yay\n} else if " +
-		"bob `echo bob` {\necho yoyo\n} else if " + "`testing123` {\n\n} " +
+		"bob (echo bob) {\necho yoyo\n} else if (testing123) {\n\n} " +
 		"else {\necho yo1\n}")
 	if err != nil {
 		t.Fatal(err)
