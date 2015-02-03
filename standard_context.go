@@ -43,6 +43,7 @@ func NewStandardContext() *StandardContext {
 		"puts":  res.Puts,
 		"range": res.Range,
 		"read":  res.Read,
+		"rep":   res.Replace,
 		"set":   res.Set,
 		"-":     res.Subtract,
 		"throw": res.Throw,
@@ -201,6 +202,14 @@ func (s *StandardContext) Read(args []string) (string, error) {
 		return "", err
 	}
 	return string(contents), nil
+}
+
+// Replace replaces a string with another string in a string.
+func (s *StandardContext) Replace(args []string) (string, error) {
+	if len(args) != 3 {
+		return "", errors.New("Replace command takes three arguments.")
+	}
+	return strings.Replace(args[0], args[1], args[2], -1), nil
 }
 
 // Run runs a command to satisfy the Context interface.
