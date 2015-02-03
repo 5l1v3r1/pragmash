@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -34,9 +35,11 @@ func NewStandardContext() *StandardContext {
 		"gets":  res.Gets,
 		">=":    res.GreaterEqual,
 		">":     res.GreaterThan,
+		"join":  res.Join,
 		"len":   res.Len,
 		"<=":    res.LessEqual,
 		"<":     res.LessThan,
+		"match": res.Match,
 		"*":     res.Multiply,
 		"!":     res.Not,
 		"print": res.Print,
@@ -79,7 +82,7 @@ func (s *StandardContext) Get(args []string) (string, error) {
 	if x, ok := s.Variables[args[0]]; ok {
 		return x, nil
 	} else {
-		return "", errors.New("Undefined variable: " + args[1])
+		return "", errors.New("Undefined variable: " + args[0])
 	}
 }
 
@@ -89,6 +92,15 @@ func (s *StandardContext) Gets(args []string) (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text(), nil
+}
+
+// Join joins strings by appending them.
+func (s *StandardContext) Join(args []string) (string, error) {
+	res := ""
+	for _, x := range args {
+		res += x
+	}
+	return res, nil
 }
 
 // Len returns the number of lines in a string, or 0 if it's empty.
@@ -101,6 +113,27 @@ func (s *StandardContext) Len(args []string) (string, error) {
 		count += strings.Count(arg, "\n") + 1
 	}
 	return strconv.Itoa(count), nil
+}
+
+// Match runs a regular expression on a string.
+func (s *StandardContext) Match(args []string) (string, error) {
+	if len(args) != 2 {
+		return "", errors.New("The match command takes two arguments.")
+	}
+	r, err := regexp.Compile(args[0])
+	if err != nil {
+		return "", err
+	}
+	res := r.FindAllStringSubmatch(args[1], -1)
+	resStr := ""
+	for i, x := range res {
+		for j, y := range x {
+			if i != 0 || j != 0 {
+				resStr += "\n" + y
+			}
+		}
+	}
+	return resStr, nil
 }
 
 // Print prints text to the console without a newline and returns an empty
