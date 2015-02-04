@@ -26,6 +26,7 @@ func NewStandardContext() *StandardContext {
 	res := &StandardContext{Variables: map[string]string{}}
 	res.Commands = map[string]CommandFunc{
 		"+":     res.Add,
+		"arr":   res.Arr,
 		"/":     res.Divide,
 		"echo":  res.Echo,
 		"=":     res.Equal,
@@ -53,6 +54,14 @@ func NewStandardContext() *StandardContext {
 		"write": res.Write,
 	}
 	return res
+}
+
+// Arr joins its arguments with new lines.
+func (s *StandardContext) Arr(args []string) (string, error) {
+	if len(args) == 0 {
+		return "", nil
+	}
+	return strings.Join(args, "\n"), nil
 }
 
 // Echo returns a space-delimited version of the arguments.
