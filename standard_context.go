@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -34,6 +35,7 @@ func NewStandardContext() *StandardContext {
 		"get":   res.Get,
 		"[]":    res.GetAt,
 		"gets":  res.Gets,
+		"glob":  res.Glob,
 		">=":    res.GreaterEqual,
 		">":     res.GreaterThan,
 		"join":  res.Join,
@@ -102,6 +104,19 @@ func (s *StandardContext) Gets(args []string) (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text(), nil
+}
+
+// Glob uses wildcards to match all the files for a certain pattern.
+func (s *StandardContext) Glob(args []string) (string, error) {
+	res := make([]string, 0)
+	for _, x := range args {
+		paths, err := filepath.Glob(x)
+		if err != nil {
+			return "", err
+		}
+		res = append(res, paths...)
+	}
+	return strings.Join(res, "\n"), nil
 }
 
 // Join joins strings by appending them.
