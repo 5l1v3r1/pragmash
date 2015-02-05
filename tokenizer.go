@@ -40,4 +40,3 @@ func (t *Tokenizer) Line(line string) (*Line, error) {
 	// TODO: tokenize the line here
 	return nil, nil
 }
-

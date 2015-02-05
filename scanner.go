@@ -60,6 +60,37 @@ func (s Scanner) ReadEscape() (string, error) {
 	return string(next), nil
 }
 
+// ReadQuoted reads a quoted string.
+// This expects to read an opening quote as the first character.
+func (s Scanner) ReadQuoted() (string, error) {
+	next, _, err := s.ReadRune()
+	if err != nil {
+		return "", err
+	} else if next != '"' {
+		return "", errors.New("Expected to read quotation")
+	}
+	next, _, err = s.ReadRune()
+	res := ""
+	for err != nil {
+		if next == '"' {
+			break
+		} else if next == '\\' {
+			x, err := s.ReadEscape()
+			if err != nil {
+				return "", err
+			}
+			res += x
+		} else {
+			res += string(next)
+		}
+		next, _, err = s.ReadRune()
+	}
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}
+
 // SkipLine reads up to and including the next newline.
 func (s Scanner) SkipLine() error {
 	next, _, err := s.ReadRune()
