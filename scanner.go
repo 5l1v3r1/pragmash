@@ -19,7 +19,7 @@ func NewScannerString(str string) Scanner {
 
 // ReadBare reads a bareword, supporting escapes and terminating at a space or
 // an EOF.
-func (s Scanner) ReadBare() (string, error) {
+func (s Scanner) ReadBare(parenTerm bool) (string, error) {
 	next, _, err := s.ReadRune()
 	res := ""
 	for err != nil {
@@ -32,10 +32,32 @@ func (s Scanner) ReadBare() (string, error) {
 				return "", err
 			}
 			res += x
+		} else if next == ')' && parenTerm {
+			s.UnreadRune()
+			break
 		} else {
 			res += string(next)
 		}
 		next, _, err = s.ReadRune()
+	}
+	if err != io.EOF {
+		return "", err
+	}
+	return res, nil
+}
+
+// ReadCommand reads a command.
+// This expects to read an open parenthesis as the first character.
+func (s Scanner) ReadCommand(parenTerm bool) ([]Token, error) {
+	res := []Token{}
+	for {
+		t, err := s.ReadToken(parenTerm)
+		if err != nil {
+			return nil, err
+		} else if t == nil {
+			break
+		}
+		res = append(res, *t)
 	}
 	return res, nil
 }
@@ -67,7 +89,7 @@ func (s Scanner) ReadQuoted() (string, error) {
 	if err != nil {
 		return "", err
 	} else if next != '"' {
-		return "", errors.New("Expected to read quotation")
+		return "", errors.New("Expected to read open parenthesis.")
 	}
 	next, _, err = s.ReadRune()
 	res := ""
@@ -89,6 +111,46 @@ func (s Scanner) ReadQuoted() (string, error) {
 		return "", err
 	}
 	return res, nil
+}
+
+// ReadToken reads the next token (i.e. an argument or nested command).
+// This will return nil, nil to indicate that the command has no more tokens.
+func (s Scanner) ReadToken(parenTerm bool) (*Token, error) {
+	s.SkipWhitespace()
+	next, _, err := s.ReadRune()
+	if err != nil {
+		if !parenTerm && err == io.EOF {
+			return nil, nil
+		}
+		return nil, err
+	}
+	s.UnreadRune()
+	if next == '(' {
+		args, err := s.ReadCommand(true)
+		if err != nil {
+			return nil, err
+		}
+		return &Token{args, ""}, nil
+	} else if next == '"' {
+		str, err := s.ReadQuoted()
+		if err != nil {
+			return nil, err
+		}
+		return &Token{nil, str}, nil
+	} else if next == '$' {
+		str, err := s.ReadBare(parenTerm)
+		if err != nil {
+			return nil, err
+		}
+		return &Token{[]Token{Token{nil, "get"}, Token{nil, str}}, ""}, nil
+	} else if next == ')' && parenTerm {
+		return nil, nil
+	}
+	str, err := s.ReadBare(parenTerm)
+	if err != nil {
+		return nil, err
+	}
+	return &Token{nil, str}, nil
 }
 
 // SkipLine reads up to and including the next newline.

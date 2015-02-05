@@ -4,12 +4,20 @@ import (
 	"strings"
 )
 
+// A Line represents a logical line in a source file.
 type Line struct {
 	CloseBlock bool
 	OpenBlock  bool
-	Tokens     []string
+	Tokens     []Token
 }
 
+// A Token is either a raw string or a nested command.
+type Token struct {
+	Nested []Token
+	String string
+}
+
+// A Tokenizer processes raw lines and returns Lines.
 type Tokenizer struct {
 	previous string
 }
