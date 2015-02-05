@@ -1,14 +1,15 @@
 package pragmash
 
 import (
+	"bytes"
 	"strings"
 )
 
 // A Line represents a logical line in a source file.
 type Line struct {
-	CloseBlock bool
-	OpenBlock  bool
-	Tokens     []Token
+	Close  bool
+	Open   bool
+	Tokens []Token
 }
 
 // A Token is either a raw string or a nested command.
@@ -34,17 +35,33 @@ func (t *Tokenizer) Done() bool {
 
 // Line takes a line as a string and processes it.
 //
-// If the line was the end of a logical token expression, such expression is
-// returned as the first return parameter.
+// If the line was the end of a command expression, such expression is returned
+// as the first return parameter.
 //
 // If the line needs more data to be completed (i.e. ends with a backslash)
-// then this returns a nil *Line and a nil error.
+// then this returns nil, nil.
 func (t *Tokenizer) Line(line string) (*Line, error) {
 	full := t.previous + line
 	if strings.HasSuffix(line, "\\") {
 		t.previous = full
 		return nil, nil
 	}
-	// TODO: tokenize the line here
-	return nil, nil
+	t.previous = ""
+	scanner := NewScannerString(full)
+	tokens, err := scanner.ReadCommand(false)
+	if err != nil {
+		return nil, err
+	}
+	line := &Line{Tokens: tokens}
+	// Check if the line is a close or open block.
+	if len(tokens) == 0 {
+		return line
+	}
+	if tokens[len(tokens)-1].String == "{" {
+		line.Open = true
+	}
+	if tokens[0] == "}" {
+		line.Close = true
+	}
+	return line
 }
