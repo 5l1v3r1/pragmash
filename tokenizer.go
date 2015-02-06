@@ -1,7 +1,6 @@
 package pragmash
 
 import (
-	"bytes"
 	"strings"
 )
 
@@ -52,16 +51,16 @@ func (t *Tokenizer) Line(line string) (*Line, error) {
 	if err != nil {
 		return nil, err
 	}
-	line := &Line{Tokens: tokens}
+	res := &Line{Tokens: tokens}
 	// Check if the line is a close or open block.
 	if len(tokens) == 0 {
-		return line
+		return res, nil
 	}
 	if tokens[len(tokens)-1].String == "{" {
-		line.Open = true
+		res.Open = true
 	}
-	if tokens[0] == "}" {
-		line.Close = true
+	if tokens[0].String == "}" {
+		res.Close = true
 	}
-	return line
+	return res, nil
 }
