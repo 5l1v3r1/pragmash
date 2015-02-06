@@ -8,4 +8,3 @@ func (c Condition) Run(r Runner) (Value, *Exception) {
 	}
 	return nil, nil
 }
-

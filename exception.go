@@ -51,4 +51,3 @@ func (e Exception) Number() (Number, error) {
 func (e Exception) String() string {
 	return e.err.Error()
 }
-

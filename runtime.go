@@ -10,4 +10,3 @@ type Runnable interface {
 type Runner interface {
 	RunCommand(name string, args []Value) (Value, error)
 }
-

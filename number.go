@@ -165,4 +165,3 @@ func SubtractNumbers(n1, n2 Number) Number {
 		return newNumberFloat(n1.Float() - n2.Float())
 	}
 }
-
