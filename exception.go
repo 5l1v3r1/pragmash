@@ -13,8 +13,8 @@ type Exception struct {
 }
 
 // NewException creates a new exception.
-func NewException(context string, err error) Exception {
-	return Exception{context, err}
+func NewException(context string, err error) *Exception {
+	return &Exception{context, err}
 }
 
 // Array splits the error string by newlines and returns an array of exceptions,

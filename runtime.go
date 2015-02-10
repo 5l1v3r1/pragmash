@@ -23,8 +23,7 @@ func (c CommandRunnable) Run(r Runner) (Value, *Exception) {
 	}
 	val, err := r.RunCommand(name.String(), args)
 	if err != nil {
-		exc := NewException(c.Context, err)
-		return nil, &exc
+		return nil, NewException(c.Context, err)
 	}
 	return val, nil
 }
