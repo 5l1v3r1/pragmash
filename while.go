@@ -72,6 +72,9 @@ func (w *WhileScanner) Line(l Line, context string) (Runnable, error) {
 	if res, err := w.scanner.Line(l, context); err != nil {
 		return nil, err
 	} else if res != nil {
+		if len(l.Tokens) > 0 {
+			return nil, errors.New("Unexpected tokens after while block")
+		}
 		return While{res, w.condition}, nil
 	}
 	return nil, nil
