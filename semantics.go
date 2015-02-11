@@ -100,6 +100,13 @@ func (g *genericScanner) Line(l Line, context string) (Runnable, error) {
 		}
 		g.subScanner = whileScanner
 		return nil, nil
+	} else if l.Tokens[0].String == "for" {
+		forScanner, err := NewForScanner(l, context)
+		if err != nil {
+			return nil, err
+		}
+		g.subScanner = forScanner
+		return nil, nil
 	}
 
 	// Handle a regular line
