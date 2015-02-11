@@ -54,3 +54,23 @@ func (n NotCondition) Run(r Runner) (Value, *Exception) {
 	}
 	return BoolValue(!val.Bool()), nil
 }
+
+// ConditionFromTokens reads a series of tokens and converts them into a
+// Runnable which is either a Condition or a NotCondition.
+func ConditionFromTokens(t []Token, context string) Runnable {
+	if len(t) != 0 && t[0].String == "not" {
+		// Negative condition
+		c := make(NotCondition, len(t)-1)
+		for i := 1; i < len(t); i++ {
+			c[i-1] = t[i].Runnable(context)
+		}
+		return c
+	} else {
+		// Positive condition
+		c := make(Condition, len(t))
+		for i, token := range t {
+			c[i] = token.Runnable(context)
+		}
+		return c
+	}
+}
