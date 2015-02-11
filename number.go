@@ -92,7 +92,7 @@ func AddNumbers(n1, n2 Number) Number {
 // This returns an error if the second argument is zero.
 func DivideNumbers(n1, n2 Number) (Number, error) {
 	if n2.Zero() {
-		return nil, errors.New("Division by zero.")
+		return nil, errors.New("division by zero")
 	}
 
 	i1, i2 := n1.Int(), n2.Int()
@@ -151,7 +151,7 @@ func ParseNumber(s string) (Number, error) {
 
 	num := big.NewInt(0)
 	if _, ok := num.SetString(s, 10); !ok {
-		return nil, errors.New("Invalid integer: " + s)
+		return nil, errors.New("invalid integer: " + s)
 	}
 	return number{f, num}, nil
 }

@@ -25,7 +25,7 @@ func (b BoolValue) Context() string {
 
 // Number returns an error, since a boolean is not a number.
 func (b BoolValue) Number() (Number, error) {
-	return nil, errors.New("Invalid number: " + b.String())
+	return nil, errors.New("invalid number: " + b.String())
 }
 
 // String returns StringValue("true") for a true receiver and StringValue("")

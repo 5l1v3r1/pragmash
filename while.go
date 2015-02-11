@@ -41,11 +41,11 @@ type WhileScanner struct {
 func NewWhileScanner(l Line, context string) (*WhileScanner, error) {
 	// Validate the line's skeleton.
 	if !l.Open {
-		return nil, errors.New("While loop must open a block.")
+		return nil, errors.New("while loop must open a block")
 	} else if l.Close {
-		return nil, errors.New("While loop must not close a block.")
+		return nil, errors.New("while loop must not close a block")
 	} else if len(l.Tokens) == 0 || l.Tokens[0].String != "while" {
-		return nil, errors.New("While loop must start with 'while' token.")
+		return nil, errors.New("while loop must start with 'while' token")
 	}
 
 	// Generate the condition.
@@ -59,7 +59,7 @@ func NewWhileScanner(l Line, context string) (*WhileScanner, error) {
 
 // EOF returns an error with the context of the first line of the loop.
 func (w *WhileScanner) EOF() (Runnable, error) {
-	return nil, errors.New("While loop (at " + w.context +
+	return nil, errors.New("while loop (at " + w.context +
 		") not terminated at EOF")
 }
 
@@ -73,7 +73,7 @@ func (w *WhileScanner) Line(l Line, context string) (Runnable, error) {
 		return nil, err
 	} else if res != nil {
 		if len(l.Tokens) > 0 {
-			return nil, errors.New("Unexpected tokens after while block")
+			return nil, errors.New("unexpected tokens after while block")
 		}
 		return While{res, w.condition}, nil
 	}

@@ -89,7 +89,7 @@ func (s Scanner) ReadQuoted() (string, error) {
 	if err != nil {
 		return "", err
 	} else if next != '"' {
-		return "", errors.New("Expected to read open parenthesis.")
+		return "", errors.New("expected to read open parenthesis")
 	}
 	next, _, err = s.ReadRune()
 	res := ""

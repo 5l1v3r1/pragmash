@@ -58,7 +58,7 @@ func (g *genericScanner) EOF() (Runnable, error) {
 		}
 	}
 	if g.waitingClose {
-		return nil, errors.New("Missing '}' at EOF.")
+		return nil, errors.New("missing '}' at EOF")
 	}
 	return RunnableList(g.list), nil
 }
@@ -88,7 +88,7 @@ func (g *genericScanner) Line(l Line, context string) (Runnable, error) {
 		if g.waitingClose {
 			return RunnableList(g.list), nil
 		} else {
-			return nil, errors.New("Unexpected '}' at " + context)
+			return nil, errors.New("unexpected '}' at " + context)
 		}
 	}
 
