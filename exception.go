@@ -32,6 +32,11 @@ func (e Exception) Array() []Value {
 	return res
 }
 
+// Bool returns true unless the error message is empty.
+func (e Exception) Bool() bool {
+	return len(e.String()) > 0
+}
+
 // Context returns the context string.
 func (e Exception) Context() string {
 	return e.context

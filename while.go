@@ -18,7 +18,7 @@ func (w While) Run(r Runner) (Value, *Exception) {
 		if exc != nil {
 			return nil, exc
 		}
-		if len(val.String()) == 0 {
+		if !val.Bool() {
 			break
 		}
 		_, exc = w.Body.Run(r)
@@ -49,9 +49,21 @@ func NewWhileScanner(l Line, context string) (*WhileScanner, error) {
 	}
 
 	// Generate the condition.
-	condition := make(Condition, len(l.Tokens)-1)
-	for i := 1; i < len(l.Tokens); i++ {
-		condition[i-1] = l.Tokens[i].Runnable(context)
+	var condition Runnable
+	if len(l.Tokens) > 1 && l.Tokens[1].String == "not" {
+		// Negative condition
+		c := make(NotCondition, len(l.Tokens)-2)
+		for i := 2; i < len(l.Tokens); i++ {
+			c[i-2] = l.Tokens[i].Runnable(context)
+		}
+		condition = c
+	} else {
+		// Positive condition
+		c := make(Condition, len(l.Tokens)-1)
+		for i := 1; i < len(l.Tokens); i++ {
+			c[i-1] = l.Tokens[i].Runnable(context)
+		}
+		condition = c
 	}
 	scanner := newGenericScanner(true)
 	return &WhileScanner{condition, context, scanner}, nil
