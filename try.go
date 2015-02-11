@@ -98,6 +98,7 @@ func (t *TryScanner) Line(l Line, context string) (Runnable, error) {
 		t.catchContext = context
 		t.tryBlock = res
 		t.variable = l.Tokens[1].Runnable(context)
+		t.scanner = newGenericScanner(true)
 	}
 	return nil, nil
 }
