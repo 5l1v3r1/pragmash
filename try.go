@@ -53,7 +53,7 @@ func NewTryScanner(l Line, context string) (*TryScanner, error) {
 	if len(l.Tokens) != 1 {
 		return nil, errors.New("try block takes no arguments")
 	} else if l.Tokens[0].String != "try" {
-		return nil, errors.New("try block must be initiated by '{'")
+		return nil, errors.New("try block must be initiated by 'try'")
 	} else if l.Close || !l.Open {
 		return nil, errors.New("try line must end with '{' and not start" +
 			" with '}'")
@@ -63,7 +63,7 @@ func NewTryScanner(l Line, context string) (*TryScanner, error) {
 	return &TryScanner{"", context, newGenericScanner(true), nil, nil}, nil
 }
 
-// EOF returns an error with the context of the first line of the loop.
+// EOF returns an error with the context of the first line of the block.
 func (t *TryScanner) EOF() (Runnable, error) {
 	return nil, errors.New("try block (at " + t.context +
 		") not terminated at EOF")

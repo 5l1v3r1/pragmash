@@ -18,6 +18,11 @@ func (b BoolValue) Array() []Value {
 	}
 }
 
+// Bool returns bool(b).
+func (b BoolValue) Bool() bool {
+	return bool(b)
+}
+
 // Context returns an empty string.
 func (b BoolValue) Context() string {
 	return ""
@@ -56,6 +61,11 @@ func (s StringValue) Array() []Value {
 	return res
 }
 
+// Bool returns true if the string is not empty.
+func (s StringValue) Bool() bool {
+	return len(s) != 0
+}
+
 // Context returns an empty string.
 func (s StringValue) Context() string {
 	return ""
@@ -76,6 +86,9 @@ func (s StringValue) String() string {
 type Value interface {
 	// Array returns the array representation of the value.
 	Array() []Value
+
+	// Bool returns the boolean representation of the value.
+	Bool() bool
 
 	// Context returns the context of the value. This is useful if the value is
 	// an exception. In most cases, this should be an empty string.

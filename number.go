@@ -47,6 +47,10 @@ func (n number) Array() []Value {
 	return []Value{n}
 }
 
+func (n number) Bool() bool {
+	return true
+}
+
 func (n number) Context() string {
 	return ""
 }
