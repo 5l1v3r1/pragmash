@@ -13,14 +13,14 @@ func TokenizeString(str string) ([]Line, []string, error) {
 	contexts := make([]string, 0)
 	tokenizer := NewTokenizer()
 	lineStart := -1
-	
+
 	// Loop through each line string
 	for i, lineStr := range strings.Split(str, "\n") {
 		// If the line is a comment, we should skip it.
 		if strings.HasPrefix(strings.TrimSpace(lineStr), "#") {
 			continue
 		}
-		
+
 		// Add the line to the tokenizer.
 		line, err := tokenizer.Line(lineStr)
 		if err != nil {
@@ -29,10 +29,10 @@ func TokenizeString(str string) ([]Line, []string, error) {
 			// We read the line, so we should add it and its context.
 			lines = append(lines, *line)
 			if lineStart >= 0 {
-				contexts = append(contexts, "line " + strconv.Itoa(lineStart))
+				contexts = append(contexts, "line "+strconv.Itoa(lineStart))
 				lineStart = -1
 			} else {
-				contexts = append(contexts, "line " + strconv.Itoa(i))
+				contexts = append(contexts, "line "+strconv.Itoa(i))
 			}
 		} else if lineStart < 0 {
 			// This line is being continued.
