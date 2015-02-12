@@ -104,6 +104,25 @@ func AddNumbers(n1, n2 Number) Number {
 	}
 }
 
+// CompareNumbers returns -1 if n1 < n2, 0 if n1 == n2, or 1 if n1 > n2.
+func CompareNumbers(n1, n2 Number) int {
+	i1, i2 := n1.Int(), n2.Int()
+
+	// Check if we need to use floating points.
+	if i1 == nil || i2 == nil {
+		f1, f2 := n1.Float(), n2.Float()
+		if f1 < f2 {
+			return -1
+		} else if f1 > f2 {
+			return 1
+		} else {
+			return 0
+		}
+	}
+
+	return i1.Cmp(i2)
+}
+
 // DivideNumbers multiplies two numbers and returns the product.
 // This returns an error if the second argument is zero.
 func DivideNumbers(n1, n2 Number) (Number, error) {
@@ -130,7 +149,7 @@ func DivideNumbers(n1, n2 Number) (Number, error) {
 }
 
 // ExponentiateNumber raises a number to a given power.
-func ExponentiateNumber(base, power number) Number {
+func ExponentiateNumber(base, power Number) Number {
 	i1, i2 := base.Int(), power.Int()
 	if i1 != nil && i2 != nil {
 		return NewNumberBig(big.NewInt(0).Exp(i1, i2, nil))

@@ -1,11 +1,5 @@
 package pragmash
 
-// StdMathRewrites can be used for a ReflectRunner's command rewrite table to
-// replace the named operators with symbolic ones like *, +, /, and -.
-var StdMathRewrites = map[string]string{
-	"+": "add", "/": "div", "*": "mul", "-": "sub", "**": "pow",
-}
-
 // StdMath implements the standard arithmetic functions.
 type StdMath struct{}
 
@@ -30,6 +24,11 @@ func (s StdMath) Mul(nums []Number) Value {
 		res = MultiplyNumbers(res, num)
 	}
 	return res
+}
+
+// Pow raises the first argument to the power of the second.
+func (s StdMath) Pow(n1, n2 Number) Value {
+	return ExponentiateNumber(n1, n2)
 }
 
 // Sub subtracts the second argument from the first.

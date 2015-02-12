@@ -54,7 +54,11 @@ func (r ReflectRunner) RewriteName(name string) string {
 func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 	// Special cases.
 	if t.NumIn() == 0 {
-		return []reflect.Value{}, nil
+		if len(vals) == 0 {
+			return []reflect.Value{}, nil
+		} else {
+			return nil, errors.New("expected no arguments")
+		}
 	} else if t.NumIn() == 1 && t.In(0) == reflect.TypeOf([]Number{}) {
 		// Generate a list of numbers.
 		nums := make([]Number, len(vals))
@@ -70,12 +74,13 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 		return []reflect.Value{reflect.ValueOf(vals)}, nil
 	} else if t.NumIn() != len(vals) {
 		return nil, errors.New("expected " + strconv.Itoa(t.NumIn()) +
-			" arguments")
+			" argument(s)")
 	}
 
 	// These are the allowed argument types.
 	arrType := reflect.TypeOf([]string{})
 	boolType := reflect.TypeOf(true)
+	intType := reflect.TypeOf(int(0))
 	numType := reflect.TypeOf((*Number)(nil)).Elem()
 	strType := reflect.TypeOf("")
 	valType := reflect.TypeOf((*Value)(nil)).Elem()
@@ -98,6 +103,17 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 			args[i] = reflect.ValueOf(x.Array())
 		} else if inputType == strType {
 			args[i] = reflect.ValueOf(x.String())
+		} else if inputType == intType {
+			num, err := x.Number()
+			if err != nil {
+				return nil, err
+			}
+			intVal := num.Int()
+			if intVal != nil {
+				args[i] = reflect.ValueOf(int(intVal.Int64()))
+			} else {
+				args[i] = reflect.ValueOf(int(num.Float()))
+			}
 		} else {
 			return nil, errors.New("invalid argument type: " +
 				inputType.String())
