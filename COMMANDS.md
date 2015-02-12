@@ -89,6 +89,10 @@ This command takes two arguments: first a path; second, some data to write to th
 
 # Basic functionality
 
+### The "count" command
+
+This command takes one argument and returns how many elements it contains as a newline-delimited list.
+
 ### The "exit" command
 
 This command exits the program. It takes an optional integer argument with a return value. If this argument is specified but is not a valid integer, the command throws an exception.
@@ -99,7 +103,7 @@ This command takes one argument--a variable name--and returns its contents. It t
 
 ### The "len" command
 
-This command takes any number of arguments. It treats each argument as a newline-delimited array and returns the total number of items it was passed.
+This command takes one string argument and returns its length, in bytes.
 
 ### The "set" command
 
