@@ -29,10 +29,10 @@ func TokenizeString(str string) ([]Line, []string, error) {
 			// We read the line, so we should add it and its context.
 			lines = append(lines, *line)
 			if lineStart >= 0 {
-				contexts = append(contexts, "line "+strconv.Itoa(lineStart))
+				contexts = append(contexts, "line "+strconv.Itoa(lineStart+1))
 				lineStart = -1
 			} else {
-				contexts = append(contexts, "line "+strconv.Itoa(i))
+				contexts = append(contexts, "line "+strconv.Itoa(i+1))
 			}
 		} else if lineStart < 0 {
 			// This line is being continued.
@@ -50,6 +50,12 @@ type Line struct {
 	Close  bool
 	Open   bool
 	Tokens []Token
+}
+
+// Blank returns true if the line has no tokens and does not close or open a
+// block.
+func (l Line) Blank() bool {
+	return len(l.Tokens) == 0 && !l.Close && !l.Open
 }
 
 // Runnable returns a Runnable for the line.
@@ -140,11 +146,11 @@ func (t *Tokenizer) Line(line string) (*Line, error) {
 		return res, nil
 	}
 	if tokens[len(tokens)-1].String == "{" {
-		tokens = tokens[0 : len(tokens)-1]
+		res.Tokens = res.Tokens[0 : len(tokens)-1]
 		res.Open = true
 	}
 	if tokens[0].String == "}" {
-		tokens = tokens[1:]
+		res.Tokens = res.Tokens[1:]
 		res.Close = true
 	}
 	return res, nil

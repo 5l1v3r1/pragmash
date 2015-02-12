@@ -9,7 +9,12 @@ type StdAll struct {
 	StdOps
 }
 
+// NewStdAll creates a new StdAll instance with a new StdInternal inside.
+func NewStdAll() StdAll {
+	return StdAll{StdInternal: NewStdInternal()}
+}
+
 // NewStdRunner returns a Runner which implements the standard library.
 func NewStdRunner() Runner {
-	return NewReflectRunner(StdAll{}, OperatorRewrites)
+	return NewReflectRunner(NewStdAll(), OperatorRewrites)
 }

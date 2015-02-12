@@ -25,7 +25,7 @@ func (r ReflectRunner) RunCommand(name string, vals []Value) (Value, error) {
 	// Lookup the method.
 	n := r.RewriteName(name)
 	n = strings.ToUpper(n[:1]) + n[1:]
-	method := r.value.MethodByName(name)
+	method := r.value.MethodByName(n)
 	if !method.IsValid() {
 		return nil, errors.New("unknown command: " + name)
 	}
@@ -126,30 +126,38 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 func reflectReturnValue(res []reflect.Value) (Value, error) {
 	if len(res) == 0 {
 		return StringValue(""), nil
-	} else if len(res) == 1 {
+	}
+	
+	errType := reflect.TypeOf((*error)(nil)).Elem()
+	valType := reflect.TypeOf((*Value)(nil)).Elem()
+	
+	if len(res) == 1 {
 		// The return type may be an error or a value.
-		val := res[0].Interface()
-		if err, ok := val.(error); ok {
-			if err != nil {
-				return nil, err
+		if res[0].Type() == errType {
+			val := res[0].Interface()
+			if val != nil {
+				return nil, val.(error)
 			} else {
 				return StringValue(""), nil
 			}
-		} else if retVal, ok := val.(Value); ok {
-			return retVal, nil
-		}
-		return nil, errors.New("invalid return type")
-	} else if len(res) == 2 {
-		// The return type must be (Value, error)
-		i1 := res[0].Interface()
-		i2 := res[0].Interface()
-		if val, ok := i1.(Value); !ok {
-			return nil, errors.New("invalid first return type")
-		} else if err, ok := i2.(error); !ok {
-			return nil, errors.New("invalid second return type")
+		} else if res[0].Type() == valType {
+			return res[0].Interface().(Value), nil
 		} else {
-			return val, err
+			return nil, errors.New("invalid return type")
 		}
 	}
-	return nil, errors.New("invalid number of return values")
+	
+	// The return type must be (Value, error)
+	if len(res) != 2 {
+		return nil, errors.New("invalid number of return values")
+	} else if res[0].Type() != valType {
+		return nil, errors.New("invalid first return type")
+	} else if res[1].Type() != errType {
+		return nil, errors.New("invalid second return type")
+	}
+	if errVal := res[1].Interface(); errVal != nil {
+		return nil, errVal.(error)
+	} else {
+		return res[0].Interface().(Value), nil
+	}
 }

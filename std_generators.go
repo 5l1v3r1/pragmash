@@ -81,9 +81,9 @@ func rangeTriple(start, end, step int) (string, error) {
 	var buffer bytes.Buffer
 	i := start
 	for {
-		if step < 0 && start < end {
+		if step < 0 && i <= end {
 			break
-		} else if step > 0 && start > end {
+		} else if step > 0 && i >= end {
 			break
 		}
 		if i != start {

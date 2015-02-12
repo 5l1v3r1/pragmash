@@ -20,9 +20,10 @@ func NewScannerString(str string) Scanner {
 // ReadBare reads a bareword, supporting escapes and terminating at a space or
 // an EOF.
 func (s Scanner) ReadBare(parenTerm bool) (string, error) {
+	// TODO: use bytes.Buffer here to build the string.
 	next, _, err := s.ReadRune()
 	res := ""
-	for err != nil {
+	for err == nil {
 		if unicode.IsSpace(next) {
 			s.UnreadRune()
 			break
@@ -40,14 +41,14 @@ func (s Scanner) ReadBare(parenTerm bool) (string, error) {
 		}
 		next, _, err = s.ReadRune()
 	}
-	if err != io.EOF {
+	if err != nil && err != io.EOF {
 		return "", err
 	}
 	return res, nil
 }
 
 // ReadCommand reads a command.
-// This expects to read an open parenthesis as the first character.
+// This does not expect to read an open parenthesis as the first character.
 func (s Scanner) ReadCommand(parenTerm bool) ([]Token, error) {
 	res := []Token{}
 	for {
@@ -83,17 +84,12 @@ func (s Scanner) ReadEscape() (string, error) {
 }
 
 // ReadQuoted reads a quoted string.
-// This expects to read an opening quote as the first character.
+// This does not expect to read an opening quote as the first character.
 func (s Scanner) ReadQuoted() (string, error) {
+	// TODO: use bytes.Buffer here
 	next, _, err := s.ReadRune()
-	if err != nil {
-		return "", err
-	} else if next != '"' {
-		return "", errors.New("expected to read open parenthesis")
-	}
-	next, _, err = s.ReadRune()
 	res := ""
-	for err != nil {
+	for err == nil {
 		if next == '"' {
 			break
 		} else if next == '\\' {
@@ -124,7 +120,6 @@ func (s Scanner) ReadToken(parenTerm bool) (*Token, error) {
 		}
 		return nil, err
 	}
-	s.UnreadRune()
 	if next == '(' {
 		args, err := s.ReadCommand(true)
 		if err != nil {
@@ -146,6 +141,8 @@ func (s Scanner) ReadToken(parenTerm bool) (*Token, error) {
 	} else if next == ')' && parenTerm {
 		return nil, nil
 	}
+	
+	s.UnreadRune()
 	str, err := s.ReadBare(parenTerm)
 	if err != nil {
 		return nil, err

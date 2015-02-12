@@ -11,6 +11,12 @@ type StdInternal struct {
 	Variables map[string]Value
 }
 
+// NewStdInternal creates a StdInternal with some default variables.
+func NewStdInternal() StdInternal {
+	// TODO: add ARGV here.
+	return StdInternal{map[string]Value{}}
+}
+
 // Count returns the number of elements in a list.
 func (s StdInternal) Count(args []string) Value {
 	return NewNumberInt(int64(len(args)))

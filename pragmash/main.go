@@ -31,11 +31,9 @@ func main() {
 		os.Exit(1)
 	}
 	
-	runner := pragmash.NewStdRunner()
-	// TODO: here, set os.Args as the ARGV variable.
-	
+	runner := pragmash.NewStdRunner()	
 	if _, exc := runnable.Run(runner); exc != nil {
-		fmt.Fprintln(os.Stderr, "exception at " + exc.Context() + ":" +
+		fmt.Fprintln(os.Stderr, "exception at " + exc.Context() + ": " +
 			exc.String())
 		os.Exit(1)
 	}

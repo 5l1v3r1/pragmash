@@ -82,7 +82,7 @@ func (g *genericScanner) EOF() (Runnable, error) {
 }
 
 func (g *genericScanner) Line(l Line, context string) (Runnable, error) {
-	if len(l.Tokens) == 0 {
+	if l.Blank() {
 		return nil, nil
 	}
 
