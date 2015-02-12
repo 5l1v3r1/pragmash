@@ -1,3 +1,5 @@
+# Btw, these only apply if you live in the U.S. in 2015.
+
 print "Enter your age: "
 set age (gets)
 

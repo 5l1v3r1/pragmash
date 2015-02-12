@@ -125,6 +125,22 @@ func (g *genericScanner) Line(l Line, context string) (Runnable, error) {
 		}
 		g.subScanner = forScanner
 		return nil, nil
+	} else if l.Tokens[0].String == "try" {
+		tryScanner, err := NewTryScanner(l, context)
+		if err != nil {
+			return nil, err
+		}
+		g.subScanner = tryScanner
+		return nil, nil
+	} else if l.Tokens[0].String == "if" {
+		ifScanner, err := NewIfScanner(l, context)
+		if err != nil {
+			return nil, err
+		}
+		g.subScanner = ifScanner
+		return nil, nil
+	} else if l.Open {
+		return nil, errors.New("unexpected '{' at " + context)
 	}
 
 	// Handle a regular line

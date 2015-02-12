@@ -5,6 +5,7 @@ import (
 	"github.com/unixpickle/pragmash"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -31,7 +32,10 @@ func main() {
 		os.Exit(1)
 	}
 	
-	runner := pragmash.NewStdRunner()	
+	runner := pragmash.NewStdRunner()
+	runner.RunCommand("set", []pragmash.Value{pragmash.StringValue("ARGV"),
+		pragmash.StringValue(strings.Join(os.Args[2:], "\n"))})
+	
 	if _, exc := runnable.Run(runner); exc != nil {
 		fmt.Fprintln(os.Stderr, "exception at " + exc.Context() + ": " +
 			exc.String())

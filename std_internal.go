@@ -13,7 +13,6 @@ type StdInternal struct {
 
 // NewStdInternal creates a StdInternal with some default variables.
 func NewStdInternal() StdInternal {
-	// TODO: add ARGV here.
 	return StdInternal{map[string]Value{}}
 }
 

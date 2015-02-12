@@ -100,7 +100,12 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 		} else if inputType == boolType {
 			args[i] = reflect.ValueOf(x.Bool())
 		} else if inputType == arrType {
-			args[i] = reflect.ValueOf(x.Array())
+			arr := x.Array()
+			strs := make([]string, len(arr))
+			for i, x := range arr {
+				strs[i] = x.String()
+			}
+			args[i] = reflect.ValueOf(strs)
 		} else if inputType == strType {
 			args[i] = reflect.ValueOf(x.String())
 		} else if inputType == intType {

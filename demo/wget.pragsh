@@ -1,4 +1,4 @@
-if (! 2 (len $ARGV)) {
+if not (count $ARGV) 2 {
   puts "Usage: wget <url> <path>"
   exit 1
 }
