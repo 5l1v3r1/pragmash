@@ -4,6 +4,24 @@ import (
 	"errors"
 )
 
+// ScanAll scans every line and context string at once and returns a Runnable or
+// fails with an error.
+func ScanAll(lines []Line, contexts []string) (Runnable, error) {
+	if len(lines) != len(contexts) {
+		return nil, errors.New("each line must have exactly one context")
+	}
+	scanner := NewBodyScanner()
+	for i, l := range lines {
+		r, err := scanner.Line(l, contexts[i])
+		if err != nil {
+			return nil, err
+		} else if r != nil {
+			return nil, errors.New("got premature runnable")
+		}
+	}
+	return scanner.EOF()
+}
+
 // A SemanticScanner converts a raw list of Lines into a Runnable.
 type SemanticScanner interface {
 	// EOF should be called when no more lines will be passed to the scanner.
