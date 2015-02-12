@@ -22,6 +22,7 @@ func NewReflectRunner(val interface{}, rw map[string]string) ReflectRunner {
 // It then capitalizes the first letter of the name and looks for a
 // corresponding method.
 func (r ReflectRunner) RunCommand(name string, vals []Value) (Value, error) {
+	// Lookup the method.
 	n := r.RewriteName(name)
 	n = strings.ToUpper(n[:1]) + n[1:]
 	method := r.value.MethodByName(name)
@@ -30,28 +31,83 @@ func (r ReflectRunner) RunCommand(name string, vals []Value) (Value, error) {
 	}
 	t := method.Type()
 
-	// Generate the arguments for the call.
-	var args []reflect.Value
+	// Generate the arguments.
+	args, err := reflectArguments(t, vals)
+	if err != nil {
+		return nil, err
+	}
+
+	// Run the call and process the return value.
+	res := method.Call(args)
+	return reflectReturnValue(res)
+}
+
+func (r ReflectRunner) RewriteName(name string) string {
+	if r.rewrite != nil {
+		if n, ok := r.rewrite[name]; ok {
+			return n
+		}
+	}
+	return name
+}
+
+func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
+	// Special cases.
 	if t.NumIn() == 0 {
-		args = []reflect.Value{}
+		return []reflect.Value{}, nil
+	} else if t.NumIn() == 1 && t.In(0) == reflect.TypeOf([]Number{}) {
+		// Generate a list of numbers.
+		nums := make([]Number, len(vals))
+		for i, x := range vals {
+			num, err := x.Number()
+			if err != nil {
+				return nil, err
+			}
+			nums[i] = num
+		}
+		return []reflect.Value{reflect.ValueOf(nums)}, nil
 	} else if t.NumIn() == 1 && t.In(0) == reflect.TypeOf([]Value{}) {
-		args = []reflect.Value{reflect.ValueOf(vals)}
+		return []reflect.Value{reflect.ValueOf(vals)}, nil
 	} else if t.NumIn() != len(vals) {
 		return nil, errors.New("expected " + strconv.Itoa(t.NumIn()) +
 			" arguments")
-	} else {
-		valType := reflect.TypeOf((*Value)(nil)).Elem()
-		args = make([]reflect.Value, t.NumIn())
-		for i, x := range vals {
-			// TODO: here, support bool, string, and []string types.
-			if t.In(i) != valType {
-				return nil, errors.New("invalid argument type")
-			}
+	}
+
+	// These are the allowed argument types.
+	arrType := reflect.TypeOf([]string{})
+	boolType := reflect.TypeOf(true)
+	numType := reflect.TypeOf((*Number)(nil)).Elem()
+	strType := reflect.TypeOf("")
+	valType := reflect.TypeOf((*Value)(nil)).Elem()
+
+	// Process each argument individually.
+	args := make([]reflect.Value, t.NumIn())
+	for i, x := range vals {
+		inputType := t.In(i)
+		if inputType == valType {
 			args[i] = reflect.ValueOf(x)
+		} else if inputType == numType {
+			num, err := x.Number()
+			if err != nil {
+				return nil, err
+			}
+			args[i] = reflect.ValueOf(num)
+		} else if inputType == boolType {
+			args[i] = reflect.ValueOf(x.Bool())
+		} else if inputType == arrType {
+			args[i] = reflect.ValueOf(x.Array())
+		} else if inputType == strType {
+			args[i] = reflect.ValueOf(x.String())
+		} else {
+			return nil, errors.New("invalid argument type: " +
+				inputType.String())
 		}
 	}
 
-	res := method.Call(args)
+	return args, nil
+}
+
+func reflectReturnValue(res []reflect.Value) (Value, error) {
 	if len(res) == 0 {
 		return StringValue(""), nil
 	} else if len(res) == 1 {
@@ -80,13 +136,4 @@ func (r ReflectRunner) RunCommand(name string, vals []Value) (Value, error) {
 		}
 	}
 	return nil, errors.New("invalid number of return values")
-}
-
-func (r ReflectRunner) RewriteName(name string) string {
-	if r.rewrite != nil {
-		if n, ok := r.rewrite[name]; ok {
-			return n
-		}
-	}
-	return name
 }

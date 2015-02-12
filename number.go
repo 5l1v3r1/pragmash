@@ -28,7 +28,9 @@ type number struct {
 	integer  *big.Int
 }
 
-func newNumberBig(b *big.Int) number {
+// NewNumberBig returns an object which implements Number and represents the
+// given integer.
+func NewNumberBig(b *big.Int) Number {
 	// Use big.Rat to convert the integer to a floating point.
 	// NOTE: using float64(b.Int64()) will cause undefined behavior where there
 	// need not be.
@@ -36,11 +38,21 @@ func newNumberBig(b *big.Int) number {
 	rat.SetInt(b)
 	f, _ := rat.Float64()
 
-	return number{f, b}
+	bCopy := big.NewInt(0)
+	bCopy.Set(b)
+	return number{f, bCopy}
 }
 
-func newNumberFloat(f float64) number {
+// NewNumberFloat returns an object which implements Number and represents the
+// given floating point.
+func NewNumberFloat(f float64) Number {
 	return number{f, nil}
+}
+
+// NewNumberInt returns an object which implements Number and represents the
+// given floating point.
+func NewNumberInt(i int64) Number {
+	return NewNumberBig(big.NewInt(i))
 }
 
 func (n number) Array() []Value {
@@ -86,9 +98,9 @@ func (n number) Zero() bool {
 func AddNumbers(n1, n2 Number) Number {
 	i1, i2 := n1.Int(), n2.Int()
 	if i1 != nil && i2 != nil {
-		return newNumberBig(big.NewInt(0).Add(i1, i2))
+		return NewNumberBig(big.NewInt(0).Add(i1, i2))
 	} else {
-		return newNumberFloat(n1.Float() + n2.Float())
+		return NewNumberFloat(n1.Float() + n2.Float())
 	}
 }
 
@@ -106,14 +118,14 @@ func DivideNumbers(n1, n2 Number) (Number, error) {
 		rat.SetFrac(i1, i2)
 		if rat.IsInt() {
 			// Special case where the division resulted in an integer.
-			return newNumberBig(rat.Num()), nil
+			return NewNumberBig(rat.Num()), nil
 		}
 
 		// Division resulted in a floating point.
 		f, _ := rat.Float64()
-		return newNumberFloat(f), nil
+		return NewNumberFloat(f), nil
 	} else {
-		return newNumberFloat(n1.Float() / n2.Float()), nil
+		return NewNumberFloat(n1.Float() / n2.Float()), nil
 	}
 }
 
@@ -121,9 +133,9 @@ func DivideNumbers(n1, n2 Number) (Number, error) {
 func ExponentiateNumber(base, power number) Number {
 	i1, i2 := base.Int(), power.Int()
 	if i1 != nil && i2 != nil {
-		return newNumberBig(big.NewInt(0).Exp(i1, i2, nil))
+		return NewNumberBig(big.NewInt(0).Exp(i1, i2, nil))
 	} else {
-		return newNumberFloat(math.Pow(base.Float(), power.Float()))
+		return NewNumberFloat(math.Pow(base.Float(), power.Float()))
 	}
 }
 
@@ -131,9 +143,9 @@ func ExponentiateNumber(base, power number) Number {
 func MultiplyNumbers(n1, n2 Number) Number {
 	i1, i2 := n1.Int(), n2.Int()
 	if i1 != nil && i2 != nil {
-		return newNumberBig(big.NewInt(0).Mul(i1, i2))
+		return NewNumberBig(big.NewInt(0).Mul(i1, i2))
 	} else {
-		return newNumberFloat(n1.Float() + n2.Float())
+		return NewNumberFloat(n1.Float() + n2.Float())
 	}
 }
 
@@ -164,8 +176,8 @@ func ParseNumber(s string) (Number, error) {
 func SubtractNumbers(n1, n2 Number) Number {
 	i1, i2 := n1.Int(), n2.Int()
 	if i1 != nil && i2 != nil {
-		return newNumberBig(big.NewInt(0).Sub(i1, i2))
+		return NewNumberBig(big.NewInt(0).Sub(i1, i2))
 	} else {
-		return newNumberFloat(n1.Float() - n2.Float())
+		return NewNumberFloat(n1.Float() - n2.Float())
 	}
 }
