@@ -55,83 +55,83 @@ This returns "true" if all its arguments are equal (when compared as strings). R
 
 ## The console
 
-### The "gets" command
+### gets
 
 This command reads a line from the console and takes no arguments. The newline is not included in the returned string.
 
-### The "print" command
+### print
 
 This command prints all of its arguments (separated by spaces) to the console. It does not print a newline, but it does flush the output.
 
-### The "puts" command
+### puts
 
 This command prints all of its arguments (separated by spaces), followed by a newline, to the console.
 
 ## The web and filesystem
 
-### The "read" command
+### read
 
 This command takes one argument which is either a filepath or a URL. It returns a string representing the contents of the specified resource, or throws an exception.
 
-### The "write" command
+### write
 
 This command takes two arguments: first a path; second, some data to write to the path. It throws an exception if the data cannot be written.
 
 ## OS commands
 
-### The "cmd" command
+### cmd
 
 This command takes 1 or more argument and executes it as a command. It returns the combined output (stdout+stderr) of the command, or throws an error.
 
 # Basic functionality
 
-### The "count" command
+### count
 
 This command takes one argument and returns how many elements it contains as a newline-delimited list.
 
-### The "exit" command
+### exit
 
 This command exits the program. It takes an optional integer argument with a return value. If this argument is specified but is not a valid integer, the command throws an exception.
 
-### The "get" command
+### get
 
 This command takes one argument--a variable name--and returns its contents. It throws an exception if the variable is not defined.
 
-### The "len" command
+### len
 
 This command takes one string argument and returns its length, in bytes.
 
-### The "set" command
+### set
 
 This command takes two arguments and sets a variable. The first argument is a variable name, the second is a value to give the variable.
 
-### The "throw" command
+### throw
 
 This command raises an exception with the specified error message. It joins its arguments with spaces and uses them for the error message.
 
 # Strings
 
-### The "echo" command
+### echo
 
 This command joins its arguments and inserts spaces between them.
 
-### The "join" command
+### join
 
 This command joins its arguments without inserting spaces between them.
 
-### The "match" command
+### match
 
 This command takes a regular expression and a string. It returns an array of matches. Each sub-match is its own element in the array.
 
 For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
 
-### The "rep" command
+### rep
 
 This command takes three arguments. It replaces all occurances of the second argument with the third argument in the first argument.
 
 For example, `rep heythere e E` yields "hEythErE".
 
-### The "substr" command
+### substr
 
 This command takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
 
@@ -139,11 +139,23 @@ For example, `substr yoyo 1 3` yields "oy".
 
 # Arrays
 
-### The "arr" command
+### arr
 
 This command joins its arguments with newlines. For example, `arr a b c` generates "a\nb\nc".
 
-### The "range" command
+### delete
+
+This command deletes an element from the array.
+
+For example, `delete (arr a b c) 1` yields the array equivalent of `(arr a c)`
+
+### insert
+
+This command inserts an element into the array.
+
+For example, `insert (arr a b c) 1 A` yields the array equivalent of `(arr a A b c)`
+
+### range
 
 This command generates a newline-delimited list of integers.
 
@@ -153,22 +165,28 @@ If the command is given two arguments `M` and `N`, it will generate the ordered 
 
 If the command is given three arguments, it generates the ordered list of integers starting with the first argument going to the second argument, stepping by the third argument each time. For example, `range 10 5 -2` yields `10\n8\n6`.
 
+### subarr
+
+This command takes a string and two indices. It returns a slice of an array.
+
+For example, `subarr (arr a b c) 1 3` returns the array equivalent to `arr b c`.
+
 # Filesystem
 
-### The "exists" command
+### exists
 
 This returns a boolean expression indicating whether or not a file exists. It may throw an error if it does not have permissions to check or if some other error occurs.
 
-### The "glob" command
+### glob
 
 This command takes any number of arguments and "globs" files by those names. 
 
 For example, if my current directory includes the files "foo" "bar" and "foobar", `glob foo*`, it would return the array equivalent to `arr foo foobar`.
 
-### The "rm" command
+### rm
 
 This deletes a file or an empty directory.
 
-### The "rmall" command
+### rmall
 
 This deletes a file or directory recursively.

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"strconv"
+	"strings"
 )
 
 // StdArray implements ways of manipulating or creating arrays
@@ -19,6 +20,29 @@ func (s StdArray) Arr(args []Value) Value {
 		buffer.WriteString(v.String())
 	}
 	return StringValue(buffer.String())
+}
+
+// Delete removes an element at a certain index from the array.
+func (s StdArray) Delete(arr []string, idx int) (Value, error) {
+	if idx < 0 || idx >= len(arr) {
+		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
+	}
+	res := make([]string, len(arr)-1)
+	copy(res, arr[0:idx])
+	copy(res[idx:], arr[idx+1:])
+	return StringValue(strings.Join(res, "\n")), nil
+}
+
+// Insert inserts an element at a certain index in the array.
+func (s StdArray) Insert(arr []string, idx int, val string) (Value, error) {
+	if idx < 0 || idx > len(arr) {
+		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
+	}
+	res := make([]string, len(arr)+1)
+	copy(res, arr[0:idx])
+	copy(res[idx+1:], arr[idx:])
+	res[idx] = val
+	return StringValue(strings.Join(res, "\n")), nil
 }
 
 // Range generates a range of integers.
@@ -51,6 +75,28 @@ func (s StdArray) Range(args []Value) (Value, error) {
 		}
 		return StringValue(res), nil
 	}
+}
+
+// Subarr returns a subarray.
+func (s StdArray) Subarr(arr []string, start, end int) Value {
+	if len(arr) == 0 {
+		return StringValue("")
+	}
+	
+	// Sanitize the range
+	if start < 0 {
+		start = 0
+	} else if start > len(arr) {
+		start = len(arr)
+	}
+	if end < start {
+		end = start
+	} else if end > len(arr) {
+		end = len(arr)
+	}
+	
+	res := arr[start : end]
+	return StringValue(strings.Join(res, "\n"))
 }
 
 func rangeDouble(start, end int) string {
