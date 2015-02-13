@@ -23,8 +23,18 @@ To see some pre-written example programs, see [demo](demo).
 
 This is my personal to-do list.
 
- * Create file system manipulation functions:
+ * Create file system manipulation functions
    * Chmod
+   * Touch
+ * Create time manipulation functions
+   * Sleep
+   * Get UNIX epoch time
+   * Parse/format dates
+ * Create array manipulation functions
+   * Remove element
+   * Insert element
+   * Subarray
+ * Create `exec` command for executing other files in the same context.
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
  * Support up arrow in REPL
