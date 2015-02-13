@@ -30,3 +30,6 @@ This is my personal to-do list.
    * Rm
    * Rmdir
    * Shell
+ * Add `break` built-in for leaving loops.
+ * Add `and` and `or` commands for conditions.
+ * Create REPL

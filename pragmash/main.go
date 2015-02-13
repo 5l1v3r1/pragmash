@@ -10,26 +10,35 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "Usage:", os.Args[0], "<script> [ARGS]")
+		fmt.Fprintln(os.Stderr, "Usage: pragmash <script.pragmash> [ARGS]")
 		os.Exit(1)
 	}
 	
-	data, err := ioutil.ReadFile(os.Args[1])
+	contents, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	
-	program, err := pragmash.ParseProgram(string(data))
+	lines, contexts, err := pragmash.TokenizeString(string(contents))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	
-	context := pragmash.NewStandardContext()
-	context.Variables["ARGV"] = strings.Join(os.Args[2:], "\n")
-	if _, err := program.Run(context); err != nil {
+	runnable, err := pragmash.ScanAll(lines, contexts)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	
+	runner := pragmash.NewStdRunner()
+	runner.RunCommand("set", []pragmash.Value{pragmash.StringValue("ARGV"),
+		pragmash.StringValue(strings.Join(os.Args[2:], "\n"))})
+	
+	if _, exc := runnable.Run(runner); exc != nil {
+		fmt.Fprintln(os.Stderr, "exception at " + exc.Context() + ": " +
+			exc.String())
 		os.Exit(1)
 	}
 }
