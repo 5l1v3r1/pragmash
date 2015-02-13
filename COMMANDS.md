@@ -107,7 +107,17 @@ This command raises an exception with the specified error message. It joins its 
 
 ### The "echo" command
 
-This command joins its arguments with spaces and returns the result.
+This command joins its arguments and inserts spaces between them.
+
+### The "join" command
+
+This command joins its arguments without inserting spaces between them.
+
+### The "match" command
+
+This command takes a regular expression and a string. It returns an array of matches. Each sub-match is its own element in the array.
+
+For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
 
 # Arrays
 
@@ -124,3 +134,11 @@ If the command is given one argument `N`, it will generate the ordered list of i
 If the command is given two arguments `M` and `N`, it will generate the ordered list of integers `i` such that `M <= i < N`
 
 If the command is given three arguments, it generates the ordered list of integers starting with the first argument going to the second argument, stepping by the third argument each time. For example, `range 10 5 -2` yields `10\n8\n6`.
+
+# Filesystem
+
+### The "glob" command
+
+This command takes any number of arguments and "globs" files by those names. 
+
+For example, if my current directory includes the files "foo" "bar" and "foobar", `glob foo*`, it would return the array equivalent to `arr foo foobar`.

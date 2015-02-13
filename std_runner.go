@@ -3,6 +3,7 @@ package pragmash
 // StdAll implements the methods corresponding to the standard library.
 type StdAll struct {
 	StdArray
+	StdFs
 	StdInternal
 	StdIo
 	StdMath
