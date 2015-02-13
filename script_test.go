@@ -79,7 +79,7 @@ func readTestScript(path string) (*testScript, error) {
 		return nil, err
 	}
 	contents := string(data)
-	
+
 	// Read the first line which contains the quoted string for the expected
 	// output.
 	lines := strings.Split(contents, "\n")
@@ -95,6 +95,6 @@ func readTestScript(path string) (*testScript, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &testScript{expect, path}, nil
 }

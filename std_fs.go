@@ -13,7 +13,7 @@ type StdFs struct{}
 // Exists returns whether or not a file exists.
 func (s StdFs) Exists(path string) (Value, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-	    return BoolValue(false), nil
+		return BoolValue(false), nil
 	} else if err != nil {
 		return nil, err
 	}

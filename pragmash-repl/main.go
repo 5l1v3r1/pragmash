@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	ErrorColor = "\x1b[91m"
-	OutputColor = "\x1b[2m"
+	ErrorColor   = "\x1b[91m"
+	OutputColor  = "\x1b[2m"
 	RegularColor = "\x1b[0m"
 )
 
 const (
 	RegularPrompt = "> "
-	ContPrompt = "... "
+	ContPrompt    = "... "
 )
 
 func escapeResult(res string) string {
@@ -40,7 +40,7 @@ func main() {
 	errorChan := make(chan error)
 	conts := make(chan struct{})
 	go readInput(statements, errorChan, conts)
-	
+
 	runner := pragmash.NewStdRunner()
 	fmt.Print(RegularPrompt)
 	for {

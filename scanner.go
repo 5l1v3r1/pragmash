@@ -141,7 +141,7 @@ func (s Scanner) ReadToken(parenTerm bool) (*Token, error) {
 	} else if next == ')' && parenTerm {
 		return nil, nil
 	}
-	
+
 	s.UnreadRune()
 	str, err := s.ReadBare(parenTerm)
 	if err != nil {

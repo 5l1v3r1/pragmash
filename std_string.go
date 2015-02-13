@@ -36,7 +36,7 @@ func (s StdString) Match(expr, haystack string) (Value, error) {
 		return nil, err
 	}
 	res := r.FindAllStringSubmatch(haystack, -1)
-	
+
 	// Return the result as a massive list.
 	var buffer bytes.Buffer
 	for i, x := range res {
@@ -53,4 +53,24 @@ func (s StdString) Match(expr, haystack string) (Value, error) {
 // Rep replaces all occurances of a string with another string.
 func (_ StdString) Rep(s, old, replacement string) Value {
 	return StringValue(strings.Replace(s, old, replacement, -1))
+}
+
+// Substr returns a substring of a large string.
+func (_ StdString) Substr(s string, start, end int) Value {
+	if len(s) == 0 {
+		return StringValue("")
+	}
+
+	if start < 0 {
+		start = 0
+	} else if start > len(s) {
+		start = len(s)
+	}
+	if end < start {
+		end = start
+	} else if end > len(s) {
+		end = len(s)
+	}
+
+	return StringValue(s[start:end])
 }

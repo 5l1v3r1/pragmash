@@ -134,10 +134,10 @@ func reflectReturnValue(res []reflect.Value) (Value, error) {
 	if len(res) == 0 {
 		return StringValue(""), nil
 	}
-	
+
 	errType := reflect.TypeOf((*error)(nil)).Elem()
 	valType := reflect.TypeOf((*Value)(nil)).Elem()
-	
+
 	if len(res) == 1 {
 		// The return type may be an error or a value.
 		if res[0].Type() == errType {
@@ -153,7 +153,7 @@ func reflectReturnValue(res []reflect.Value) (Value, error) {
 			return nil, errors.New("invalid return type")
 		}
 	}
-	
+
 	// The return type must be (Value, error)
 	if len(res) != 2 {
 		return nil, errors.New("invalid number of return values")

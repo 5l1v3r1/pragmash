@@ -13,7 +13,7 @@ func TestForRangeLine(t *testing.T) {
 	if len(lines) != 1 {
 		t.Fatal("invalid line count")
 	}
-	
+
 	line := lines[0]
 	if !line.Open || line.Close {
 		t.Error("line should be open and not close")
@@ -21,7 +21,7 @@ func TestForRangeLine(t *testing.T) {
 	if len(line.Tokens) != 3 {
 		t.Fatal("invalid number of tokens")
 	}
-	
+
 	if line.Tokens[0].String != "for" {
 		t.Error("invalid first token")
 	}
