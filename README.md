@@ -25,11 +25,7 @@ This is my personal to-do list.
 
  * Create string substitution routines
  * Create file system manipulation functions:
-   * Exists
    * Chmod
-   * Rm
-   * Rmdir
-   * Shell
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
  * Create REPL

@@ -77,6 +77,12 @@ This command takes one argument which is either a filepath or a URL. It returns 
 
 This command takes two arguments: first a path; second, some data to write to the path. It throws an exception if the data cannot be written.
 
+## OS commands
+
+### The "cmd" command
+
+This command takes 1 or more argument and executes it as a command. It returns the combined output (stdout+stderr) of the command, or throws an error.
+
 # Basic functionality
 
 ### The "count" command
@@ -137,8 +143,20 @@ If the command is given three arguments, it generates the ordered list of intege
 
 # Filesystem
 
+### The "exists" command
+
+This returns a boolean expression indicating whether or not a file exists. It may throw an error if it does not have permissions to check or if some other error occurs.
+
 ### The "glob" command
 
 This command takes any number of arguments and "globs" files by those names. 
 
 For example, if my current directory includes the files "foo" "bar" and "foobar", `glob foo*`, it would return the array equivalent to `arr foo foobar`.
+
+### The "rm" command
+
+This deletes a file or an empty directory.
+
+### The "rmall" command
+
+This deletes a file or directory recursively.

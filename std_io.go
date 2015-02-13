@@ -7,11 +7,33 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 )
 
 // StdIo implements the standard I/O routines.
 type StdIo struct{}
+
+// Cmd executes a shell command and returns its combined output.
+func (s StdIo) Cmd(arguments []Value) (Value, error) {
+	if len(arguments) == 0 {
+		return nil, errors.New("expected at least one argument")
+	}
+	strArgs := make([]string, len(arguments))
+	for i, x := range arguments {
+		strArgs[i] = x.String()
+	}
+	cmdName, err := exec.LookPath(strArgs[0])
+	if err != nil {
+		return nil, err
+	}
+	cmd := exec.Command(cmdName, strArgs[1:]...)
+	res, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	return StringValue(res), nil
+}
 
 // Gets reads a line of text from the console.
 func (s StdIo) Gets() (Value, error) {
