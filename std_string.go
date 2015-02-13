@@ -61,6 +61,7 @@ func (_ StdString) Substr(s string, start, end int) Value {
 		return StringValue("")
 	}
 
+	// Any inputs are sanitized and accepted.
 	if start < 0 {
 		start = 0
 	} else if start > len(s) {

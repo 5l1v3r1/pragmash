@@ -131,6 +131,12 @@ This command takes three arguments. It replaces all occurances of the second arg
 
 For example, `rep heythere e E` yields "hEythErE".
 
+### The "substr" command
+
+This command takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
+
+For example, `substr yoyo 1 3` yields "oy".
+
 # Arrays
 
 ### The "arr" command
