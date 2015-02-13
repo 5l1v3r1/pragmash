@@ -1,0 +1,37 @@
+# "ABCDE"
+
+set x 3
+
+if not $x 3 {
+  print a
+} else {
+  print A
+}
+
+if $x 3 {
+  print B
+} else {
+  print b
+}
+
+if $x 2 {
+  print c
+} else if $x 3 {
+  print C
+}
+
+if $x 2 {
+  print d
+} else if $x 1 {
+  print e
+} else {
+  print D
+}
+
+if $x 2 {
+  print f
+} else if not $x 1 {
+  print E
+} else {
+  print g
+}

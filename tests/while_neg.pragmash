@@ -1,0 +1,7 @@
+# "01234"
+
+set x 0
+while not $x 5 {
+  print $x
+  set x (+ $x 1)
+}

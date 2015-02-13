@@ -1,0 +1,10 @@
+# "abd"
+
+try {
+  print a
+  throw b
+  print c
+} catch e {
+  print $e
+  print d
+}
