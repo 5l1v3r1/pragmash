@@ -2,8 +2,8 @@ package pragmash
 
 import (
 	"errors"
-	"fmt"
 	"os"
+	"strings"
 )
 
 // StdInternal implements built-in commands that make the language usable.
@@ -59,9 +59,9 @@ func (s StdInternal) Set(name string, val Value) {
 
 // Throw throws an exception.
 func (s StdInternal) Throw(args []Value) error {
-	interfaceArgs := make([]interface{}, len(args))
+	strArgs := make([]string, len(args))
 	for i, x := range args {
-		interfaceArgs[i] = x
+		strArgs[i] = x.String()
 	}
-	return errors.New(fmt.Sprint(interfaceArgs...))
+	return errors.New(strings.Join(strArgs, " "))
 }

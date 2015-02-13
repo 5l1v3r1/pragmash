@@ -2,7 +2,6 @@ package pragmash
 
 import (
 	"bytes"
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -12,11 +11,11 @@ type StdString struct{}
 
 // Echo joins its arguments with spaces.
 func (s StdString) Echo(args []Value) Value {
-	interfaceArgs := make([]interface{}, len(args))
+	strArgs := make([]string, len(args))
 	for i, x := range args {
-		interfaceArgs[i] = x
+		strArgs[i] = x.String()
 	}
-	return StringValue(fmt.Sprint(interfaceArgs...))
+	return StringValue(strings.Join(strArgs, " "))
 }
 
 // Join joins its arguments without spaces.
