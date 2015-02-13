@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 // StdString implements ways of manipulating or creating strings
@@ -47,4 +48,9 @@ func (s StdString) Match(expr, haystack string) (Value, error) {
 		}
 	}
 	return StringValue(buffer.String()), nil
+}
+
+// Rep replaces all occurances of a string with another string.
+func (_ StdString) Rep(s, old, replacement string) Value {
+	return StringValue(strings.Replace(s, old, replacement, -1))
 }

@@ -125,6 +125,12 @@ This command takes a regular expression and a string. It returns an array of mat
 
 For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
 
+### The "rep" command
+
+This command takes three arguments. It replaces all occurances of the second argument with the third argument in the first argument.
+
+For example, `rep heythere e E` yields "hEythErE".
+
 # Arrays
 
 ### The "arr" command
