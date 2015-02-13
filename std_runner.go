@@ -2,11 +2,12 @@ package pragmash
 
 // StdAll implements the methods corresponding to the standard library.
 type StdAll struct {
-	StdGenerators
+	StdArray
 	StdInternal
 	StdIo
 	StdMath
 	StdOps
+	StdString
 }
 
 // NewStdAll creates a new StdAll instance with a new StdInternal inside.

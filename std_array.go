@@ -3,24 +3,14 @@ package pragmash
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"strconv"
 )
 
-// StdGenerators implements ways of generating data.
-type StdGenerators struct{}
-
-// Echo joins its arguments with spaces.
-func (s StdGenerators) Echo(args []Value) Value {
-	interfaceArgs := make([]interface{}, len(args))
-	for i, x := range args {
-		interfaceArgs[i] = x
-	}
-	return StringValue(fmt.Sprint(interfaceArgs...))
-}
+// StdArray implements ways of manipulating or creating arrays
+type StdArray struct{}
 
 // Range generates a range of integers.
-func (s StdGenerators) Range(args []Value) (Value, error) {
+func (s StdArray) Range(args []Value) (Value, error) {
 	// Validate argument count.
 	if len(args) == 0 || len(args) > 3 {
 		return nil, errors.New("range cannot take " + strconv.Itoa(len(args)) +
