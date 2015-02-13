@@ -19,6 +19,12 @@ It is also possible to nest backticks:
 
     read (replace http://aqnichol.com (read old_domain.txt) google)
 
+Something to note is that *all* tokens and keywords are evaluated the same way. As a result, code like this is valid (as you will see later on):
+
+    "if" a b "{"
+        "echo" hey
+    "}"
+
 ## Comments
 
 Comments are ignored by the parser and runtime. A line is marked as a comment if its first non-whitespace character is "#". Here are some examples:
@@ -97,7 +103,7 @@ But checking if a command outputs an empty string only goes so far. You can also
         puts It works!
     }
 
-Finally, you can also use the `else if` and `else` keywords as expected:
+You can also use the `else if` and `else` keywords as expected:
 
     if "a" $x {
         echo It's A.
@@ -105,6 +111,25 @@ Finally, you can also use the `else if` and `else` keywords as expected:
         echo It's B.
     } else {
         echo It's not A or B.
+    }
+
+To negate a condition in an if statement, you can insert the `not` token:
+
+    if not "a" $x {
+        echo It's not A.
+    }
+
+Note: because of the above feature, you must take care when checking if an expression is the string "not". I recommend putting "not" as the last argument in such cases:
+
+    if $a not {
+        echo It's 'not'.
+    }
+
+The following **is not** a solution, since the tokenizer runs before the semantic processor:
+
+    # This probably won't do what you think...
+    if "not" $a {
+        echo A is 'not'.
     }
 
 ## While loops

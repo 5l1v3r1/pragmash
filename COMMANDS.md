@@ -23,16 +23,6 @@ This operator takes two arguments, a and b, and returns a/b. Both arguments are 
 
 This operator takes two arguments, a and b, and returns a-b. The arguments can be big integers or floating points.
 
-### The ! operator
-
-The not operator (denoted with an exclamation point `!`) inverts a condition. For loops, while loops and if statements all take conditionals, and `!` works the exact same way but backwards.
-
-If the `!` command gets 0 arguments, it returns "".
-
-If the `!` command gets one argument, it returns "" if the argument is not "" and "true" if the argument is "".
-
-If the `!` command gets more than one argument, it returns "" if the arguments are all the same or "true" otherwise.
-
 ### The [] operator
 
 The subscript operator (denoted with two brackets `[]`) is used to access an element in a newline-delimited list. The first argument is the list, the second is the index. For example:
