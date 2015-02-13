@@ -38,7 +38,7 @@ type SemanticScanner interface {
 	Line(l Line, context string) (Runnable, error)
 }
 
-// NewBodyScanner returns a SemanticScanner that will read every line its given
+// NewBodyScanner returns a SemanticScanner that will read every line it's given
 // (provided there are no errors) and return a Runnable (or error) on EOF.
 func NewBodyScanner() SemanticScanner {
 	return &genericScanner{[]Runnable{}, false, nil, false}

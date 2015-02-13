@@ -1,3 +1,4 @@
+// Command pragmash executes a pragmash script using the standard library.
 package main
 
 import (

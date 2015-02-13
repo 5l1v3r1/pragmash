@@ -42,6 +42,8 @@ func (r ReflectRunner) RunCommand(name string, vals []Value) (Value, error) {
 	return reflectReturnValue(res)
 }
 
+// RewriteName uses the ReflectRunner's rewrite table to rewrite a given command
+// name.
 func (r ReflectRunner) RewriteName(name string) string {
 	if r.rewrite != nil {
 		if n, ok := r.rewrite[name]; ok {
