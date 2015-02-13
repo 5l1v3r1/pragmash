@@ -113,11 +113,17 @@ This command takes two arguments and sets a variable. The first argument is a va
 
 This command raises an exception with the specified error message. It joins its arguments with spaces and uses them for the error message.
 
-# Generating data
+# Strings
 
 ### The "echo" command
 
 This command joins its arguments with spaces and returns the result.
+
+# Arrays
+
+### The "arr" command
+
+This command joins its arguments with newlines. For example, `arr a b c` generates "a\nb\nc".
 
 ### The "range" command
 

@@ -9,6 +9,18 @@ import (
 // StdArray implements ways of manipulating or creating arrays
 type StdArray struct{}
 
+// Arr joins its arguments with newlines.
+func (s StdArray) Arr(args []Value) Value {
+	var buffer bytes.Buffer
+	for i, v := range args {
+		if i != 0 {
+			buffer.WriteRune('\n')
+		}
+		buffer.WriteString(v.String())
+	}
+	return StringValue(buffer.String())
+}
+
 // Range generates a range of integers.
 func (s StdArray) Range(args []Value) (Value, error) {
 	// Validate argument count.
