@@ -38,14 +38,17 @@ type Runnable interface {
 type RunnableList []Runnable
 
 // Run runs each Runnable and fails on the first exception it encounters.
-// If no exception is encountered, this returns an empty string.
+// If no exception is encountered, this returns the value of the last runnable.
 func (r RunnableList) Run(runner Runner) (Value, *Exception) {
+	var lastValue Value = StringValue("")
 	for _, x := range r {
-		if _, exc := x.Run(runner); exc != nil {
+		if val, exc := x.Run(runner); exc != nil {
 			return nil, exc
+		} else {
+			lastValue = val
 		}
 	}
-	return StringValue(""), nil
+	return lastValue, nil
 }
 
 // A Runner is a generic interface which can run a commands.

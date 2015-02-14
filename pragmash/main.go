@@ -6,6 +6,7 @@ import (
 	"github.com/unixpickle/pragmash"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -36,6 +37,8 @@ func main() {
 	runner := pragmash.NewStdRunner()
 	runner.RunCommand("set", []pragmash.Value{pragmash.StringValue("ARGV"),
 		pragmash.StringValue(strings.Join(os.Args[2:], "\n"))})
+	runner.RunCommand("set", []pragmash.Value{pragmash.StringValue("DIR"),
+		pragmash.StringValue(filepath.Dir(os.Args[1]))})
 
 	if _, exc := runnable.Run(runner); exc != nil {
 		fmt.Fprintln(os.Stderr, "exception at "+exc.Context()+": "+

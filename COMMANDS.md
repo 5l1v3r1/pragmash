@@ -83,11 +83,23 @@ This command takes two arguments: first a path; second, some data to write to th
 
 This command takes 1 or more argument and executes it as a command. It returns the combined output (stdout+stderr) of the command, or throws an error.
 
-# Basic functionality
+# Language functionality
 
 ### count
 
 This command takes one argument and returns how many elements it contains as a newline-delimited list.
+
+### eval
+
+This command executes a block of pragmash code. The code which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the code runs as if it were part of the main script. If no error occurs, this returns the value of the last expression of the code.
+
+Example: `eval "puts hey"`
+
+### exec
+
+This command executes a pragmash file. The scirpt which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the script runs as if it were part of the main script. If no error occurs, this returns the value of the last expression from the script.
+
+Example: `exec (join $DIR /some_file.pragmash)`
 
 ### exit
 

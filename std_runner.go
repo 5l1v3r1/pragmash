@@ -18,5 +18,10 @@ func NewStdAll() StdAll {
 
 // NewStdRunner returns a Runner which implements the standard library.
 func NewStdRunner() Runner {
-	return NewReflectRunner(NewStdAll(), OperatorRewrites)
+	var runner Runner
+	all := NewStdAll()
+	all.Runner = &runner
+	res := NewReflectRunner(all, OperatorRewrites)
+	runner = res
+	return res
 }

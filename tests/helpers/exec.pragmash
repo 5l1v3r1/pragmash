@@ -1,0 +1,7 @@
+while not $x 6 {
+  print $x
+  set x (+ $x 1)
+}
+echo $x
+
+# This line ensures that no blank expressions get counted as the return value.

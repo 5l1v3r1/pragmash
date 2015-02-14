@@ -30,7 +30,6 @@ This is my personal to-do list.
    * Sleep
    * Get UNIX epoch time
    * Parse/format dates
- * Create `exec` command for executing other files in the same context.
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
  * Support up arrow in REPL
