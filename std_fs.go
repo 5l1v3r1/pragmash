@@ -34,6 +34,11 @@ func (s StdFs) Glob(args []Value) (Value, error) {
 	return StringValue(strings.Join(res, "\n")), nil
 }
 
+// Mkdir creates a directory or fails with an error.
+func (s StdFs) Mkdir(name string) error {
+	return os.Mkdir(name, os.FileMode(0755))
+}
+
 // Rm removes a file or directory but does not do so recursively.
 func (s StdFs) Rm(path string) error {
 	return os.Remove(path)

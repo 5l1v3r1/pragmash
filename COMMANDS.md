@@ -195,6 +195,10 @@ This command takes any number of arguments and "globs" files by those names.
 
 For example, if my current directory includes the files "foo" "bar" and "foobar", `glob foo*`, it would return the array equivalent to `arr foo foobar`.
 
+### mkdir
+
+This command creates a directory at a given path. This will not create intermediate directories.
+
 ### rm
 
 This deletes a file or an empty directory.
