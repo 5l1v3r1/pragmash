@@ -199,6 +199,10 @@ For example, if my current directory includes the files "foo" "bar" and "foobar"
 
 This command creates a directory at a given path. This will not create intermediate directories.
 
+### path
+
+This command takens any number of string arguments and joins them as path components.
+
 ### rm
 
 This deletes a file or an empty directory.

@@ -39,6 +39,15 @@ func (s StdFs) Mkdir(name string) error {
 	return os.Mkdir(name, os.FileMode(0755))
 }
 
+// Path joins path components.
+func (s StdFs) Path(args []Value) Value {
+	comps := make([]string, len(args))
+	for i, x := range args {
+		comps[i] = x.String()
+	}
+	return StringValue(filepath.Join(comps...))
+}
+
 // Rm removes a file or directory but does not do so recursively.
 func (s StdFs) Rm(path string) error {
 	return os.Remove(path)
