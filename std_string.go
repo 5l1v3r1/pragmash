@@ -10,7 +10,7 @@ import (
 type StdString struct{}
 
 // Echo joins its arguments with spaces.
-func (s StdString) Echo(args []Value) Value {
+func (_ StdString) Echo(args []Value) Value {
 	strArgs := make([]string, len(args))
 	for i, x := range args {
 		strArgs[i] = x.String()
@@ -19,7 +19,7 @@ func (s StdString) Echo(args []Value) Value {
 }
 
 // Join joins its arguments without spaces.
-func (s StdString) Join(args []Value) Value {
+func (_ StdString) Join(args []Value) Value {
 	var buffer bytes.Buffer
 	for _, v := range args {
 		buffer.WriteString(v.String())
@@ -28,7 +28,7 @@ func (s StdString) Join(args []Value) Value {
 }
 
 // Match runs a regular expression on a string.
-func (s StdString) Match(expr, haystack string) (Value, error) {
+func (_ StdString) Match(expr, haystack string) (Value, error) {
 	// Evaluate the regular expression.
 	r, err := regexp.Compile(expr)
 	if err != nil {

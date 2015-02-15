@@ -17,10 +17,15 @@ func NewStdAll() StdAll {
 }
 
 // NewStdRunner returns a Runner which implements the standard library.
-func NewStdRunner() Runner {
+func NewStdRunner(variables map[string]Value) Runner {
 	var runner Runner
 	all := NewStdAll()
 	all.Runner = &runner
+	if variables != nil {
+		for variable, value := range variables {
+			all.Variables[variable] = value
+		}
+	}
 	res := NewReflectRunner(all, OperatorRewrites)
 	runner = res
 	return res

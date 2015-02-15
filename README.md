@@ -23,7 +23,6 @@ To see some pre-written example programs, see [demo](demo).
 
 This is my personal to-do list.
 
- * Use _ instead of "s" for receiver name
  * Create file system manipulation functions
    * Chmod
    * Touch

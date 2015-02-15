@@ -41,7 +41,7 @@ func main() {
 	conts := make(chan struct{})
 	go readInput(statements, errorChan, conts)
 
-	runner := pragmash.NewStdRunner()
+	runner := pragmash.NewStdRunner(nil)
 	fmt.Print(RegularPrompt)
 	for {
 		select {

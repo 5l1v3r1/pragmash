@@ -34,11 +34,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	runner := pragmash.NewStdRunner()
-	runner.RunCommand("set", []pragmash.Value{pragmash.StringValue("ARGV"),
-		pragmash.StringValue(strings.Join(os.Args[2:], "\n"))})
-	runner.RunCommand("set", []pragmash.Value{pragmash.StringValue("DIR"),
-		pragmash.StringValue(filepath.Dir(os.Args[1]))})
+	variables := map[string]pragmash.Value{
+		"ARGV": pragmash.StringValue(strings.Join(os.Args[2:], "\n")),
+		"DIR": pragmash.StringValue(filepath.Dir(os.Args[1])),
+	}
+	runner := pragmash.NewStdRunner(variables)
 
 	if _, exc := runnable.Run(runner); exc != nil {
 		fmt.Fprintln(os.Stderr, "exception at "+exc.Context()+": "+

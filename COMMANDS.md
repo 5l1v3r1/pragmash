@@ -113,6 +113,22 @@ This command takes one argument--a variable name--and returns its contents. It t
 
 This command takes one string argument and returns its length, in bytes.
 
+### pragmash
+
+This command takes one or more arguments. This executes the script (specified by the first argument) in a new context and returns the output of its last expression. The script runs with a new set of variables (including $ARGV and $DIR), but it may still print to the console or exit the program.
+
+For example, suppose this is the contents of a file "main.pragmash":
+
+    pragmash foo.pragmash hey there
+    puts unreachable
+
+and this is the contents of the file "foo.pragmash":
+
+    puts ([] $ARGV 1)
+    exit 1
+
+This would print "there" to the console and exit with status code 1. The "unreachable" print would not run.
+
 ### set
 
 This command takes two arguments and sets a variable. The first argument is a variable name, the second is a value to give the variable.

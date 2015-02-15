@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,7 +20,7 @@ func NewStdInternal() StdInternal {
 }
 
 // Count returns the number of elements in a list.
-func (s StdInternal) Count(args []string) Value {
+func (_ StdInternal) Count(args []string) Value {
 	return NewNumberInt(int64(len(args)))
 }
 
@@ -85,7 +86,7 @@ func (s StdInternal) Exec(path string) (Value, error) {
 }
 
 // Exit exits the current program with an optional exit code.
-func (s StdInternal) Exit(args []Value) {
+func (_ StdInternal) Exit(args []Value) {
 	if len(args) != 1 {
 		os.Exit(0)
 	} else {
@@ -111,8 +112,56 @@ func (s StdInternal) Get(name string) (Value, error) {
 }
 
 // Len returns the length of a string in bytes.
-func (s StdInternal) Len(val string) Value {
+func (_ StdInternal) Len(val string) Value {
 	return NewNumberInt(int64(len(val)))
+}
+
+// Pragmash runs a script with a given set of arguments in a new, standard
+// runner. This is different from Exec because it isolates the variables of the
+// new script and it sets its $DIR and $ARGV variables.
+func (_ StdInternal) Pragmash(args []Value) (Value, error) {
+	if len(args) == 0 {
+		return nil, errors.New("missing file path")
+	}
+	
+	path := args[0].String()
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	lines, contexts, err := TokenizeString(string(contents))
+	if err != nil {
+		return nil, err
+	}
+	
+	// Update the contexts to include the path
+	for i, x := range contexts {
+		contexts[i] = x + " in " + path
+	}
+	
+	// Generate the runnable
+	runnable, err := ScanAll(lines, contexts)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Generate the runner
+	strArgs := make([]string, len(args)-1)
+	for i := 1; i < len(args); i++ {
+		strArgs[i-1] = args[i].String()
+	}
+	variables := map[string]Value{
+		"DIR": StringValue(filepath.Dir(path)),
+		"ARGV": StringValue(strings.Join(strArgs, "\n")),
+	}
+	runner := NewStdRunner(variables)
+	
+	// Run the file.
+	if val, err := runnable.Run(runner); err != nil {
+		return nil, errors.New(err.Context() + ": " + err.String())
+	} else {
+		return val, nil
+	}
 }
 
 // Set sets a variable.
@@ -121,7 +170,7 @@ func (s StdInternal) Set(name string, val Value) {
 }
 
 // Throw throws an exception.
-func (s StdInternal) Throw(args []Value) error {
+func (_ StdInternal) Throw(args []Value) error {
 	strArgs := make([]string, len(args))
 	for i, x := range args {
 		strArgs[i] = x.String()

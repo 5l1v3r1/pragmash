@@ -11,7 +11,7 @@ import (
 type StdArray struct{}
 
 // Arr joins its arguments with newlines.
-func (s StdArray) Arr(args []Value) Value {
+func (_ StdArray) Arr(args []Value) Value {
 	var buffer bytes.Buffer
 	for i, v := range args {
 		if i != 0 {
@@ -23,7 +23,7 @@ func (s StdArray) Arr(args []Value) Value {
 }
 
 // Delete removes an element at a certain index from the array.
-func (s StdArray) Delete(arr []string, idx int) (Value, error) {
+func (_ StdArray) Delete(arr []string, idx int) (Value, error) {
 	if idx < 0 || idx >= len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
@@ -34,7 +34,7 @@ func (s StdArray) Delete(arr []string, idx int) (Value, error) {
 }
 
 // Insert inserts an element at a certain index in the array.
-func (s StdArray) Insert(arr []string, idx int, val string) (Value, error) {
+func (_ StdArray) Insert(arr []string, idx int, val string) (Value, error) {
 	if idx < 0 || idx > len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
@@ -46,7 +46,7 @@ func (s StdArray) Insert(arr []string, idx int, val string) (Value, error) {
 }
 
 // Range generates a range of integers.
-func (s StdArray) Range(args []Value) (Value, error) {
+func (_ StdArray) Range(args []Value) (Value, error) {
 	// Validate argument count.
 	if len(args) == 0 || len(args) > 3 {
 		return nil, errors.New("range cannot take " + strconv.Itoa(len(args)) +
@@ -78,7 +78,7 @@ func (s StdArray) Range(args []Value) (Value, error) {
 }
 
 // Subarr returns a subarray.
-func (s StdArray) Subarr(arr []string, start, end int) Value {
+func (_ StdArray) Subarr(arr []string, start, end int) Value {
 	if len(arr) == 0 {
 		return StringValue("")
 	}
