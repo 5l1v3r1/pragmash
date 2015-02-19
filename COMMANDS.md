@@ -193,6 +193,14 @@ If the command is given two arguments `M` and `N`, it will generate the ordered 
 
 If the command is given three arguments, it generates the ordered list of integers starting with the first argument going to the second argument, stepping by the third argument each time. For example, `range 10 5 -2` yields `10\n8\n6`.
 
+### sort
+
+This command takes an array and returns an array. The resulting array will be sorted alphabetically.
+
+### sortnums
+
+This command takes an array of numbers and returns the sorted array.
+
 ### subarr
 
 This command takes a string and two indices. It returns a slice of an array.
