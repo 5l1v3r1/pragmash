@@ -3,6 +3,7 @@ package pragmash
 import (
 	"bytes"
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -79,6 +80,37 @@ func (_ StdArray) Range(args []Value) (Value, error) {
 	}
 }
 
+// Sort sorts an array of strings alphabetically.
+func (_ StdArray) Sort(arr []string) Value {
+	cpy := make([]string, len(arr))
+	copy(cpy, arr)
+	sort.Strings(cpy)
+	return StringValue(strings.Join(cpy, "\n"))
+}
+
+// Sortnums sorts an array of numbers.
+func (_ StdArray) Sortnums(v Value) (Value, error) {
+	valList := v.Array()
+	numList := make(numberList, len(valList))
+	for i, x := range valList {
+		var err error
+		numList[i], err = x.Number()
+		if err != nil {
+			return nil, err
+		}
+	}
+	sort.Sort(numList)
+	res := ""
+	for i, x := range numList {
+		if i == 0 {
+			res = x.String()
+		} else {
+			res += "\n" + x.String()
+		}
+	}
+	return StringValue(res), nil
+}
+
 // Subarr returns a subarray.
 func (_ StdArray) Subarr(arr []string, start, end int) Value {
 	if len(arr) == 0 {
@@ -144,3 +176,18 @@ func rangeTriple(start, end, step int) (string, error) {
 	}
 	return buffer.String(), nil
 }
+
+type numberList []Number
+
+func (n numberList) Len() int {
+	return len(n)
+}
+
+func (n numberList) Less(i, j int) bool {
+	return CompareNumbers(n[i], n[j]) < 0
+}
+
+func (n numberList) Swap(i, j int) {
+	n[i], n[j] = n[j], n[i]
+}
+
