@@ -13,11 +13,13 @@ type StdArray struct{}
 // Arr joins its arguments with newlines.
 func (_ StdArray) Arr(args []Value) Value {
 	var buffer bytes.Buffer
-	for i, v := range args {
-		if i != 0 {
-			buffer.WriteRune('\n')
+	for _, v := range args {
+		if str := v.String(); len(str) != 0 {
+			if buffer.Len() > 0 {
+				buffer.WriteRune('\n')
+			}
+			buffer.WriteString(str)
 		}
-		buffer.WriteString(v.String())
 	}
 	return StringValue(buffer.String())
 }
