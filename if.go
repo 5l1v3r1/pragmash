@@ -23,7 +23,7 @@ func (block If) Run(r Runner) (Value, *Exception) {
 		}
 	}
 	// No branches ran.
-	return StringValue(""), nil
+	return emptyValue, nil
 }
 
 // An IfScanner scans an if-statement with its accompanying "else if" and

@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 )
 
 // StdFs provides commands for file system manipulation.
@@ -31,7 +30,12 @@ func (_ StdFs) Glob(args []Value) (Value, error) {
 		res = append(res, paths...)
 	}
 	sort.Strings(res)
-	return StringValue(strings.Join(res, "\n")), nil
+	
+	valArray := make([]Value, len(res))
+	for i, x := range res {
+		valArray[i] = NewHybridValueString(x)
+	}
+	return NewHybridValueArray(valArray), nil
 }
 
 // Mkdir creates a directory or fails with an error.
@@ -45,7 +49,7 @@ func (_ StdFs) Path(args []Value) Value {
 	for i, x := range args {
 		comps[i] = x.String()
 	}
-	return StringValue(filepath.Join(comps...))
+	return NewHybridValueString(filepath.Join(comps...))
 }
 
 // Rm removes a file or directory but does not do so recursively.

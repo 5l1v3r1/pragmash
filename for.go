@@ -41,7 +41,7 @@ func (f For) Run(r Runner) (Value, *Exception) {
 			return nil, exc
 		}
 	}
-	return StringValue(""), nil
+	return emptyValue, nil
 }
 
 // A ForScanner scans a for-loop.

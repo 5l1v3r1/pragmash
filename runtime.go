@@ -40,7 +40,7 @@ type RunnableList []Runnable
 // Run runs each Runnable and fails on the first exception it encounters.
 // If no exception is encountered, this returns the value of the last runnable.
 func (r RunnableList) Run(runner Runner) (Value, *Exception) {
-	var lastValue Value = StringValue("")
+	var lastValue Value = emptyValue
 	for _, x := range r {
 		if val, exc := x.Run(runner); exc != nil {
 			return nil, exc

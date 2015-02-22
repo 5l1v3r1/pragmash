@@ -17,13 +17,14 @@ func TestAllScripts(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, path := range listing {
+		testName := filepath.Base(path)
 		s, err := readTestScript(path)
 		if err != nil {
 			t.Error(err)
 			continue
 		}
 		if err := s.run(); err != nil {
-			t.Error(err)
+			t.Error("error in " + testName + ": " + err.Error())
 		}
 	}
 }

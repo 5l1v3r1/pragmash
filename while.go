@@ -26,7 +26,7 @@ func (w While) Run(r Runner) (Value, *Exception) {
 			return nil, exc
 		}
 	}
-	return StringValue(""), nil
+	return emptyValue, nil
 }
 
 // A WhileScanner reads a while loop semantically.

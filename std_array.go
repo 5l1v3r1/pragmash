@@ -1,51 +1,44 @@
 package pragmash
 
 import (
-	"bytes"
 	"errors"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 // StdArray implements ways of manipulating or creating arrays
 type StdArray struct{}
 
-// Arr joins its arguments with newlines.
+// Arr creates an array by combining arrays passed to it as arguments.
 func (_ StdArray) Arr(args []Value) Value {
-	var buffer bytes.Buffer
+	values := make([]Value, 0)
 	for _, v := range args {
-		if str := v.String(); len(str) != 0 {
-			if buffer.Len() > 0 {
-				buffer.WriteRune('\n')
-			}
-			buffer.WriteString(str)
-		}
+		values = append(values, v.Array()...)
 	}
-	return StringValue(buffer.String())
+	return NewHybridValueArray(values)
 }
 
 // Delete removes an element at a certain index from the array.
-func (_ StdArray) Delete(arr []string, idx int) (Value, error) {
+func (_ StdArray) Delete(arr []Value, idx int) (Value, error) {
 	if idx < 0 || idx >= len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
-	res := make([]string, len(arr)-1)
+	res := make([]Value, len(arr)-1)
 	copy(res, arr[0:idx])
 	copy(res[idx:], arr[idx+1:])
-	return StringValue(strings.Join(res, "\n")), nil
+	return NewHybridValueArray(res), nil
 }
 
 // Insert inserts an element at a certain index in the array.
-func (_ StdArray) Insert(arr []string, idx int, val string) (Value, error) {
+func (_ StdArray) Insert(arr []Value, idx int, val Value) (Value, error) {
 	if idx < 0 || idx > len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
-	res := make([]string, len(arr)+1)
+	res := make([]Value, len(arr)+1)
 	copy(res, arr[0:idx])
 	copy(res[idx+1:], arr[idx:])
 	res[idx] = val
-	return StringValue(strings.Join(res, "\n")), nil
+	return NewHybridValueArray(res), nil
 }
 
 // Range generates a range of integers.
@@ -68,15 +61,15 @@ func (_ StdArray) Range(args []Value) (Value, error) {
 
 	// Run the range function that corresponds to the number of arguments.
 	if len(parsed) == 1 {
-		return StringValue(rangeSingle(parsed[0])), nil
+		return NewHybridValueArray(rangeSingle(parsed[0])), nil
 	} else if len(parsed) == 2 {
-		return StringValue(rangeDouble(parsed[0], parsed[1])), nil
+		return NewHybridValueArray(rangeDouble(parsed[0], parsed[1])), nil
 	} else {
 		res, err := rangeTriple(parsed[0], parsed[1], parsed[2])
 		if err != nil {
 			return nil, err
 		}
-		return StringValue(res), nil
+		return NewHybridValueArray(res), nil
 	}
 }
 
@@ -85,7 +78,12 @@ func (_ StdArray) Sort(arr []string) Value {
 	cpy := make([]string, len(arr))
 	copy(cpy, arr)
 	sort.Strings(cpy)
-	return StringValue(strings.Join(cpy, "\n"))
+	
+	valArray := make([]Value, len(arr))
+	for i, x := range cpy {
+		valArray[i] = NewHybridValueString(x)
+	}
+	return NewHybridValueArray(valArray)
 }
 
 // Sortnums sorts an array of numbers.
@@ -100,21 +98,18 @@ func (_ StdArray) Sortnums(v Value) (Value, error) {
 		}
 	}
 	sort.Sort(numList)
-	res := ""
+	
+	valArray := make([]Value, len(numList))
 	for i, x := range numList {
-		if i == 0 {
-			res = x.String()
-		} else {
-			res += "\n" + x.String()
-		}
+		valArray[i] = NewHybridValueNumber(x)
 	}
-	return StringValue(res), nil
+	return NewHybridValueArray(valArray), nil
 }
 
-// Subarr returns a subarray.
-func (_ StdArray) Subarr(arr []string, start, end int) Value {
+// Subarr returns a portion from an array.
+func (_ StdArray) Subarr(arr []Value, start, end int) Value {
 	if len(arr) == 0 {
-		return StringValue("")
+		return emptyValue
 	}
 	
 	// Sanitize the range
@@ -130,37 +125,31 @@ func (_ StdArray) Subarr(arr []string, start, end int) Value {
 	}
 	
 	res := arr[start : end]
-	return StringValue(strings.Join(res, "\n"))
+	return NewHybridValueArray(res)
 }
 
-func rangeDouble(start, end int) string {
-	var buffer bytes.Buffer
+func rangeDouble(start, end int) []Value {
+	res := make([]Value, end-start)
 	for i := start; i < end; i++ {
-		if i != start {
-			buffer.WriteRune('\n')
-		}
-		buffer.WriteString(strconv.Itoa(i))
+		res[i-start] = NewNumberInt(int64(i))
 	}
-	return buffer.String()
+	return res
 }
 
-func rangeSingle(end int) string {
-	var buffer bytes.Buffer
+func rangeSingle(end int) []Value {
+	res := make([]Value, end)
 	for i := 0; i < end; i++ {
-		if i != 0 {
-			buffer.WriteRune('\n')
-		}
-		buffer.WriteString(strconv.Itoa(i))
+		res[i] = NewNumberInt(int64(i))
 	}
-	return buffer.String()
+	return res
 }
 
-func rangeTriple(start, end, step int) (string, error) {
+func rangeTriple(start, end, step int) ([]Value, error) {
 	if step == 0 {
-		return "", errors.New("step cannot be 0")
+		return nil, errors.New("step cannot be 0")
 	}
 
-	var buffer bytes.Buffer
+	res := make([]Value, 0)
 	i := start
 	for {
 		if step < 0 && i <= end {
@@ -168,13 +157,10 @@ func rangeTriple(start, end, step int) (string, error) {
 		} else if step > 0 && i >= end {
 			break
 		}
-		if i != start {
-			buffer.WriteRune('\n')
-		}
-		buffer.WriteString(strconv.Itoa(i))
+		res = append(res, NewNumberInt(int64(i)))
 		i += step
 	}
-	return buffer.String(), nil
+	return res, nil
 }
 
 type numberList []Number
