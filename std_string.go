@@ -9,6 +9,22 @@ import (
 // StdString implements ways of manipulating or creating strings
 type StdString struct{}
 
+// Chars returns an array with each character from a string.
+// Each newline character will be encoded as the two-character escape
+// sequence "\\n".
+func (_ StdString) Chars(s string) Value {
+	runes := []rune(s)
+	resArr := make([]Value, len(runes))
+	for i, x := range runes {
+		if x == '\n' {
+			resArr[i] = NewHybridValueString("\\n")
+		} else {
+			resArr[i] = NewHybridValueString(string(x))
+		}
+	}
+	return NewHybridValueArray(resArr)
+}
+
 // Echo joins its arguments with spaces.
 func (_ StdString) Echo(args []Value) Value {
 	strArgs := make([]string, len(args))
@@ -25,6 +41,16 @@ func (_ StdString) Join(args []Value) Value {
 		buffer.WriteString(v.String())
 	}
 	return NewHybridValueString(buffer.String())
+}
+
+// Lowercase joins its arguments with spaces and returns the result, converted
+// to lower-case.
+func (_ StdString) Lowercase(args []Value) Value {
+	strArgs := make([]string, len(args))
+	for i, x := range args {
+		strArgs[i] = strings.ToLower(x.String())
+	}
+	return NewHybridValueString(strings.Join(strArgs, " "))
 }
 
 // Match runs a regular expression on a string.
@@ -70,4 +96,14 @@ func (_ StdString) Substr(s string, start, end int) Value {
 	}
 
 	return NewHybridValueString(s[start:end])
+}
+
+// Uppercase joins its arguments with spaces and returns the result, converted
+// to upper-case.
+func (_ StdString) Uppercase(args []Value) Value {
+	strArgs := make([]string, len(args))
+	for i, x := range args {
+		strArgs[i] = strings.ToUpper(x.String())
+	}
+	return NewHybridValueString(strings.Join(strArgs, " "))
 }

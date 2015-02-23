@@ -139,6 +139,10 @@ This command raises an exception with the specified error message. It joins its 
 
 # Strings
 
+### chars
+
+This generates a newline-delimited list of strings which correspond to each character of the string. Newline characters are encoded as the two-character "\n" escape sequence. For example, `chars 12\n3` yields `"1\n2\n\\n\n3"`.
+
 ### echo
 
 This command joins its arguments and inserts spaces between them.
@@ -146,6 +150,10 @@ This command joins its arguments and inserts spaces between them.
 ### join
 
 This command joins its arguments without inserting spaces between them.
+
+### lowercase
+
+This joins its arguments with spaces and converts the result to lower-case.
 
 ### match
 
@@ -164,6 +172,10 @@ For example, `rep heythere e E` yields "hEythErE".
 This command takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
 
 For example, `substr yoyo 1 3` yields "oy".
+
+### uppercase
+
+This joins its arguments with spaces and converts the result to upper-case.
 
 # Arrays
 

@@ -33,11 +33,8 @@ This is my personal to-do list.
    * Get UNIX epoch time
    * Parse/format dates
  * Strings
-   * To upper
-   * To lower
    * Is letter
    * Is digit
-   * Characters
    * Escape/unescape
  * Math
    * Random
