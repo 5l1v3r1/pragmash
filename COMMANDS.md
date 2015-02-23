@@ -223,6 +223,10 @@ This command takes a string and two indices. It returns a slice of an array.
 
 For example, `subarr (arr a b c) 1 3` returns the array equivalent to `arr b c`.
 
+### sum
+
+This command takes zero or more arrays of numbers and returns the sum of all the numbers.
+
 # Filesystem
 
 ### exists

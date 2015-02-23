@@ -145,13 +145,19 @@ func (_ StdArray) Subarr(arr []Value, start, end int) Value {
 	return NewHybridValueArray(res)
 }
 
-// Sum takes an array of numbers and returns their sum.
-func (_ StdArray) Sum(numbers []Number) Value {
+// Sum takes arrays of numbers and returns their total sum.
+func (_ StdArray) Sum(args []Value) (Value, error) {
 	sum := NewNumberInt(0)
-	for _, x := range numbers {
-		sum = AddNumbers(sum, x)
+	for _, arg := range args {
+		for _, val := range arg.Array() {
+			num, err := val.Number()
+			if err != nil {
+				return nil, err
+			}
+			sum = AddNumbers(sum, num)
+		}
 	}
-	return NewHybridValueNumber(sum)
+	return NewHybridValueNumber(sum), nil
 }
 
 func rangeDouble(start, end int) []Value {
