@@ -32,6 +32,20 @@ This is my personal to-do list.
    * Sleep
    * Get UNIX epoch time
    * Parse/format dates
+ * Strings
+   * To upper
+   * To lower
+   * Is letter
+   * Is digit
+   * Characters
+   * Escape/unescape
+ * Math
+   * Random
+   * Trig
+   * Sqrt
+ * Arrays
+   * Shuffle
+   * Sum
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
  * Support up arrow in REPL
