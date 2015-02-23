@@ -32,7 +32,7 @@ func (_ StdIo) Cmd(arguments []Value) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return StringValue(res), nil
+	return NewHybridValueString(string(res)), nil
 }
 
 // Gets reads a line of text from the console.
@@ -45,7 +45,7 @@ func (_ StdIo) Gets() (Value, error) {
 			return nil, errors.New("end of input")
 		}
 	}
-	return StringValue(scanner.Text()), nil
+	return NewHybridValueString(scanner.Text()), nil
 }
 
 // Print prints text to the console with no newline.
@@ -83,7 +83,7 @@ func (_ StdIo) Read(resource string) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		return StringValue(body), nil
+		return NewHybridValueString(string(body)), nil
 	}
 
 	// Read a path.
@@ -91,7 +91,7 @@ func (_ StdIo) Read(resource string) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return StringValue(contents), nil
+	return NewHybridValueString(string(contents)), nil
 }
 
 // Write writes some data to a file.

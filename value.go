@@ -1,9 +1,12 @@
 package pragmash
 
 import (
+	"bytes"
 	"errors"
 	"strings"
 )
+
+var emptyValue = BoolValue(false)
 
 // A BoolValue is a bool which implements the Value interface.
 type BoolValue bool
@@ -43,43 +46,98 @@ func (b BoolValue) String() string {
 	}
 }
 
-// A StringValue is a string which implements the Value interface.
-type StringValue string
+// A HybridValue is a Value which caches its various representations.
+type HybridValue struct {
+	ArrayRep  []Value
+	BoolRep   bool
+	NumVal    Number
+	NumErr    error
+	StringRep *string
+}
 
-// Array splits the string by newline characters and returns a slice of
-// StringValues.
-func (s StringValue) Array() []Value {
-	// Split the string up by newline
-	if len(s) == 0 {
-		return []Value{}
+// NewHybridValueArray creates a new HybridValue from an array of values.
+func NewHybridValueArray(arr []Value) *HybridValue {
+	// If there is one empty element, the array must be empty in order to
+	// maintain integrity.
+	if len(arr) == 1 && len(arr[0].String()) == 0 {
+		str := ""
+		return &HybridValue{[]Value{}, false, nil, nil, &str}
 	}
-	parts := strings.Split(string(s), "\n")
-	res := make([]Value, len(parts))
-	for i, x := range parts {
-		res[i] = StringValue(x)
-	}
+	return &HybridValue{arr, len(arr) != 0, nil, nil, nil}
+}
+
+// NewHybridValueString creates a new HybridValue from a string.
+func NewHybridValueString(str string) *HybridValue {
+	return &HybridValue{nil, len(str) > 0, nil, nil, &str}
+}
+
+// NewHybridValueNumber creates a new HybridValue from a Number.
+func NewHybridValueNumber(num Number) *HybridValue {
+	res := &HybridValue{nil, true, num, nil, nil}
+	res.ArrayRep = []Value{res}
 	return res
 }
 
-// Bool returns true if the string is not empty.
-func (s StringValue) Bool() bool {
-	return len(s) != 0
+// Array returns an array which represents the value.
+func (h *HybridValue) Array() []Value {
+	if h.ArrayRep != nil {
+		return h.ArrayRep
+	}
+	
+	// Generate an array by splitting the string into parts.
+	strVal := h.String()
+	comps := strings.Split(strVal, "\n")
+	res := make([]Value, len(comps))
+	for i, x := range comps {
+		res[i] = NewHybridValueString(x)
+	}
+	h.ArrayRep = res
+	return res
+}
+
+// Bool returns the pre-cached boolean representation of the value.
+func (h *HybridValue) Bool() bool {
+	return h.BoolRep
 }
 
 // Context returns an empty string.
-func (s StringValue) Context() string {
+func (_ *HybridValue) Context() string {
 	return ""
 }
 
-// Number attempts to parse the string as a number and returns it.
-func (s StringValue) Number() (Number, error) {
-	// TODO: perhaps we will cache the numeric result.
-	return ParseNumber(string(s))
+// Number returns the numerical representation of the value, parsing it as
+// needed.
+func (h *HybridValue) Number() (Number, error) {
+	if h.NumVal != nil || h.NumErr != nil {
+		return h.NumVal, h.NumErr
+	}
+	h.NumVal, h.NumErr = ParseNumber(h.String())
+	return h.NumVal, h.NumErr
 }
 
-// String casts the receiver to string and returns it.
-func (s StringValue) String() string {
-	return string(s)
+// String returns the string representation of the value.
+func (h *HybridValue) String() string {
+	if h.StringRep != nil {
+		return *h.StringRep
+	} else if h.NumVal != nil {
+		str := h.NumVal.String()
+		h.StringRep = &str
+		return str
+	} else if h.ArrayRep != nil {
+		var buffer bytes.Buffer
+		for i, v := range h.ArrayRep {
+			str := v.String()
+			if i != 0 {
+				buffer.WriteRune('\n')
+			}
+			buffer.WriteString(str)
+		}
+		str := buffer.String()
+		h.StringRep = &str
+		return str
+	}
+	panic("no way to generate a string representation")
+	return ""
 }
 
 // A Value is a read-only variable value.

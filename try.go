@@ -20,7 +20,7 @@ type Try struct {
 func (t Try) Run(r Runner) (Value, *Exception) {
 	_, exc := t.Try.Run(r)
 	if exc == nil {
-		return StringValue(""), nil
+		return emptyValue, nil
 	}
 
 	// Set the exception variable if necessary.

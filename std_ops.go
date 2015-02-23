@@ -41,10 +41,10 @@ func (_ StdOps) Lt(n1, n2 Number) Value {
 }
 
 // Subscript gets a term from a list.
-func (_ StdOps) Subscript(strings []string, index int) (Value, error) {
-	if index < 0 || index >= len(strings) {
+func (_ StdOps) Subscript(vals []Value, index int) (Value, error) {
+	if index < 0 || index >= len(vals) {
 		return nil, errors.New("subscript out of bounds: " +
 			strconv.Itoa(index))
 	}
-	return StringValue(strings[index]), nil
+	return vals[index], nil
 }

@@ -64,7 +64,7 @@ func (l Line) Blank() bool {
 // If the line is not blank, this returns a CommandRunnable.
 func (l Line) Runnable(context string) Runnable {
 	if len(l.Tokens) == 0 {
-		return ValueRunnable{StringValue("")}
+		return ValueRunnable{emptyValue}
 	}
 
 	// Turn arguments into Runnables.
@@ -87,12 +87,12 @@ type Token struct {
 // Runnable returns either a ValueRunnable or a CommandRunnable for the token.
 func (t Token) Runnable(context string) Runnable {
 	if t.Nested == nil {
-		return ValueRunnable{StringValue(t.String)}
+		return ValueRunnable{NewHybridValueString(t.String)}
 	}
 	if len(t.Nested) == 0 {
 		// If a command has no name or arguments, it just returns the empty
 		// string.
-		return ValueRunnable{StringValue(t.String)}
+		return ValueRunnable{NewHybridValueString(t.String)}
 	}
 
 	// Turn arguments into Runnables.

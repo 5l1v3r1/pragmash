@@ -169,7 +169,7 @@ For example, `substr yoyo 1 3` yields "oy".
 
 ### arr
 
-This command joins its arguments with newlines. For example, `arr a b c` generates "a\nb\nc".
+This command joins its arguments with newlines and throws away empty arguments. For example, `arr a b c` generates "a\nb\nc". As another example, `arr "" a ""` generates "a".
 
 ### delete
 

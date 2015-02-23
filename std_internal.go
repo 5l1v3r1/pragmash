@@ -151,8 +151,8 @@ func (_ StdInternal) Pragmash(args []Value) (Value, error) {
 		strArgs[i-1] = args[i].String()
 	}
 	variables := map[string]Value{
-		"DIR": StringValue(filepath.Dir(path)),
-		"ARGV": StringValue(strings.Join(strArgs, "\n")),
+		"DIR": NewHybridValueString(filepath.Dir(path)),
+		"ARGV": NewHybridValueString(strings.Join(strArgs, "\n")),
 	}
 	runner := NewStdRunner(variables)
 	

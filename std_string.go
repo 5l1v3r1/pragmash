@@ -15,7 +15,7 @@ func (_ StdString) Echo(args []Value) Value {
 	for i, x := range args {
 		strArgs[i] = x.String()
 	}
-	return StringValue(strings.Join(strArgs, " "))
+	return NewHybridValueString(strings.Join(strArgs, " "))
 }
 
 // Join joins its arguments without spaces.
@@ -24,7 +24,7 @@ func (_ StdString) Join(args []Value) Value {
 	for _, v := range args {
 		buffer.WriteString(v.String())
 	}
-	return StringValue(buffer.String())
+	return NewHybridValueString(buffer.String())
 }
 
 // Match runs a regular expression on a string.
@@ -37,27 +37,24 @@ func (_ StdString) Match(expr, haystack string) (Value, error) {
 	res := r.FindAllStringSubmatch(haystack, -1)
 
 	// Return the result as a massive list.
-	var buffer bytes.Buffer
-	for i, x := range res {
-		for j, y := range x {
-			if i != 0 || j != 0 {
-				buffer.WriteRune('\n')
-			}
-			buffer.WriteString(y)
+	list := make([]Value, 0)
+	for _, x := range res {
+		for _, y := range x {
+			list = append(list, NewHybridValueString(y))
 		}
 	}
-	return StringValue(buffer.String()), nil
+	return NewHybridValueArray(list), nil
 }
 
 // Rep replaces all occurances of a string with another string.
 func (_ StdString) Rep(s, old, replacement string) Value {
-	return StringValue(strings.Replace(s, old, replacement, -1))
+	return NewHybridValueString(strings.Replace(s, old, replacement, -1))
 }
 
 // Substr returns a substring of a large string.
 func (_ StdString) Substr(s string, start, end int) Value {
 	if len(s) == 0 {
-		return StringValue("")
+		return emptyValue
 	}
 
 	// Any inputs are sanitized and accepted.
@@ -72,5 +69,5 @@ func (_ StdString) Substr(s string, start, end int) Value {
 		end = len(s)
 	}
 
-	return StringValue(s[start:end])
+	return NewHybridValueString(s[start:end])
 }

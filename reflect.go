@@ -81,6 +81,7 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 
 	// These are the allowed argument types.
 	arrType := reflect.TypeOf([]string{})
+	valArrType := reflect.TypeOf([]Value{})
 	boolType := reflect.TypeOf(true)
 	intType := reflect.TypeOf(int(0))
 	numType := reflect.TypeOf((*Number)(nil)).Elem()
@@ -121,6 +122,8 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 			} else {
 				args[i] = reflect.ValueOf(int(num.Float()))
 			}
+		} else if inputType == valArrType {
+			args[i] = reflect.ValueOf(x.Array())
 		} else {
 			return nil, errors.New("invalid argument type: " +
 				inputType.String())
@@ -132,7 +135,7 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 
 func reflectReturnValue(res []reflect.Value) (Value, error) {
 	if len(res) == 0 {
-		return StringValue(""), nil
+		return emptyValue, nil
 	}
 
 	errType := reflect.TypeOf((*error)(nil)).Elem()
@@ -145,7 +148,7 @@ func reflectReturnValue(res []reflect.Value) (Value, error) {
 			if val != nil {
 				return nil, val.(error)
 			} else {
-				return StringValue(""), nil
+				return emptyValue, nil
 			}
 		} else if res[0].Type() == valType {
 			return res[0].Interface().(Value), nil
