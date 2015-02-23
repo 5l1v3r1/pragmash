@@ -37,11 +37,9 @@ This is my personal to-do list.
    * Is digit
    * Escape/unescape
  * Math
-   * Random
    * Trig
    * Sqrt
  * Arrays
-   * Shuffle
    * Sum
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.

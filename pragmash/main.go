@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/unixpickle/pragmash"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -15,6 +17,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Usage: pragmash <script.pragmash> [ARGS]")
 		os.Exit(1)
 	}
+
+	rand.Seed(time.Now().UTC().UnixNano())
 
 	contents, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {

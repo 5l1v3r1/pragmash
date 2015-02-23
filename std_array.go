@@ -2,6 +2,7 @@ package pragmash
 
 import (
 	"errors"
+	"math/rand"
 	"sort"
 	"strconv"
 )
@@ -73,8 +74,24 @@ func (_ StdArray) Range(args []Value) (Value, error) {
 	}
 }
 
+// Shuffle randomly re-orders an array.
+func (_ StdArray) Shuffle(arguments []Value) (Value, error) {
+	if len(arguments) != 1 {
+		return nil, errors.New("expected 1 argument")
+	}
+	list := arguments[0].Array()
+	result := make([]Value, len(list))
+	perm := rand.Perm(len(list))
+	for i, j := range perm {
+		result[i] = list[j]
+	}
+	return NewHybridValueArray(result), nil
+}
+
 // Sort sorts an array of strings alphabetically.
 func (_ StdArray) Sort(arr []string) Value {
+	// TODO: presereve the Values to keep cached representations
+	
 	cpy := make([]string, len(arr))
 	copy(cpy, arr)
 	sort.Strings(cpy)

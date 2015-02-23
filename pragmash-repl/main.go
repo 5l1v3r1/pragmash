@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/unixpickle/pragmash"
+	"math/rand"
 	"os"
+	"time"
 )
 
 const (
@@ -36,6 +38,8 @@ func escapeResult(res string) string {
 }
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
+	
 	statements := make(chan pragmash.Runnable)
 	errorChan := make(chan error)
 	conts := make(chan struct{})

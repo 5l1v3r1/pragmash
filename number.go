@@ -164,7 +164,7 @@ func MultiplyNumbers(n1, n2 Number) Number {
 	if i1 != nil && i2 != nil {
 		return NewNumberBig(big.NewInt(0).Mul(i1, i2))
 	} else {
-		return NewNumberFloat(n1.Float() + n2.Float())
+		return NewNumberFloat(n1.Float() * n2.Float())
 	}
 }
 

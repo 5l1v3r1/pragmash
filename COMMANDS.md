@@ -205,6 +205,10 @@ If the command is given two arguments `M` and `N`, it will generate the ordered 
 
 If the command is given three arguments, it generates the ordered list of integers starting with the first argument going to the second argument, stepping by the third argument each time. For example, `range 10 5 -2` yields `10\n8\n6`.
 
+### shuffle
+
+This command takes an array and returns an array. The resulting array will be permuted in a random order.
+
 ### sort
 
 This command takes an array and returns an array. The resulting array will be sorted alphabetically.
@@ -246,3 +250,21 @@ This deletes a file or an empty directory.
 ### rmall
 
 This deletes a file or directory recursively.
+
+# Math
+
+### ceil
+
+This returns the greatest integer which is less than or equal to a floating-point number.
+
+### floor
+
+This returns the lowest integer which is greater than or equal to a floating-point number.
+
+### rand
+
+This returns a random floating point between 0.0 and 1.0.
+
+### round
+
+This rounds a floating point number to the nearest integer.
