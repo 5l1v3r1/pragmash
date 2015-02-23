@@ -21,14 +21,14 @@ To see some pre-written example programs, see [demo](demo).
 
 # TODO
 
-This is my personal to-do list.
+Here are the commands that I'd like to add:
 
- * Create file system manipulation functions
+ * File system manipulation functions
    * Chmod
    * Touch
    * Link
    * FileType
- * Create time manipulation functions
+ * Time manipulation functions
    * Sleep
    * Get UNIX epoch time
    * Parse/format dates
@@ -39,8 +39,11 @@ This is my personal to-do list.
  * Math
    * Trig
    * Sqrt
- * Arrays
-   * Sum
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
+
+Here are improvements I'd like to make to the tools and/or implementation:
+
  * Support up arrow in REPL
+ * Change `Number` from interface to concrete type
+ * Change `Value` from interface to `HybridValue` struct.

@@ -145,6 +145,15 @@ func (_ StdArray) Subarr(arr []Value, start, end int) Value {
 	return NewHybridValueArray(res)
 }
 
+// Sum takes an array of numbers and returns their sum.
+func (_ StdArray) Sum(numbers []Number) Value {
+	sum := NewNumberInt(0)
+	for _, x := range numbers {
+		sum = AddNumbers(sum, x)
+	}
+	return NewHybridValueNumber(sum)
+}
+
 func rangeDouble(start, end int) []Value {
 	res := make([]Value, end-start)
 	for i := start; i < end; i++ {
