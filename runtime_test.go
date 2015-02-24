@@ -17,7 +17,7 @@ func BenchmarkSummation(b *testing.B) {
 	// Generate a script which loops b.N times.
 	nString := strconv.Itoa(b.N)
 	script := "set x (range " + nString + ")\n" +
-		"set sum 0\nfor y $x {\nset sum (+ $sum $y)\n}" 	
+		"set sum 0\nfor y $x {\nset sum (+ $sum $y)\n}"
 	runBenchmarkScript(script)
 }
 

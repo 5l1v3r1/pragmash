@@ -9,6 +9,7 @@ type StdAll struct {
 	StdMath
 	StdOps
 	StdString
+	StdTime
 }
 
 // NewStdAll creates a new StdAll instance with a new StdInternal inside.

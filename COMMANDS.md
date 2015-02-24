@@ -147,6 +147,10 @@ This generates a newline-delimited list of strings which correspond to each char
 
 This command joins its arguments and inserts spaces between them.
 
+### escape
+
+This command replaces backslashes with double backslashes and newlines with "\\n". This is helpful for storing strings with newlines as elements in arrays.
+
 ### join
 
 This command joins its arguments without inserting spaces between them.
@@ -172,6 +176,10 @@ For example, `rep heythere e E` yields "hEythErE".
 This command takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
 
 For example, `substr yoyo 1 3` yields "oy".
+
+### unescape
+
+This command inverts the effect of the escape command.
 
 ### uppercase
 
@@ -276,3 +284,13 @@ This returns a random floating point between 0.0 and 1.0.
 ### round
 
 This rounds a floating point number to the nearest integer.
+
+# Time
+
+### sleep
+
+This takes a numerical argument and sleeps for that many seconds.
+
+### time
+
+This returns the current UNIX epoch time as a floating point in seconds.

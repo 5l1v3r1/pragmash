@@ -40,7 +40,7 @@ func main() {
 
 	variables := map[string]pragmash.Value{
 		"ARGV": pragmash.NewHybridValueString(strings.Join(os.Args[2:], "\n")),
-		"DIR": pragmash.NewHybridValueString(filepath.Dir(os.Args[1])),
+		"DIR":  pragmash.NewHybridValueString(filepath.Dir(os.Args[1])),
 	}
 	runner := pragmash.NewStdRunner(variables)
 

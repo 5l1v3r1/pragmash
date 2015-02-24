@@ -101,11 +101,11 @@ func (_ StdArray) Shuffle(arguments []Value) (Value, error) {
 // Sort sorts an array of strings alphabetically.
 func (_ StdArray) Sort(arr []string) Value {
 	// TODO: presereve the Values to keep cached representations
-	
+
 	cpy := make([]string, len(arr))
 	copy(cpy, arr)
 	sort.Strings(cpy)
-	
+
 	valArray := make([]Value, len(arr))
 	for i, x := range cpy {
 		valArray[i] = NewHybridValueString(x)
@@ -125,7 +125,7 @@ func (_ StdArray) Sortnums(v Value) (Value, error) {
 		}
 	}
 	sort.Sort(numList)
-	
+
 	valArray := make([]Value, len(numList))
 	for i, x := range numList {
 		valArray[i] = NewHybridValueNumber(x)
@@ -138,7 +138,7 @@ func (_ StdArray) Subarr(arr []Value, start, end int) Value {
 	if len(arr) == 0 {
 		return emptyValue
 	}
-	
+
 	// Sanitize the range
 	if start < 0 {
 		start = 0
@@ -150,8 +150,8 @@ func (_ StdArray) Subarr(arr []Value, start, end int) Value {
 	} else if end > len(arr) {
 		end = len(arr)
 	}
-	
-	res := arr[start : end]
+
+	res := arr[start:end]
 	return NewHybridValueArray(res)
 }
 
@@ -218,4 +218,3 @@ func (n numberList) Less(i, j int) bool {
 func (n numberList) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
-

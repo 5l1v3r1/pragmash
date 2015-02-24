@@ -30,7 +30,7 @@ func (_ StdFs) Glob(args []Value) (Value, error) {
 		res = append(res, paths...)
 	}
 	sort.Strings(res)
-	
+
 	valArray := make([]Value, len(res))
 	for i, x := range res {
 		valArray[i] = NewHybridValueString(x)

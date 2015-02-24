@@ -29,13 +29,11 @@ Here are the commands that I'd like to add:
    * Link
    * FileType
  * Time manipulation functions
-   * Sleep
-   * Get UNIX epoch time
    * Parse/format dates
  * Strings
    * Is letter
    * Is digit
-   * Escape/unescape
+   * Add escmatch command for match with escapes
  * Math
    * Trig
    * Sqrt

@@ -29,17 +29,17 @@ func (s StdInternal) Eval(code string) (Value, error) {
 	if s.Runner == nil || *s.Runner == nil {
 		return nil, errors.New("no Runner")
 	}
-	
+
 	lines, contexts, err := TokenizeString(code)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Update the contexts to reflect that we're in an eval.
 	for i, x := range contexts {
 		contexts[i] = x + " in eval"
 	}
-	
+
 	// Generate the runner and run it
 	runnable, err := ScanAll(lines, contexts)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s StdInternal) Exec(path string) (Value, error) {
 	if s.Runner == nil || *s.Runner == nil {
 		return nil, errors.New("no Runner")
 	}
-	
+
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -67,12 +67,12 @@ func (s StdInternal) Exec(path string) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Update the contexts to include the path
 	for i, x := range contexts {
 		contexts[i] = x + " in " + path
 	}
-	
+
 	// Generate the runner and run it
 	runnable, err := ScanAll(lines, contexts)
 	if err != nil {
@@ -123,7 +123,7 @@ func (_ StdInternal) Pragmash(args []Value) (Value, error) {
 	if len(args) == 0 {
 		return nil, errors.New("missing file path")
 	}
-	
+
 	path := args[0].String()
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -133,29 +133,29 @@ func (_ StdInternal) Pragmash(args []Value) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Update the contexts to include the path
 	for i, x := range contexts {
 		contexts[i] = x + " in " + path
 	}
-	
+
 	// Generate the runnable
 	runnable, err := ScanAll(lines, contexts)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Generate the runner
 	strArgs := make([]string, len(args)-1)
 	for i := 1; i < len(args); i++ {
 		strArgs[i-1] = args[i].String()
 	}
 	variables := map[string]Value{
-		"DIR": NewHybridValueString(filepath.Dir(path)),
+		"DIR":  NewHybridValueString(filepath.Dir(path)),
 		"ARGV": NewHybridValueString(strings.Join(strArgs, "\n")),
 	}
 	runner := NewStdRunner(variables)
-	
+
 	// Run the file.
 	if val, err := runnable.Run(runner); err != nil {
 		return nil, errors.New(err.Context() + ": " + err.String())

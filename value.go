@@ -83,7 +83,7 @@ func (h *HybridValue) Array() []Value {
 	if h.ArrayRep != nil {
 		return h.ArrayRep
 	}
-	
+
 	// Generate an array by splitting the string into parts.
 	strVal := h.String()
 	if len(strVal) == 0 {

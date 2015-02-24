@@ -34,6 +34,13 @@ func (_ StdString) Echo(args []Value) Value {
 	return NewHybridValueString(strings.Join(strArgs, " "))
 }
 
+// Escape replaces backslashes with double-backslashes and newlines with "\n".
+func (_ StdString) Escape(str string) Value {
+	s := strings.Replace(str, "\\", "\\\\", -1)
+	s = strings.Replace(s, "\n", "\\n", -1)
+	return NewHybridValueString(s)
+}
+
 // Join joins its arguments without spaces.
 func (_ StdString) Join(args []Value) Value {
 	var buffer bytes.Buffer
@@ -96,6 +103,13 @@ func (_ StdString) Substr(s string, start, end int) Value {
 	}
 
 	return NewHybridValueString(s[start:end])
+}
+
+// Unescape replaces "\\" with "\" and "\n" with a newline.
+func (_ StdString) Unescape(arg string) Value {
+	s := strings.Replace(arg, "\\n", "\n", -1)
+	s = strings.Replace(s, "\\\\", "\\", -1)
+	return NewHybridValueString(s)
 }
 
 // Uppercase joins its arguments with spaces and returns the result, converted
