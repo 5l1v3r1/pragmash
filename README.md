@@ -37,6 +37,9 @@ Here are the commands that I'd like to add:
  * Math
    * Trig
    * Sqrt
+ * Networking
+   * Cookies
+   * POST
  * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
 
@@ -46,3 +49,9 @@ Here are improvements I'd like to make to the tools and/or implementation:
  * Change `Number` from interface to concrete type
  * Change `Value` from interface to `HybridValue` struct.
  * Add a version number system
+ * Improve reflection calling mechanism
+   * Looser return types
+   * Take variable map as argument
+   * Take runner as argument
+   * Take variadic arguments
+ * Unify standard variables
