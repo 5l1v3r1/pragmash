@@ -183,6 +183,10 @@ This joins its arguments with spaces and converts the result to upper-case.
 
 This command joins its arguments with newlines and throws away empty arguments. For example, `arr a b c` generates "a\nb\nc". As another example, `arr "" a ""` generates "a".
 
+### contains
+
+This command takes an array and a string and returns "true" if the array contains the string.
+
 ### delete
 
 This command deletes an element from the array.

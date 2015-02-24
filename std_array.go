@@ -19,6 +19,16 @@ func (_ StdArray) Arr(args []Value) Value {
 	return NewHybridValueArray(values)
 }
 
+// Contains checks if an array contains a value.
+func (_ StdArray) Contains(arr []string, val string) Value {
+	for _, s := range arr {
+		if s == val {
+			return BoolValue(true)
+		}
+	}
+	return BoolValue(false)
+}
+
 // Delete removes an element at a certain index from the array.
 func (_ StdArray) Delete(arr []Value, idx int) (Value, error) {
 	if idx < 0 || idx >= len(arr) {
