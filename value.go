@@ -86,6 +86,10 @@ func (h *HybridValue) Array() []Value {
 	
 	// Generate an array by splitting the string into parts.
 	strVal := h.String()
+	if len(strVal) == 0 {
+		h.ArrayRep = []Value{}
+		return h.ArrayRep
+	}
 	comps := strings.Split(strVal, "\n")
 	res := make([]Value, len(comps))
 	for i, x := range comps {
