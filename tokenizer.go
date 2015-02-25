@@ -131,7 +131,7 @@ func (t *Tokenizer) Done() bool {
 func (t *Tokenizer) Line(line string) (*Line, error) {
 	full := t.previous + line
 	if strings.HasSuffix(line, "\\") {
-		t.previous = full
+		t.previous = t.previous + line[0:len(line)-1]
 		return nil, nil
 	}
 	t.previous = ""
