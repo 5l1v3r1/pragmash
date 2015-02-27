@@ -273,9 +273,17 @@ This deletes a file or directory recursively.
 
 This returns the greatest integer which is less than or equal to a floating-point number.
 
+### cos
+
+This computes the cosine of an angle in radians.
+
 ### floor
 
 This returns the lowest integer which is greater than or equal to a floating-point number.
+
+### pi
+
+This takes no arguments and returns the value of pi.
 
 ### rand
 
@@ -284,6 +292,10 @@ This returns a random floating point between 0.0 and 1.0.
 ### round
 
 This rounds a floating point number to the nearest integer.
+
+### sin
+
+This computes the sine of an angle in radians.
 
 # Time
 

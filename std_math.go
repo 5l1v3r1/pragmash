@@ -28,6 +28,12 @@ func (_ StdMath) Ceil(num *Number) *Value {
 	return NewValueNumber(NewNumberBig(rat.Num()))
 }
 
+// Cos returns the cosine of its argument (which is in radians).
+func (_ StdMath) Cos(num *Number) *Value {
+	res := math.Cos(num.Float())
+	return NewValueNumber(NewNumberFloat(res))
+}
+
 // Div divides the first argument by the second.
 func (_ StdMath) Div(n1, n2 *Number) (*Value, error) {
 	num, err := DivideNumbers(n1, n2)
@@ -56,6 +62,11 @@ func (_ StdMath) Mul(nums []*Number) *Value {
 	return NewValueNumber(res)
 }
 
+// Pi returns the value of pi.
+func (_ StdMath) Pi() *Value {
+	return NewValueNumber(NewNumberFloat(math.Pi))
+}
+
 // Pow raises the first argument to the power of the second.
 func (_ StdMath) Pow(n1, n2 *Number) *Value {
 	return NewValueNumber(ExponentiateNumber(n1, n2))
@@ -74,6 +85,12 @@ func (_ StdMath) Round(num *Number) *Value {
 	rat := big.NewRat(0, 1)
 	rat.SetFloat64(rounded)
 	return NewValueNumber(NewNumberBig(rat.Num()))
+}
+
+// Sin returns the sine of its argument (which is in radians).
+func (_ StdMath) Sin(num *Number) *Value {
+	res := math.Sin(num.Float())
+	return NewValueNumber(NewNumberFloat(res))
 }
 
 // Sub subtracts the second argument from the first.
