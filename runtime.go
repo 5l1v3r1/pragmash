@@ -8,42 +8,42 @@ type CommandRunnable struct {
 }
 
 // Run evaluates every argument, then executes the named command.
-func (c CommandRunnable) Run(r Runner) (Value, *Exception) {
+func (c CommandRunnable) Run(r Runner) (*Value, *Breakout) {
 	name, exc := c.Name.Run(r)
 	if exc != nil {
 		return nil, exc
 	}
-	args := make([]Value, len(c.Arguments))
+	args := make([]*Value, len(c.Arguments))
 	for i, x := range c.Arguments {
-		val, exc := x.Run(r)
-		if exc != nil {
-			return nil, exc
+		val, bo := x.Run(r)
+		if bo != nil {
+			return nil, bo
 		}
 		args[i] = val
 	}
 	val, err := r.RunCommand(name.String(), args)
 	if err != nil {
-		return nil, NewException(c.Context, err)
+		return nil, NewBreakoutException(c.Context, err)
 	}
 	return val, nil
 }
 
 // A Runnable is a generic interface which can execute on a given Runner and
-// return a value or runtime exception.
+// return a value or breakout.
 type Runnable interface {
-	Run(r Runner) (Value, *Exception)
+	Run(r Runner) (*Value, *Breakout)
 }
 
 // A RunnableList is a Runnable which runs a list of Runnables.
 type RunnableList []Runnable
 
-// Run runs each Runnable and fails on the first exception it encounters.
-// If no exception is encountered, this returns the value of the last runnable.
-func (r RunnableList) Run(runner Runner) (Value, *Exception) {
-	var lastValue Value = emptyValue
+// Run runs each Runnable and fails on the first breakout it encounters.
+// If no breakout is encountered, this returns the value of the last runnable.
+func (r RunnableList) Run(runner Runner) (*Value, *Breakout) {
+	lastValue := emptyValue
 	for _, x := range r {
-		if val, exc := x.Run(runner); exc != nil {
-			return nil, exc
+		if val, bo := x.Run(runner); bo != nil {
+			return nil, bo
 		} else {
 			lastValue = val
 		}
@@ -53,15 +53,13 @@ func (r RunnableList) Run(runner Runner) (Value, *Exception) {
 
 // A Runner is a generic interface which can run a commands.
 type Runner interface {
-	RunCommand(name string, args []Value) (Value, error)
+	RunCommand(name string, args []*Value) (*Value, error)
 }
 
 // A ValueRunnable always returns the same value.
-type ValueRunnable struct {
-	Value
-}
+type ValueRunnable *Value
 
-// Run returns Value(v), nil.
-func (v ValueRunnable) Run(r Runner) (Value, *Exception) {
-	return v.Value, nil
+// Run returns (*Value)(v), nil.
+func (v ValueRunnable) Run(r Runner) (*Value, *Breakout) {
+	return (*Value)(v), nil
 }
