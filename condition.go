@@ -8,36 +8,32 @@ type Condition []Runnable
 // Empty conditions are automatically true. Conditions with one argument are
 // true if the argument's length is non-zero. Conditions with more than one
 // argument are true if all the arguments equal.
-func (c Condition) Run(r Runner) (Value, *Exception) {
+func (c Condition) Run(r Runner) (*Value, *Breakout) {
 	if len(c) == 0 {
 		// Empty conditions are automatically true.
-		return BoolValue(true), nil
+		return NewValueBool(true), nil
 	} else if len(c) == 1 {
 		// Every non-empty string is true.
-		val, exc := c[0].Run(r)
-		if exc != nil {
-			return nil, exc
-		}
-		return BoolValue(val.Bool()), nil
+		return c[0].Run(r)
 	}
 
 	// Make sure every value equals the first.
-	first, exc := c[0].Run(r)
-	if exc != nil {
-		return nil, exc
+	first, bo := c[0].Run(r)
+	if bo != nil {
+		return nil, bo
 	}
 	str := first.String()
 	for i := 1; i < len(c); i++ {
-		val, exc := c[i].Run(r)
-		if exc != nil {
-			return nil, exc
+		val, bo := c[i].Run(r)
+		if bo != nil {
+			return nil, bo
 		}
 		if val.String() != str {
-			return BoolValue(false), nil
+			return emptyValue, nil
 		}
 	}
 
-	return BoolValue(true), nil
+	return NewValueBool(true), nil
 }
 
 // A NotCondition is essentially the inverse of a Condition.
@@ -47,12 +43,12 @@ type NotCondition []Runnable
 // Empty conditions are automatically false. Conditions with one argument are
 // true if the argument's length is zero. Conditions with more than one
 // argument are true if at least one of the arguments differs.
-func (n NotCondition) Run(r Runner) (Value, *Exception) {
-	val, exc := Condition(n).Run(r)
-	if exc != nil {
-		return nil, exc
+func (n NotCondition) Run(r Runner) (*Value, *Breakout) {
+	val, bo := Condition(n).Run(r)
+	if bo != nil {
+		return nil, bo
 	}
-	return BoolValue(!val.Bool()), nil
+	return NewValueBool(!val.Bool()), nil
 }
 
 // ConditionFromTokens reads a series of tokens and converts them into a

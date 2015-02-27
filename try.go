@@ -17,20 +17,23 @@ type Try struct {
 // Run executes the try-catch block.
 // This returns an exception if the catch block throws one or if the exception
 // variable cannot be set.
-func (t Try) Run(r Runner) (Value, *Exception) {
-	_, exc := t.Try.Run(r)
-	if exc == nil {
+func (t Try) Run(r Runner) (*Value, *Breakout) {
+	_, bo := t.Try.Run(r)
+	if bo == nil {
 		return emptyValue, nil
+	} else if bo.Type() != BreakoutTypeException {
+		return nil, bo
 	}
 
 	// Set the exception variable if necessary.
 	if t.Variable != nil {
-		v, e := t.Variable.Run(r)
-		if e != nil {
-			return nil, e
+		v, bo1 := t.Variable.Run(r)
+		if bo1 != nil {
+			return nil, bo1
 		}
-		if _, e := r.RunCommand("set", []Value{v, *exc}); e != nil {
-			return nil, NewException(t.CatchContext, e)
+		msg := NewValueString(bo.Error().Error())
+		if _, err := r.RunCommand("set", []*Value{v, msg}); err != nil {
+			return nil, NewBreakoutException(t.CatchContext, err)
 		}
 	}
 

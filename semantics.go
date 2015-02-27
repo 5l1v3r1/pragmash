@@ -144,7 +144,28 @@ func (g *genericScanner) Line(l Line, context string) (Runnable, error) {
 	}
 
 	// Handle a regular line
-	runnable := l.Runnable(context)
+	var runnable Runnable
+	if l.Tokens[0].String == "break" {
+		if len(l.Tokens) != 1 {
+			return nil, errors.New("unexpected tokens after 'break' at " +
+				context)
+		}
+		runnable = BreakRunner{context}
+	} else if l.Tokens[0].String == "continue" {
+		if len(l.Tokens) != 1 {
+			return nil, errors.New("unexpected tokens after 'continue' at " +
+				context)
+		}
+		runnable = ContinueRunner{context}
+	} else if l.Tokens[0].String == "return" {
+		args := make([]Runnable, 0, len(l.Tokens)-1)
+		for i := 1; i < len(l.Tokens); i++ {
+			args = append(args, l.Tokens[i].Runnable(context))
+		}
+		runnable = ReturnRunner{args, context}
+	} else {
+		runnable = l.Runnable(context)
+	}
 	g.list = append(g.list, runnable)
 	if g.single {
 		return runnable, nil

@@ -3,8 +3,7 @@
 set x 0
 while {
   if $x 5 {
-    # TODO: test the 'break' command once I make it.
-    exit 0
+    break
   }
   print $x
   set x (+ $x 1)

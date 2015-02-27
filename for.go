@@ -17,28 +17,32 @@ type For struct {
 
 // Run executes the for loop.
 // This fails if the variable name, exression, or body triggers an exception.
-func (f For) Run(r Runner) (Value, *Exception) {
-	expr, exc := f.Expression.Run(r)
-	if exc != nil {
-		return nil, exc
+func (f For) Run(r Runner) (*Value, *Breakout) {
+	expr, bo := f.Expression.Run(r)
+	if bo != nil {
+		return nil, bo
 	}
-	var variable Value
+	var variable *Value
 	if f.Variable != nil {
-		variable, exc = f.Variable.Run(r)
-		if exc != nil {
-			return nil, exc
+		variable, bo = f.Variable.Run(r)
+		if bo != nil {
+			return nil, bo
 		}
 	}
 	for _, val := range expr.Array() {
 		if variable != nil {
-			_, err := r.RunCommand("set", []Value{variable, val})
+			_, err := r.RunCommand("set", []*Value{variable, val})
 			if err != nil {
-				return nil, NewException(f.Context, err)
+				return nil, NewBreakoutException(f.Context, err)
 			}
 		}
-		_, exc = f.Body.Run(r)
-		if exc != nil {
-			return nil, exc
+		_, bo = f.Body.Run(r)
+		if bo == nil || bo.Type() == BreakoutTypeContinue {
+			continue
+		} else if bo.Type() == BreakoutTypeBreak {
+			break
+		} else {
+			return nil, bo
 		}
 	}
 	return emptyValue, nil

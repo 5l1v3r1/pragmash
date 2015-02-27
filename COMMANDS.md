@@ -91,13 +91,13 @@ This command takes one argument and returns how many elements it contains as a n
 
 ### eval
 
-This command executes a block of pragmash code. The code which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the code runs as if it were part of the main script. If no error occurs, this returns the value of the last expression of the code.
+This command executes a block of pragmash code. The code which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the code runs as if it were part of the main script. The code may use the "return" keyword to return values.
 
 Example: `eval "puts hey"`
 
 ### exec
 
-This command executes a pragmash file. The scirpt which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the script runs as if it were part of the main script. If no error occurs, this returns the value of the last expression from the script.
+This command executes a pragmash file. The scirpt which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the script runs as if it were part of the main script. The executed file can use the "return" keyword to return values.
 
 Example: `exec (join $DIR /some_file.pragmash)`
 
@@ -115,7 +115,7 @@ This command takes one string argument and returns its length, in bytes.
 
 ### pragmash
 
-This command takes one or more arguments. This executes the script (specified by the first argument) in a new context and returns the output of its last expression. The script runs with a new set of variables (including $ARGV and $DIR), but it may still print to the console or exit the program.
+This command takes one or more arguments. This executes the script (specified by the first argument) in a new context and returns its return value. The script runs with a new set of variables (including $ARGV and $DIR), but it may still print to the console or exit the program.
 
 For example, suppose this is the contents of a file "main.pragmash":
 

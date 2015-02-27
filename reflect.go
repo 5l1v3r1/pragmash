@@ -7,6 +7,19 @@ import (
 	"strings"
 )
 
+// These are the allowed argument types.
+var (
+	arrType    = reflect.TypeOf([]string{})
+	boolType   = reflect.TypeOf(true)
+	errType    = reflect.TypeOf((*error)(nil)).Elem()
+	intType    = reflect.TypeOf(int(0))
+	numArrType = reflect.TypeOf([]*Number{})
+	numType    = numArrType.Elem()
+	strType    = reflect.TypeOf("")
+	valArrType = reflect.TypeOf([]*Value{})
+	valType    = valArrType.Elem()
+)
+
 // A ReflectRunner implements a RunCommand() function that uses reflection.
 type ReflectRunner struct {
 	rewrite map[string]string
@@ -21,7 +34,7 @@ func NewReflectRunner(val interface{}, rw map[string]string) ReflectRunner {
 // RunCommand puts the name through the alias table if possible.
 // It then capitalizes the first letter of the name and looks for a
 // corresponding method.
-func (r ReflectRunner) RunCommand(name string, vals []Value) (Value, error) {
+func (r ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
 	// Lookup the method.
 	n := r.RewriteName(name)
 	n = strings.ToUpper(n[:1]) + n[1:]
@@ -53,7 +66,7 @@ func (r ReflectRunner) RewriteName(name string) string {
 	return name
 }
 
-func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
+func reflectArguments(t reflect.Type, vals []*Value) ([]reflect.Value, error) {
 	// Special cases.
 	if t.NumIn() == 0 {
 		if len(vals) == 0 {
@@ -61,9 +74,9 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 		} else {
 			return nil, errors.New("expected no arguments")
 		}
-	} else if t.NumIn() == 1 && t.In(0) == reflect.TypeOf([]Number{}) {
+	} else if t.NumIn() == 1 && t.In(0) == numArrType {
 		// Generate a list of numbers.
-		nums := make([]Number, len(vals))
+		nums := make([]*Number, len(vals))
 		for i, x := range vals {
 			num, err := x.Number()
 			if err != nil {
@@ -72,21 +85,12 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 			nums[i] = num
 		}
 		return []reflect.Value{reflect.ValueOf(nums)}, nil
-	} else if t.NumIn() == 1 && t.In(0) == reflect.TypeOf([]Value{}) {
+	} else if t.NumIn() == 1 && t.In(0) == valArrType {
 		return []reflect.Value{reflect.ValueOf(vals)}, nil
 	} else if t.NumIn() != len(vals) {
 		return nil, errors.New("expected " + strconv.Itoa(t.NumIn()) +
 			" argument(s)")
 	}
-
-	// These are the allowed argument types.
-	arrType := reflect.TypeOf([]string{})
-	valArrType := reflect.TypeOf([]Value{})
-	boolType := reflect.TypeOf(true)
-	intType := reflect.TypeOf(int(0))
-	numType := reflect.TypeOf((*Number)(nil)).Elem()
-	strType := reflect.TypeOf("")
-	valType := reflect.TypeOf((*Value)(nil)).Elem()
 
 	// Process each argument individually.
 	args := make([]reflect.Value, t.NumIn())
@@ -133,13 +137,10 @@ func reflectArguments(t reflect.Type, vals []Value) ([]reflect.Value, error) {
 	return args, nil
 }
 
-func reflectReturnValue(res []reflect.Value) (Value, error) {
+func reflectReturnValue(res []reflect.Value) (*Value, error) {
 	if len(res) == 0 {
 		return emptyValue, nil
 	}
-
-	errType := reflect.TypeOf((*error)(nil)).Elem()
-	valType := reflect.TypeOf((*Value)(nil)).Elem()
 
 	if len(res) == 1 {
 		// The return type may be an error or a value.
@@ -151,13 +152,13 @@ func reflectReturnValue(res []reflect.Value) (Value, error) {
 				return emptyValue, nil
 			}
 		} else if res[0].Type() == valType {
-			return res[0].Interface().(Value), nil
+			return res[0].Interface().(*Value), nil
 		} else {
 			return nil, errors.New("invalid return type")
 		}
 	}
 
-	// The return type must be (Value, error)
+	// The return type must be (*Value, error)
 	if len(res) != 2 {
 		return nil, errors.New("invalid number of return values")
 	} else if res[0].Type() != valType {
@@ -168,6 +169,6 @@ func reflectReturnValue(res []reflect.Value) (Value, error) {
 	if errVal := res[1].Interface(); errVal != nil {
 		return nil, errVal.(error)
 	} else {
-		return res[0].Interface().(Value), nil
+		return res[0].Interface().(*Value), nil
 	}
 }

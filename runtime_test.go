@@ -24,6 +24,6 @@ func BenchmarkSummation(b *testing.B) {
 func runBenchmarkScript(script string) {
 	lines, contexts, _ := TokenizeString(script)
 	runnable, _ := ScanAll(lines, contexts)
-	runner := NewStdRunner(map[string]Value{})
+	runner := NewStdRunner(map[string]*Value{})
 	runnable.Run(runner)
 }

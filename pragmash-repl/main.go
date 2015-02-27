@@ -52,7 +52,7 @@ func main() {
 		case statement := <-statements:
 			res, err := statement.Run(runner)
 			if err != nil {
-				fmt.Println(ErrorColor + err.String() + RegularColor)
+				fmt.Println(ErrorColor + err.Error().Error() + RegularColor)
 			} else {
 				fmt.Println(OutputColor + escapeResult(res.String()) +
 					RegularColor)
