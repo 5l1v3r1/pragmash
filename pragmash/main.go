@@ -45,7 +45,7 @@ func main() {
 	runner := pragmash.NewStdRunner(variables)
 
 	if _, bo := runnable.Run(runner); bo != nil {
-		fmt.Fprintln(os.Stderr, "error from "+bo.Context()+": "+
+		fmt.Fprintln(os.Stderr, "exception at "+bo.Context()+": "+
 			bo.Error().Error())
 		os.Exit(1)
 	}

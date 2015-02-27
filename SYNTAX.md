@@ -143,6 +143,8 @@ A `while` loop repeats a block as long as a condition remains true. Conditions f
     }
     puts Lift-off!
 
+An iteration of a while loop can be skipped with the `continue` built-in command. The while loop can be completely terminated using the `break` built-in command.
+
 ## For loops
 
 There are no array types in pragmash; instead, arrays are represented as strings with newline delimiters. You can loop over the lines in a string like this:
@@ -157,6 +159,8 @@ This could be used for other purposes as well, such as iterating through a small
         puts $x
     }
     puts Lift-off!
+
+An iteration of a for loop can be skipped with the `continue` built-in command. The for loop can be completely terminated using the `break` built-in command.
 
 ## Try blocks
 
