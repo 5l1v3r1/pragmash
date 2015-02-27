@@ -11,49 +11,49 @@ import (
 type StdArray struct{}
 
 // Arr creates an array by combining arrays passed to it as arguments.
-func (_ StdArray) Arr(args []Value) Value {
-	values := make([]Value, 0)
+func (_ StdArray) Arr(args []*Value) Value {
+	values := make([]*Value, 0)
 	for _, v := range args {
 		values = append(values, v.Array()...)
 	}
-	return NewHybridValueArray(values)
+	return NewValueArray(values)
 }
 
 // Contains checks if an array contains a value.
 func (_ StdArray) Contains(arr []string, val string) Value {
 	for _, s := range arr {
 		if s == val {
-			return BoolValue(true)
+			return NewValueBool(true)
 		}
 	}
-	return BoolValue(false)
+	return NewValueBool(false)
 }
 
 // Delete removes an element at a certain index from the array.
-func (_ StdArray) Delete(arr []Value, idx int) (Value, error) {
+func (_ StdArray) Delete(arr []*Value, idx int) (Value, error) {
 	if idx < 0 || idx >= len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
-	res := make([]Value, len(arr)-1)
+	res := make([]*Value, len(arr)-1)
 	copy(res, arr[0:idx])
 	copy(res[idx:], arr[idx+1:])
-	return NewHybridValueArray(res), nil
+	return NewValueArray(res), nil
 }
 
 // Insert inserts an element at a certain index in the array.
-func (_ StdArray) Insert(arr []Value, idx int, val Value) (Value, error) {
+func (_ StdArray) Insert(arr []*Value, idx int, val Value) (Value, error) {
 	if idx < 0 || idx > len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
-	res := make([]Value, len(arr)+1)
+	res := make([]*Value, len(arr)+1)
 	copy(res, arr[0:idx])
 	copy(res[idx+1:], arr[idx:])
 	res[idx] = val
-	return NewHybridValueArray(res), nil
+	return NewValueArray(res), nil
 }
 
 // Range generates a range of integers.
-func (_ StdArray) Range(args []Value) (Value, error) {
+func (_ StdArray) Range(args []*Value) (Value, error) {
 	// Validate argument count.
 	if len(args) == 0 || len(args) > 3 {
 		return nil, errors.New("range cannot take " + strconv.Itoa(len(args)) +
@@ -72,30 +72,30 @@ func (_ StdArray) Range(args []Value) (Value, error) {
 
 	// Run the range function that corresponds to the number of arguments.
 	if len(parsed) == 1 {
-		return NewHybridValueArray(rangeSingle(parsed[0])), nil
+		return NewValueArray(rangeSingle(parsed[0])), nil
 	} else if len(parsed) == 2 {
-		return NewHybridValueArray(rangeDouble(parsed[0], parsed[1])), nil
+		return NewValueArray(rangeDouble(parsed[0], parsed[1])), nil
 	} else {
 		res, err := rangeTriple(parsed[0], parsed[1], parsed[2])
 		if err != nil {
 			return nil, err
 		}
-		return NewHybridValueArray(res), nil
+		return NewValueArray(res), nil
 	}
 }
 
 // Shuffle randomly re-orders an array.
-func (_ StdArray) Shuffle(arguments []Value) (Value, error) {
+func (_ StdArray) Shuffle(arguments []*Value) (Value, error) {
 	if len(arguments) != 1 {
 		return nil, errors.New("expected 1 argument")
 	}
 	list := arguments[0].Array()
-	result := make([]Value, len(list))
+	result := make([]*Value, len(list))
 	perm := rand.Perm(len(list))
 	for i, j := range perm {
 		result[i] = list[j]
 	}
-	return NewHybridValueArray(result), nil
+	return NewValueArray(result), nil
 }
 
 // Sort sorts an array of strings alphabetically.
@@ -106,11 +106,11 @@ func (_ StdArray) Sort(arr []string) Value {
 	copy(cpy, arr)
 	sort.Strings(cpy)
 
-	valArray := make([]Value, len(arr))
+	valArray := make([]*Value, len(arr))
 	for i, x := range cpy {
-		valArray[i] = NewHybridValueString(x)
+		valArray[i] = NewValueString(x)
 	}
-	return NewHybridValueArray(valArray)
+	return NewValueArray(valArray)
 }
 
 // Sortnums sorts an array of numbers.
@@ -126,15 +126,15 @@ func (_ StdArray) Sortnums(v Value) (Value, error) {
 	}
 	sort.Sort(numList)
 
-	valArray := make([]Value, len(numList))
+	valArray := make([]*Value, len(numList))
 	for i, x := range numList {
-		valArray[i] = NewHybridValueNumber(x)
+		valArray[i] = NewValueNumber(x)
 	}
-	return NewHybridValueArray(valArray), nil
+	return NewValueArray(valArray), nil
 }
 
 // Subarr returns a portion from an array.
-func (_ StdArray) Subarr(arr []Value, start, end int) Value {
+func (_ StdArray) Subarr(arr []*Value, start, end int) Value {
 	if len(arr) == 0 {
 		return emptyValue
 	}
@@ -152,11 +152,11 @@ func (_ StdArray) Subarr(arr []Value, start, end int) Value {
 	}
 
 	res := arr[start:end]
-	return NewHybridValueArray(res)
+	return NewValueArray(res)
 }
 
 // Sum takes arrays of numbers and returns their total sum.
-func (_ StdArray) Sum(args []Value) (Value, error) {
+func (_ StdArray) Sum(args []*Value) (Value, error) {
 	sum := NewNumberInt(0)
 	for _, arg := range args {
 		for _, val := range arg.Array() {
@@ -167,31 +167,31 @@ func (_ StdArray) Sum(args []Value) (Value, error) {
 			sum = AddNumbers(sum, num)
 		}
 	}
-	return NewHybridValueNumber(sum), nil
+	return NewValueNumber(sum), nil
 }
 
-func rangeDouble(start, end int) []Value {
-	res := make([]Value, end-start)
+func rangeDouble(start, end int) []*Value {
+	res := make([]*Value, end-start)
 	for i := start; i < end; i++ {
 		res[i-start] = NewNumberInt(int64(i))
 	}
 	return res
 }
 
-func rangeSingle(end int) []Value {
-	res := make([]Value, end)
+func rangeSingle(end int) []*Value {
+	res := make([]*Value, end)
 	for i := 0; i < end; i++ {
 		res[i] = NewNumberInt(int64(i))
 	}
 	return res
 }
 
-func rangeTriple(start, end, step int) ([]Value, error) {
+func rangeTriple(start, end, step int) ([]*Value, error) {
 	if step == 0 {
 		return nil, errors.New("step cannot be 0")
 	}
 
-	res := make([]Value, 0)
+	res := make([]*Value, 0)
 	i := start
 	for {
 		if step < 0 && i <= end {
