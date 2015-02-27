@@ -11,11 +11,11 @@ type If struct {
 }
 
 // Run executes the if statement.
-func (block If) Run(r Runner) (Value, *Exception) {
+func (block If) Run(r Runner) (*Value, *Breakout) {
 	for i, cond := range block.Conditions {
-		val, exc := cond.Run(r)
-		if exc != nil {
-			return nil, exc
+		val, bo := cond.Run(r)
+		if bo != nil {
+			return nil, bo
 		}
 		if val.Bool() {
 			// Run the branch.
@@ -96,7 +96,7 @@ func (s *IfScanner) Line(l Line, context string) (Runnable, error) {
 	s.lastContext = context
 	if len(l.Tokens) == 1 {
 		s.readingElse = true
-		cond := ValueRunnable{BoolValue(true)}
+		cond := ValueRunnable(NewValueBool(true))
 		s.conditions = append(s.conditions, cond)
 		return nil, nil
 	} else if l.Tokens[1].String != "if" {
