@@ -40,7 +40,6 @@ Here are the commands that I'd like to add:
  * Networking
    * Cookies
    * POST
- * Add `break` built-in for leaving loops.
  * Add `and` and `or` commands for conditions.
  * Add option to get current index in for loop
 

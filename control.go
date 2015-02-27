@@ -19,9 +19,9 @@ type ContinueRunner struct {
 	Context string
 }
 
-// Run returns nil, NewBreakoutBreak(c.Context).
+// Run returns nil, NewBreakoutContinue(c.Context).
 func (c ContinueRunner) Run(r Runner) (*Value, *Breakout) {
-	return nil, NewBreakoutBreak(c.Context)
+	return nil, NewBreakoutContinue(c.Context)
 }
 
 // A ReturnRunner returns a return breakout.
