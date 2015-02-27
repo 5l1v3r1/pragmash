@@ -15,7 +15,7 @@ import (
 type StdIo struct{}
 
 // Cmd executes a shell command and returns its combined output.
-func (_ StdIo) Cmd(arguments []Value) (Value, error) {
+func (_ StdIo) Cmd(arguments []*Value) (*Value, error) {
 	if len(arguments) == 0 {
 		return nil, errors.New("expected at least one argument")
 	}
@@ -32,11 +32,11 @@ func (_ StdIo) Cmd(arguments []Value) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewHybridValueString(string(res)), nil
+	return NewValueString(string(res)), nil
 }
 
 // Gets reads a line of text from the console.
-func (_ StdIo) Gets() (Value, error) {
+func (_ StdIo) Gets() (*Value, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	if !scanner.Scan() {
 		if err := scanner.Err(); err != nil {
@@ -45,11 +45,11 @@ func (_ StdIo) Gets() (Value, error) {
 			return nil, errors.New("end of input")
 		}
 	}
-	return NewHybridValueString(scanner.Text()), nil
+	return NewValueString(scanner.Text()), nil
 }
 
 // Print prints text to the console with no newline.
-func (_ StdIo) Print(vals []Value) {
+func (_ StdIo) Print(vals []*Value) {
 	for i, v := range vals {
 		if i != 0 {
 			fmt.Print(" ")
@@ -59,7 +59,7 @@ func (_ StdIo) Print(vals []Value) {
 }
 
 // Puts prints text to the console with a trailing newline.
-func (_ StdIo) Puts(vals []Value) {
+func (_ StdIo) Puts(vals []*Value) {
 	for i, v := range vals {
 		if i != 0 {
 			fmt.Print(" ")
@@ -70,7 +70,7 @@ func (_ StdIo) Puts(vals []Value) {
 }
 
 // Read reads the contents of a file or a URL.
-func (_ StdIo) Read(resource string) (Value, error) {
+func (_ StdIo) Read(resource string) (*Value, error) {
 	// Read a web URL if applicable.
 	if strings.HasPrefix(resource, "http://") ||
 		strings.HasPrefix(resource, "https://") {
@@ -83,7 +83,7 @@ func (_ StdIo) Read(resource string) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewHybridValueString(string(body)), nil
+		return NewValueString(string(body)), nil
 	}
 
 	// Read a path.
@@ -91,7 +91,7 @@ func (_ StdIo) Read(resource string) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewHybridValueString(string(contents)), nil
+	return NewValueString(string(contents)), nil
 }
 
 // Write writes some data to a file.

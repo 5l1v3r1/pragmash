@@ -2,7 +2,6 @@ package pragmash
 
 import (
 	"errors"
-	"strings"
 )
 
 // These are the types of breakout which pragmash currently supports.

@@ -96,7 +96,7 @@ func (s *IfScanner) Line(l Line, context string) (Runnable, error) {
 	s.lastContext = context
 	if len(l.Tokens) == 1 {
 		s.readingElse = true
-		cond := ValueRunnable(NewValueBool(true))
+		cond := NewValueBool(true)
 		s.conditions = append(s.conditions, cond)
 		return nil, nil
 	} else if l.Tokens[1].String != "if" {

@@ -55,11 +55,3 @@ func (r RunnableList) Run(runner Runner) (*Value, *Breakout) {
 type Runner interface {
 	RunCommand(name string, args []*Value) (*Value, error)
 }
-
-// A ValueRunnable always returns the same value.
-type ValueRunnable *Value
-
-// Run returns (*Value)(v), nil.
-func (v ValueRunnable) Run(r Runner) (*Value, *Breakout) {
-	return (*Value)(v), nil
-}

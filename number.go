@@ -23,7 +23,7 @@ func NewNumberBig(b *big.Int) *Number {
 	rat := big.Rat{}
 	rat.SetInt(b)
 	f, _ := rat.Float64()
-	res := Number{true, f}
+	res := Number{isInteger: true, floating: f}
 	res.integer.Set(b)
 	return &res
 }
@@ -34,9 +34,9 @@ func NewNumberFloat(f float64) *Number {
 	rat := big.Rat{}
 	rat.SetFloat64(f)
 	if rat.IsInt() {
-		return NewNumberInt(f.Num())
+		return NewNumberBig(rat.Num())
 	}
-	return &Number{false, f}
+	return &Number{isInteger: false, floating: f}
 }
 
 // NewNumberInt generates a Number with an integer.
@@ -63,9 +63,17 @@ func (n *Number) IsInt() bool {
 	return n.isInteger
 }
 
+// String returns the string representation of the number.
+func (n *Number) String() string {
+	if n.isInteger {
+		return n.integer.String()
+	}
+	return strconv.FormatFloat(n.floating, 'f', 10, 64)
+}
+
 // Zero returns true if the number is zero.
 func (n *Number) Zero() bool {
-	if n.integer != nil {
+	if n.isInteger {
 		return n.integer.Cmp(&big.Int{}) == 0
 	} else {
 		return n.floating == 0
@@ -157,7 +165,7 @@ func ParseNumber(s string) (*Number, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewNumberFloat(f)
+		return NewNumberFloat(f), nil
 	}
 
 	// Parse it as a big int.
@@ -169,7 +177,7 @@ func ParseNumber(s string) (*Number, error) {
 	if _, ok := num.SetString(s, 10); !ok {
 		return nil, errors.New("invalid integer: " + s)
 	}
-	return &Number{true, f, *num}, nil
+	return &Number{true, f, num}, nil
 }
 
 // SubtractNumbers subtracts two numbers and returns the difference.

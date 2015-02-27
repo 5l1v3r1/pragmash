@@ -18,7 +18,7 @@ func NewStdAll() StdAll {
 }
 
 // NewStdRunner returns a Runner which implements the standard library.
-func NewStdRunner(variables map[string]Value) Runner {
+func NewStdRunner(variables map[string]*Value) Runner {
 	var runner Runner
 	all := NewStdAll()
 	all.Runner = &runner

@@ -13,7 +13,7 @@ var (
 	boolType   = reflect.TypeOf(true)
 	errType    = reflect.TypeOf((*error)(nil)).Elem()
 	intType    = reflect.TypeOf(int(0))
-	numArrType = reflect.TypeOf([]Number{})
+	numArrType = reflect.TypeOf([]*Number{})
 	numType    = numArrType.Elem()
 	strType    = reflect.TypeOf("")
 	valArrType = reflect.TypeOf([]*Value{})
@@ -76,7 +76,7 @@ func reflectArguments(t reflect.Type, vals []*Value) ([]reflect.Value, error) {
 		}
 	} else if t.NumIn() == 1 && t.In(0) == numArrType {
 		// Generate a list of numbers.
-		nums := make([]Number, len(vals))
+		nums := make([]*Number, len(vals))
 		for i, x := range vals {
 			num, err := x.Number()
 			if err != nil {

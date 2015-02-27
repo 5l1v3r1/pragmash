@@ -11,7 +11,7 @@ import (
 type StdArray struct{}
 
 // Arr creates an array by combining arrays passed to it as arguments.
-func (_ StdArray) Arr(args []*Value) Value {
+func (_ StdArray) Arr(args []*Value) *Value {
 	values := make([]*Value, 0)
 	for _, v := range args {
 		values = append(values, v.Array()...)
@@ -20,7 +20,7 @@ func (_ StdArray) Arr(args []*Value) Value {
 }
 
 // Contains checks if an array contains a value.
-func (_ StdArray) Contains(arr []string, val string) Value {
+func (_ StdArray) Contains(arr []string, val string) *Value {
 	for _, s := range arr {
 		if s == val {
 			return NewValueBool(true)
@@ -30,7 +30,7 @@ func (_ StdArray) Contains(arr []string, val string) Value {
 }
 
 // Delete removes an element at a certain index from the array.
-func (_ StdArray) Delete(arr []*Value, idx int) (Value, error) {
+func (_ StdArray) Delete(arr []*Value, idx int) (*Value, error) {
 	if idx < 0 || idx >= len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
@@ -41,7 +41,7 @@ func (_ StdArray) Delete(arr []*Value, idx int) (Value, error) {
 }
 
 // Insert inserts an element at a certain index in the array.
-func (_ StdArray) Insert(arr []*Value, idx int, val Value) (Value, error) {
+func (_ StdArray) Insert(arr []*Value, idx int, val *Value) (*Value, error) {
 	if idx < 0 || idx > len(arr) {
 		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
 	}
@@ -53,7 +53,7 @@ func (_ StdArray) Insert(arr []*Value, idx int, val Value) (Value, error) {
 }
 
 // Range generates a range of integers.
-func (_ StdArray) Range(args []*Value) (Value, error) {
+func (_ StdArray) Range(args []*Value) (*Value, error) {
 	// Validate argument count.
 	if len(args) == 0 || len(args) > 3 {
 		return nil, errors.New("range cannot take " + strconv.Itoa(len(args)) +
@@ -85,7 +85,7 @@ func (_ StdArray) Range(args []*Value) (Value, error) {
 }
 
 // Shuffle randomly re-orders an array.
-func (_ StdArray) Shuffle(arguments []*Value) (Value, error) {
+func (_ StdArray) Shuffle(arguments []*Value) (*Value, error) {
 	if len(arguments) != 1 {
 		return nil, errors.New("expected 1 argument")
 	}
@@ -99,7 +99,7 @@ func (_ StdArray) Shuffle(arguments []*Value) (Value, error) {
 }
 
 // Sort sorts an array of strings alphabetically.
-func (_ StdArray) Sort(arr []string) Value {
+func (_ StdArray) Sort(arr []string) *Value {
 	// TODO: presereve the Values to keep cached representations
 
 	cpy := make([]string, len(arr))
@@ -114,7 +114,7 @@ func (_ StdArray) Sort(arr []string) Value {
 }
 
 // Sortnums sorts an array of numbers.
-func (_ StdArray) Sortnums(v Value) (Value, error) {
+func (_ StdArray) Sortnums(v *Value) (*Value, error) {
 	valList := v.Array()
 	numList := make(numberList, len(valList))
 	for i, x := range valList {
@@ -134,7 +134,7 @@ func (_ StdArray) Sortnums(v Value) (Value, error) {
 }
 
 // Subarr returns a portion from an array.
-func (_ StdArray) Subarr(arr []*Value, start, end int) Value {
+func (_ StdArray) Subarr(arr []*Value, start, end int) *Value {
 	if len(arr) == 0 {
 		return emptyValue
 	}
@@ -156,7 +156,7 @@ func (_ StdArray) Subarr(arr []*Value, start, end int) Value {
 }
 
 // Sum takes arrays of numbers and returns their total sum.
-func (_ StdArray) Sum(args []*Value) (Value, error) {
+func (_ StdArray) Sum(args []*Value) (*Value, error) {
 	sum := NewNumberInt(0)
 	for _, arg := range args {
 		for _, val := range arg.Array() {
@@ -173,7 +173,8 @@ func (_ StdArray) Sum(args []*Value) (Value, error) {
 func rangeDouble(start, end int) []*Value {
 	res := make([]*Value, end-start)
 	for i := start; i < end; i++ {
-		res[i-start] = NewNumberInt(int64(i))
+		number := NewNumberInt(int64(i))
+		res[i-start] = NewValueNumber(number)
 	}
 	return res
 }
@@ -181,7 +182,8 @@ func rangeDouble(start, end int) []*Value {
 func rangeSingle(end int) []*Value {
 	res := make([]*Value, end)
 	for i := 0; i < end; i++ {
-		res[i] = NewNumberInt(int64(i))
+		number := NewNumberInt(int64(i))
+		res[i] = NewValueNumber(number)
 	}
 	return res
 }
@@ -199,13 +201,14 @@ func rangeTriple(start, end, step int) ([]*Value, error) {
 		} else if step > 0 && i >= end {
 			break
 		}
-		res = append(res, NewNumberInt(int64(i)))
+		number := NewNumberInt(int64(i))
+		res = append(res, NewValueNumber(number))
 		i += step
 	}
 	return res, nil
 }
 
-type numberList []Number
+type numberList []*Number
 
 func (n numberList) Len() int {
 	return len(n)

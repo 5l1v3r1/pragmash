@@ -12,18 +12,22 @@ type While struct {
 
 // Run runs the while loop.
 // On success, this returns an empty string.
-func (w While) Run(r Runner) (Value, *Exception) {
+func (w While) Run(r Runner) (*Value, *Breakout) {
 	for {
-		val, exc := w.Condition.Run(r)
-		if exc != nil {
-			return nil, exc
+		val, bo := w.Condition.Run(r)
+		if bo != nil {
+			return nil, bo
 		}
 		if !val.Bool() {
 			break
 		}
-		_, exc = w.Body.Run(r)
-		if exc != nil {
-			return nil, exc
+		_, bo = w.Body.Run(r)
+		if bo == nil || bo.Type() == BreakoutTypeContinue {
+			continue
+		} else if bo.Type() == BreakoutTypeBreak {
+			break
+		} else {
+			return nil, bo
 		}
 	}
 	return emptyValue, nil

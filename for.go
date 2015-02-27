@@ -31,7 +31,7 @@ func (f For) Run(r Runner) (*Value, *Breakout) {
 	}
 	for _, val := range expr.Array() {
 		if variable != nil {
-			_, err := r.RunCommand("set", []Value{variable, val})
+			_, err := r.RunCommand("set", []*Value{variable, val})
 			if err != nil {
 				return nil, NewBreakoutException(f.Context, err)
 			}

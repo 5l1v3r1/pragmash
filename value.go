@@ -2,7 +2,6 @@ package pragmash
 
 import (
 	"bytes"
-	"errors"
 	"strings"
 )
 
@@ -84,19 +83,24 @@ func (h *Value) Bool() bool {
 // Number returns the numerical representation of the value, parsing it as
 // needed.
 func (h *Value) Number() (*Number, error) {
-	if h.numVal != nil || h.numErr != nil {
-		return h.numVal, h.numErr
+	if h.numRep != nil || h.numErr != nil {
+		return h.numRep, h.numErr
 	}
-	h.numVal, h.numErr = ParseNumber(h.String())
-	return h.numVal, h.numErr
+	h.numRep, h.numErr = ParseNumber(h.String())
+	return h.numRep, h.numErr
+}
+
+// Run returns v, nil.
+func (v *Value) Run(r Runner) (*Value, *Breakout) {
+    return v, nil
 }
 
 // String returns the string representation of the value.
 func (h *Value) String() string {
 	if h.stringRep != nil {
 		return *h.stringRep
-	} else if h.numVal != nil {
-		str := h.numVal.String()
+	} else if h.numRep != nil {
+		str := h.numRep.String()
 		h.stringRep = &str
 		return str
 	} else if h.arrayRep != nil {

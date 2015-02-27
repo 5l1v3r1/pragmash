@@ -22,31 +22,31 @@ func main() {
 
 	contents, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Failed to read file:", err)
 		os.Exit(1)
 	}
 
 	lines, contexts, err := pragmash.TokenizeString(string(contents))
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Failed to tokenize file:", err)
 		os.Exit(1)
 	}
 
 	runnable, err := pragmash.ScanAll(lines, contexts)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "Failed to process file:", err)
 		os.Exit(1)
 	}
 
-	variables := map[string]pragmash.Value{
-		"ARGV": pragmash.NewHybridValueString(strings.Join(os.Args[2:], "\n")),
-		"DIR":  pragmash.NewHybridValueString(filepath.Dir(os.Args[1])),
+	variables := map[string]*pragmash.Value{
+		"ARGV": pragmash.NewValueString(strings.Join(os.Args[2:], "\n")),
+		"DIR":  pragmash.NewValueString(filepath.Dir(os.Args[1])),
 	}
 	runner := pragmash.NewStdRunner(variables)
 
-	if _, exc := runnable.Run(runner); exc != nil {
-		fmt.Fprintln(os.Stderr, "exception at "+exc.Context()+": "+
-			exc.String())
+	if _, bo := runnable.Run(runner); bo != nil {
+		fmt.Fprintln(os.Stderr, "error from "+bo.Context()+": "+
+			bo.Error().Error())
 		os.Exit(1)
 	}
 }
