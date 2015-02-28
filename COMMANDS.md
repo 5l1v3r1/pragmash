@@ -257,6 +257,10 @@ This command takes zero or more arrays of numbers and returns the sum of all the
 
 This returns a boolean expression indicating whether or not a file exists. It may throw an error if it does not have permissions to check or if some other error occurs.
 
+### filetype
+
+This returns the type of a named file. This can be "file", "dir", "link", or "other".
+
 ### glob
 
 This command takes any number of arguments and "globs" files by those names. 

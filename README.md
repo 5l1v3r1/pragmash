@@ -27,13 +27,13 @@ Here are the commands that I'd like to add:
    * Chmod
    * Touch
    * Link
-   * FileType
  * Time manipulation functions
    * Parse/format dates
  * Strings
    * Is letter
    * Is digit
    * Add escmatch command for match with escapes
+   * Replace regex command
  * Math
    * Inverse trig
    * Sqrt

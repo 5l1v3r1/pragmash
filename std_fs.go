@@ -19,6 +19,23 @@ func (_ StdFs) Exists(path string) (*Value, error) {
 	return NewValueBool(true), nil
 }
 
+// Filetype returns "file", "dir", "link", or "other" for a given file.
+func (_ StdFs) Filetype(path string) (*Value, error) {
+	stat, err := os.Lstat(path)
+	if err != nil {
+		return nil, err
+	}
+	t := stat.Mode() & os.ModeType
+	if t == 0 {
+		return NewValueString("file"), nil
+	} else if (t & os.ModeSymlink) != 0 {
+		return NewValueString("link"), nil
+	} else if (t & os.ModeDir) != 0 {
+		return NewValueString("dir"), nil
+	}
+	return NewValueString("other"), nil
+}
+
 // Glob matches filenames with wildcards.
 func (_ StdFs) Glob(args []*Value) (*Value, error) {
 	res := make([]string, 0)
