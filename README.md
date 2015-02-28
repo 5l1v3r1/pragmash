@@ -40,7 +40,6 @@ Here are the commands that I'd like to add:
  * Networking
    * Cookies
    * POST
- * Add `and` and `or` commands for conditions.
  * Add option to get current index in for loop
 
 Here are improvements I'd like to make to the tools and/or implementation:
