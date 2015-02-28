@@ -55,6 +55,14 @@ This operator checks if the first numerical argument is greater than the second.
 
 This returns "true" if all its arguments are equal (when compared as strings). Returns "" otherwise.
 
+### The && operator
+
+If none of the arguments are empty, this returns "true". Otherwise, it returns "".
+
+### The || operator
+
+This returns its first non-empty argument. If all arguments are empty, this returns "".
+
 # I/O
 
 ## The console
