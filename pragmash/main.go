@@ -14,7 +14,8 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "Usage: pragmash <script.pragmash> [ARGS]")
+		fmt.Fprintln(os.Stderr, "pragmash version " + pragmash.Version() +
+			"\nUsage: pragmash <script.pragmash> [ARGS]")
 		os.Exit(1)
 	}
 

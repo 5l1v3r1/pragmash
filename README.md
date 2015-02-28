@@ -45,7 +45,6 @@ Here are the commands that I'd like to add:
 Here are improvements I'd like to make to the tools and/or implementation:
 
  * Support up arrow in REPL
- * Add a version number system
  * Improve reflection calling mechanism
    * Looser return types
    * Take variable map as argument
