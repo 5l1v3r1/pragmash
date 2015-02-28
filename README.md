@@ -35,7 +35,7 @@ Here are the commands that I'd like to add:
    * Is digit
    * Add escmatch command for match with escapes
  * Math
-   * Trig
+   * Inverse trig
    * Sqrt
  * Networking
    * Cookies

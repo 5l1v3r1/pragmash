@@ -9,6 +9,16 @@ import (
 // StdMath implements the standard arithmetic functions.
 type StdMath struct{}
 
+// Abs returns the absolute value of a number.
+func (_ StdMath) Abs(num *Number) *Value {
+	// TODO: take a Value argument so we can possibly return the same *Value...
+	if CompareNumbers(num, NewNumberInt(0)) == -1 {
+		res := MultiplyNumbers(NewNumberInt(-1), num)
+		return NewValueNumber(res)
+	}
+	return NewValueNumber(num)
+}
+
 // Add adds a list of numbers.
 func (_ StdMath) Add(nums []*Number) *Value {
 	res := NewNumberInt(0)
@@ -51,6 +61,22 @@ func (_ StdMath) Floor(num *Number) *Value {
 	rat := big.NewRat(0, 1)
 	rat.SetFloat64(rounded)
 	return NewValueNumber(NewNumberBig(rat.Num()))
+}
+
+// Mod computes the remainder of a division operation.
+func (_ StdMath) Mod(num, modulus *Number) *Value {
+	i1, i2 := num.Int(), modulus.Int()
+	if i1 == nil || i2 == nil {
+		// Do a funky floating-point modulus.
+		// Some languages like Processing do this; I figure I might as well.
+		f1, f2 := num.Float(), modulus.Float()
+		quot := math.Floor(f1 / f2)
+		res := f1 - quot*f2
+		return NewValueNumber(NewNumberFloat(res))
+	}
+	var resNum big.Int
+	resNum.Mod(i1, i2)
+	return NewValueNumber(NewNumberBig(&resNum))
 }
 
 // Mul multiplies a list of numbers.

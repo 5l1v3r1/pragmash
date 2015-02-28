@@ -23,6 +23,10 @@ This operator takes two arguments, a and b, and returns a/b. Both arguments are 
 
 This operator takes two arguments, a and b, and returns a-b. The arguments can be big integers or floating points.
 
+### The % operator
+
+This is the modulus operator. It takes two arguments, a and b, and finds a mod b. If either argument is a floating point, this computes a - b*floor(a/b).
+
 ### The [] operator
 
 The subscript operator (denoted with two brackets `[]`) is used to access an element in a newline-delimited list. The first argument is the list, the second is the index. For example:
@@ -268,6 +272,10 @@ This deletes a file or an empty directory.
 This deletes a file or directory recursively.
 
 # Math
+
+### abs
+
+This takes the absolute value of its numerical argument. For example, `abs -2` yields `2`.
 
 ### ceil
 

@@ -8,7 +8,7 @@ import (
 // OperatorRewrites can be used for a ReflectRunner's command rewrite table to
 // replace the named operators with symbolic ones like *, +, [], <, etc.
 var OperatorRewrites = map[string]string{
-	"+": "add", "/": "div", "*": "mul", "-": "sub", "**": "pow",
+	"+": "add", "/": "div", "*": "mul", "-": "sub", "**": "pow", "%": "mod",
 	"[]": "subscript", "<=": "le", ">=": "ge", "<": "lt", ">": "gt", "=": "eq",
 }
 
