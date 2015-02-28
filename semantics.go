@@ -140,7 +140,9 @@ func (g *genericScanner) Line(l Line, context string) (Runnable, error) {
 		g.subScanner = ifScanner
 		return nil, nil
 	} else if l.Open {
-		return nil, errors.New("unexpected '{' at " + context)
+		// The { cannot be for control; it must be an argument.
+		l.Open = false
+		l.Tokens = append(l.Tokens, Token{nil, "{"})
 	}
 
 	// Handle a regular line
