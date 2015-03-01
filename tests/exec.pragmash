@@ -1,5 +1,13 @@
 # "34567"
 
-set x 3
-print (exec (join $DIR /helpers/exec.pragmash))
-print "7"
+if $ARGV {
+  set res ""
+  while not $ARGV 6 {
+    set res (join $res $ARGV)
+    set ARGV (+ $ARGV 1)
+  }
+  return (join $res $ARGV)
+}
+
+set ARGV 3
+return (join (exec (path $DIR exec.pragmash)) 7)

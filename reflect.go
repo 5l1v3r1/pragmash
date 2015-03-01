@@ -9,32 +9,44 @@ import (
 
 // These are the allowed argument types.
 var (
-	arrType    = reflect.TypeOf([]string{})
-	boolType   = reflect.TypeOf(true)
-	errType    = reflect.TypeOf((*error)(nil)).Elem()
-	intType    = reflect.TypeOf(int(0))
-	numArrType = reflect.TypeOf([]*Number{})
-	numType    = numArrType.Elem()
-	strType    = reflect.TypeOf("")
-	valArrType = reflect.TypeOf([]*Value{})
-	valType    = valArrType.Elem()
+	boolType     = reflect.TypeOf(true)
+	errType      = reflect.TypeOf((*error)(nil)).Elem()
+	floatArrType = reflect.TypeOf([]float64{})
+	floatType    = floatArrType.Elem()
+	intArrType   = reflect.TypeOf([]int{})
+	intType      = intArrType.Elem()
+	numArrType   = reflect.TypeOf([]*Number{})
+	numType      = numArrType.Elem()
+	runnerType   = reflect.TypeOf((*Runner)(nil)).Elem()
+	strArrType   = reflect.TypeOf([]string{})
+	strType      = strArrType.Elem()
+	valArrType   = reflect.TypeOf([]*Value{})
+	valType      = valArrType.Elem()
 )
 
 // A ReflectRunner implements a RunCommand() function that uses reflection.
 type ReflectRunner struct {
-	rewrite map[string]string
-	value   reflect.Value
+	rewrite   map[string]string
+	value     reflect.Value
+	variables map[string]*Value
 }
 
 // NewReflectRunner creates a new ReflectRunner.
-func NewReflectRunner(val interface{}, rw map[string]string) ReflectRunner {
-	return ReflectRunner{rw, reflect.ValueOf(val)}
+func NewReflectRunner(val interface{}, rw map[string]string) *ReflectRunner {
+	return &ReflectRunner{rw, reflect.ValueOf(val), map[string]*Value{}}
 }
 
 // RunCommand puts the name through the alias table if possible.
 // It then capitalizes the first letter of the name and looks for a
 // corresponding method.
-func (r ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
+// This will execute a special subroutine for the set and get commands.
+func (r *ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
+	if name == "get" {
+		return r.getCommand(vals)
+	} else if name == "set" {
+		return r.setCommand(vals)
+	}
+
 	// Lookup the method.
 	n := r.RewriteName(name)
 	n = strings.ToUpper(n[:1]) + n[1:]
@@ -45,7 +57,7 @@ func (r ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
 	t := method.Type()
 
 	// Generate the arguments.
-	args, err := reflectArguments(t, vals)
+	args, err := r.arguments(t, vals)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +69,7 @@ func (r ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
 
 // RewriteName uses the ReflectRunner's rewrite table to rewrite a given command
 // name.
-func (r ReflectRunner) RewriteName(name string) string {
+func (r *ReflectRunner) RewriteName(name string) string {
 	if r.rewrite != nil {
 		if n, ok := r.rewrite[name]; ok {
 			return n
@@ -66,84 +78,176 @@ func (r ReflectRunner) RewriteName(name string) string {
 	return name
 }
 
-func reflectArguments(t reflect.Type, vals []*Value) ([]reflect.Value, error) {
-	// Special cases.
-	if t.NumIn() == 0 {
-		if len(vals) == 0 {
-			return []reflect.Value{}, nil
-		} else {
-			return nil, errors.New("expected no arguments")
-		}
-	} else if t.NumIn() == 1 && t.In(0) == numArrType {
-		// Generate a list of numbers.
-		nums := make([]*Number, len(vals))
-		for i, x := range vals {
-			num, err := x.Number()
-			if err != nil {
-				return nil, err
-			}
-			nums[i] = num
-		}
-		return []reflect.Value{reflect.ValueOf(nums)}, nil
-	} else if t.NumIn() == 1 && t.In(0) == valArrType {
-		return []reflect.Value{reflect.ValueOf(vals)}, nil
-	} else if t.NumIn() != len(vals) {
-		return nil, errors.New("expected " + strconv.Itoa(t.NumIn()) +
-			" argument(s)")
+func (r *ReflectRunner) arguments(t reflect.Type,
+	vals []*Value) ([]reflect.Value, error) {
+	// The resulting arguments will be appended to this slice.
+	res := make([]reflect.Value, 0, t.NumIn())
+	
+	// This will be incremented whenever a value from vals is used.
+	valIdx := 0
+	
+	// If there are variadic arguments, the last argument is actually a slice
+	// and doesn't count towards the expected argument count.
+	expectedArgs := t.NumIn()
+	if t.IsVariadic() {
+		expectedArgs--
 	}
 
-	// Process each argument individually.
-	args := make([]reflect.Value, t.NumIn())
-	for i, x := range vals {
-		inputType := t.In(i)
-		if inputType == valType {
-			args[i] = reflect.ValueOf(x)
-		} else if inputType == numType {
-			num, err := x.Number()
-			if err != nil {
-				return nil, err
-			}
-			args[i] = reflect.ValueOf(num)
-		} else if inputType == boolType {
-			args[i] = reflect.ValueOf(x.Bool())
-		} else if inputType == arrType {
-			arr := x.Array()
-			strs := make([]string, len(arr))
-			for i, x := range arr {
-				strs[i] = x.String()
-			}
-			args[i] = reflect.ValueOf(strs)
-		} else if inputType == strType {
-			args[i] = reflect.ValueOf(x.String())
-		} else if inputType == intType {
-			num, err := x.Number()
-			if err != nil {
-				return nil, err
-			}
-			intVal := num.Int()
-			if intVal != nil {
-				args[i] = reflect.ValueOf(int(intVal.Int64()))
+	// Process the normal (non-variadic) arguments.
+	for i := 0; i < t.NumIn(); i++ {
+		if i == t.NumIn()-1 && t.IsVariadic() {
+			break
+		}
+		argType := t.In(i)
+		
+		// If the argument is a Runner, no value is associated with it.
+		if argType == runnerType {
+			res = append(res, reflect.ValueOf(r))
+			continue
+		} else if valIdx == len(vals) {
+			// They are missing some arguments.
+			if t.IsVariadic() {
+				if expectedArgs == 1 {
+					return nil, errors.New("expected at least 1 argument")
+				}
+				return nil, errors.New("expected at least " +
+					strconv.Itoa(expectedArgs) + " arguments")
 			} else {
-				args[i] = reflect.ValueOf(int(num.Float()))
+				if expectedArgs == 1 {
+					return nil, errors.New("expected 1 argument")
+				}
+				return nil, errors.New("expected " +
+					strconv.Itoa(expectedArgs) + " arguments")
 			}
-		} else if inputType == valArrType {
-			args[i] = reflect.ValueOf(x.Array())
-		} else {
-			return nil, errors.New("invalid argument type: " +
-				inputType.String())
+		}
+		
+		// Process a regular argument.
+		val, err := pragmashValueToGo(argType, vals[valIdx])
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, val)
+		valIdx++
+	}
+
+	// Process the variadic arguments if there are any.
+	if t.IsVariadic() {
+		argType := t.In(t.NumIn() - 1).Elem()
+		for valIdx < len(vals) {
+			val, err := pragmashValueToGo(argType, vals[valIdx])
+			if err != nil {
+				return nil, err
+			}
+			res = append(res, val)
+			valIdx++
 		}
 	}
 
-	return args, nil
+	return res, nil
+}
+
+func (r *ReflectRunner) getCommand(vals []*Value) (*Value, error) {
+	if len(vals) != 1 {
+		return nil, errors.New("expected 1 argument")
+	}
+	name := vals[0].String()
+	if v, ok := r.variables[name]; ok {
+		return v, nil
+	} else {
+		return nil, errors.New("variable undefined: " + name)
+	}
+}
+
+func (r *ReflectRunner) setCommand(vals []*Value) (*Value, error) {
+	if len(vals) != 2 {
+		return nil, errors.New("expected 2 arguments")
+	}
+	r.variables[vals[0].String()] = vals[1]
+	return emptyValue, nil
+}
+
+func goValueToPragmash(v interface{}) (*Value, error) {
+	switch v := v.(type) {
+	case bool:
+		return NewValueBool(v), nil
+	case []float64:
+		numbers := make([]*Value, len(v))
+		for i, f := range v {
+			numbers[i] = NewValueNumber(NewNumberFloat(f))
+		}
+		return NewValueArray(numbers), nil
+	case float64:
+		return NewValueNumber(NewNumberFloat(v)), nil
+	case []int:
+		numbers := make([]*Value, len(v))
+		for i, x := range v {
+			numbers[i] = NewValueNumber(NewNumberInt(int64(x)))
+		}
+		return NewValueArray(numbers), nil
+	case int:
+		return NewValueNumber(NewNumberInt(int64(v))), nil
+	case []*Number:
+		numbers := make([]*Value, len(v))
+		for i, x := range v {
+			numbers[i] = NewValueNumber(x)
+		}
+		return NewValueArray(numbers), nil
+	case *Number:
+		return NewValueNumber(v), nil
+	case []string:
+		values := make([]*Value, len(v))
+		for i, s := range v {
+			values[i] = NewValueString(s)
+		}
+		return NewValueArray(values), nil
+	case string:
+		return NewValueString(v), nil
+	case []*Value:
+		return NewValueArray(v), nil
+	case *Value:
+		return v, nil
+	default:
+		return nil, errors.New("unexpected return type")
+	}
+}
+
+func pragmashValueToGo(t reflect.Type, v *Value) (reflect.Value, error) {
+	switch t {
+	case boolType:
+		return reflect.ValueOf(v.Bool()), nil
+	case floatArrType:
+		return valueToFloatArray(v)
+	case floatType:
+		return valueToFloat(v)
+	case intArrType:
+		return valueToIntArray(v)
+	case intType:
+		return valueToInt(v)
+	case numArrType:
+		return valueToNumArray(v)
+	case numType:
+		return valueToNum(v)
+	case strArrType:
+		return valueToStrArray(v)
+	case strType:
+		return reflect.ValueOf(v.String()), nil
+	case valArrType:
+		return reflect.ValueOf(v.Array()), nil
+	case valType:
+		return reflect.ValueOf(v), nil
+	default:
+		return reflect.ValueOf(nil), errors.New("unknown argument type")
+	}
 }
 
 func reflectReturnValue(res []reflect.Value) (*Value, error) {
+	// If there was no return value, this is easy.
 	if len(res) == 0 {
 		return emptyValue, nil
 	}
 
+	// If there was a single return value, it might be an error.
 	if len(res) == 1 {
-		// The return type may be an error or a value.
 		if res[0].Type() == errType {
 			val := res[0].Interface()
 			if val != nil {
@@ -151,24 +255,91 @@ func reflectReturnValue(res []reflect.Value) (*Value, error) {
 			} else {
 				return emptyValue, nil
 			}
-		} else if res[0].Type() == valType {
-			return res[0].Interface().(*Value), nil
-		} else {
-			return nil, errors.New("invalid return type")
 		}
+		return goValueToPragmash(res[0].Interface())
 	}
 
-	// The return type must be (*Value, error)
+	// The return type must be (SOMEVALUE, error)
 	if len(res) != 2 {
 		return nil, errors.New("invalid number of return values")
-	} else if res[0].Type() != valType {
-		return nil, errors.New("invalid first return type")
 	} else if res[1].Type() != errType {
 		return nil, errors.New("invalid second return type")
 	}
 	if errVal := res[1].Interface(); errVal != nil {
 		return nil, errVal.(error)
 	} else {
-		return res[0].Interface().(*Value), nil
+		return goValueToPragmash(res[0].Interface())
 	}
+}
+
+func valueToFloat(v *Value) (reflect.Value, error) {
+	num, err := v.Number()
+	if err != nil {
+		return reflect.ValueOf(nil), err
+	}
+	return reflect.ValueOf(num.Float()), nil
+}
+
+func valueToFloatArray(v *Value) (reflect.Value, error) {
+	valArr := v.Array()
+	floats := make([]float64, len(valArr))
+	for i, x := range valArr {
+		num, err := x.Number()
+		if err != nil {
+			return reflect.ValueOf(nil), err
+		}
+		floats[i] = num.Float()
+	}
+	return reflect.ValueOf(floats), nil
+}
+
+func valueToInt(v *Value) (reflect.Value, error) {
+	num, err := v.Number()
+	if err != nil {
+		return reflect.ValueOf(nil), err
+	}
+	return reflect.ValueOf(int(num.Float())), nil
+}
+
+func valueToIntArray(v *Value) (reflect.Value, error) {
+	valArr := v.Array()
+	ints := make([]int, len(valArr))
+	for i, x := range valArr {
+		num, err := x.Number()
+		if err != nil {
+			return reflect.ValueOf(nil), err
+		}
+		ints[i] = int(num.Float())
+	}
+	return reflect.ValueOf(ints), nil
+}
+
+func valueToNum(v *Value) (reflect.Value, error) {
+	num, err := v.Number()
+	if err != nil {
+		return reflect.ValueOf(nil), err
+	}
+	return reflect.ValueOf(num), nil
+}
+
+func valueToNumArray(v *Value) (reflect.Value, error) {
+	valArr := v.Array()
+	nums := make([]*Number, len(valArr))
+	for i, x := range valArr {
+		num, err := x.Number()
+		if err != nil {
+			return reflect.ValueOf(nil), err
+		}
+		nums[i] = num
+	}
+	return reflect.ValueOf(nums), nil
+}
+
+func valueToStrArray(v *Value) (reflect.Value, error) {
+	valArr := v.Array()
+	strs := make([]string, len(valArr))
+	for i, x := range valArr {
+		strs[i] = x.String()
+	}
+	return reflect.ValueOf(strs), nil
 }

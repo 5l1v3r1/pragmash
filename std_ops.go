@@ -17,43 +17,43 @@ var OperatorRewrites = map[string]string{
 type StdOps struct{}
 
 // And implements the && operator.
-func (_ StdOps) And(vals []*Value) *Value {
-	for _, v := range vals {
-		if !v.Bool() {
-			return emptyValue
+func (_ StdOps) And(args ...bool) bool {
+	for _, b := range args {
+		if !b {
+			return false
 		}
 	}
-	return NewValueBool(true)
+	return true
 }
 
 // Eq implements the equality operator.
-func (_ StdOps) Eq(s1, s2 string) *Value {
-	return NewValueBool(s1 == s2)
+func (_ StdOps) Eq(s1, s2 string) bool {
+	return s1 == s2
 }
 
 // Ge implements the >= operator.
-func (_ StdOps) Ge(n1, n2 *Number) *Value {
-	return NewValueBool(CompareNumbers(n1, n2) >= 0)
+func (_ StdOps) Ge(n1, n2 *Number) bool {
+	return CompareNumbers(n1, n2) >= 0
 }
 
 // Gt implements the > operator.
-func (_ StdOps) Gt(n1, n2 *Number) *Value {
-	return NewValueBool(CompareNumbers(n1, n2) > 0)
+func (_ StdOps) Gt(n1, n2 *Number) bool {
+	return CompareNumbers(n1, n2) > 0
 }
 
 // Le implements the <= operator.
-func (_ StdOps) Le(n1, n2 *Number) *Value {
-	return NewValueBool(CompareNumbers(n1, n2) <= 0)
+func (_ StdOps) Le(n1, n2 *Number) bool {
+	return CompareNumbers(n1, n2) <= 0
 }
 
 // Lt implements the < operator.
-func (_ StdOps) Lt(n1, n2 *Number) *Value {
-	return NewValueBool(CompareNumbers(n1, n2) < 0)
+func (_ StdOps) Lt(n1, n2 *Number) bool {
+	return CompareNumbers(n1, n2) < 0
 }
 
 // Or implements the || operator.
-func (_ StdOps) Or(vals []*Value) *Value {
-	for _, v := range vals {
+func (_ StdOps) Or(args ...*Value) *Value {
+	for _, v := range args {
 		if v.Bool() {
 			return v
 		}

@@ -1,9 +1,13 @@
 # "01234xxxxx"
 
+set res ""
+
 for x (arr 0 1 2 3 4) {
-  print $x
+  set res (join $res $x)
 }
 
 for (arr 0 1 2 3 4) {
-  print "x"
+  set res (join $res x)
 }
+
+return $res

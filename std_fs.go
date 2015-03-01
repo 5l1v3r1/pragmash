@@ -10,49 +10,44 @@ import (
 type StdFs struct{}
 
 // Exists returns whether or not a file exists.
-func (_ StdFs) Exists(path string) (*Value, error) {
+func (_ StdFs) Exists(path string) (bool, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return NewValueBool(false), nil
+		return false, nil
 	} else if err != nil {
-		return nil, err
+		return false, err
 	}
-	return NewValueBool(true), nil
+	return true, nil
 }
 
 // Filetype returns "file", "dir", "link", or "other" for a given file.
-func (_ StdFs) Filetype(path string) (*Value, error) {
+func (_ StdFs) Filetype(path string) (string, error) {
 	stat, err := os.Lstat(path)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	t := stat.Mode() & os.ModeType
 	if t == 0 {
-		return NewValueString("file"), nil
+		return "file", nil
 	} else if (t & os.ModeSymlink) != 0 {
-		return NewValueString("link"), nil
+		return "link", nil
 	} else if (t & os.ModeDir) != 0 {
-		return NewValueString("dir"), nil
+		return "dir", nil
 	}
-	return NewValueString("other"), nil
+	return "other", nil
 }
 
 // Glob matches filenames with wildcards.
-func (_ StdFs) Glob(args []*Value) (*Value, error) {
+func (_ StdFs) Glob(args ...string) ([]string, error) {
 	res := make([]string, 0)
-	for _, v := range args {
-		paths, err := filepath.Glob(v.String())
+	for _, name := range args {
+		paths, err := filepath.Glob(name)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, paths...)
 	}
 	sort.Strings(res)
-
-	valArray := make([]*Value, len(res))
-	for i, x := range res {
-		valArray[i] = NewValueString(x)
-	}
-	return NewValueArray(valArray), nil
+	return res, nil
 }
 
 // Mkdir creates a directory or fails with an error.
@@ -61,12 +56,8 @@ func (_ StdFs) Mkdir(name string) error {
 }
 
 // Path joins path components.
-func (_ StdFs) Path(args []*Value) *Value {
-	comps := make([]string, len(args))
-	for i, x := range args {
-		comps[i] = x.String()
-	}
-	return NewValueString(filepath.Join(comps...))
+func (_ StdFs) Path(comps ...string) string {
+	return filepath.Join(comps...)
 }
 
 // Rm removes a file or directory but does not do so recursively.

@@ -1,8 +1,10 @@
 # "13579"
 
+set res ""
 for x (range 10) {
 	if (contains (range 0 9 2) $x) {
 		continue
 	}
-	print $x
+	set res (join $res $x)
 }
+return $res

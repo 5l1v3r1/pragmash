@@ -68,7 +68,7 @@ func (n *Number) String() string {
 	if n.isInteger {
 		return n.integer.String()
 	}
-	return strconv.FormatFloat(n.floating, 'f', 10, 64)
+	return strconv.FormatFloat(n.floating, 'f', -1, 64)
 }
 
 // Zero returns true if the number is zero.

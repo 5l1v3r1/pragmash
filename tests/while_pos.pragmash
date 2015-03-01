@@ -1,7 +1,10 @@
 # "0"
 
+set res ""
 set x 0
 while $x 0 {
-  print $x
+  set res (join $res $x)
   set x (+ $x 1)
 }
+
+return $res

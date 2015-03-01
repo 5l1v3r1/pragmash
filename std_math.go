@@ -10,61 +10,53 @@ import (
 type StdMath struct{}
 
 // Abs returns the absolute value of a number.
-func (_ StdMath) Abs(num *Number) *Value {
+func (_ StdMath) Abs(num *Number) *Number {
 	// TODO: take a Value argument so we can possibly return the same *Value...
 	if CompareNumbers(num, NewNumberInt(0)) == -1 {
-		res := MultiplyNumbers(NewNumberInt(-1), num)
-		return NewValueNumber(res)
+		return MultiplyNumbers(NewNumberInt(-1), num)
 	}
-	return NewValueNumber(num)
+	return num
 }
 
 // Add adds a list of numbers.
-func (_ StdMath) Add(nums []*Number) *Value {
+func (_ StdMath) Add(nums ...*Number) *Number {
 	res := NewNumberInt(0)
 	for _, num := range nums {
 		res = AddNumbers(res, num)
 	}
-	return NewValueNumber(res)
+	return res
 }
 
 // Ceil returns the greatest integer which is less than or equal to a floating
 // point.
-func (_ StdMath) Ceil(num *Number) *Value {
-	f := num.Float()
+func (_ StdMath) Ceil(f float64) *Number {
 	rounded := math.Ceil(f)
 	rat := big.NewRat(0, 1)
 	rat.SetFloat64(rounded)
-	return NewValueNumber(NewNumberBig(rat.Num()))
+	return NewNumberBig(rat.Num())
 }
 
 // Cos returns the cosine of its argument (which is in radians).
-func (_ StdMath) Cos(num *Number) *Value {
-	res := math.Cos(num.Float())
-	return NewValueNumber(NewNumberFloat(res))
+func (_ StdMath) Cos(f float64) float64 {
+	return math.Cos(f)
 }
 
 // Div divides the first argument by the second.
-func (_ StdMath) Div(n1, n2 *Number) (*Value, error) {
-	num, err := DivideNumbers(n1, n2)
-	if err != nil {
-		return nil, err
-	}
-	return NewValueNumber(num), nil
+func (_ StdMath) Div(n1, n2 *Number) (*Number, error) {
+	return DivideNumbers(n1, n2)
 }
 
 // Floor returns the lowest integer which is greater than or equal to a floating
 // point.
-func (_ StdMath) Floor(num *Number) *Value {
-	f := num.Float()
+func (_ StdMath) Floor(f float64) *Number {
 	rounded := math.Floor(f)
 	rat := big.NewRat(0, 1)
 	rat.SetFloat64(rounded)
-	return NewValueNumber(NewNumberBig(rat.Num()))
+	return NewNumberBig(rat.Num())
 }
 
 // Mod computes the remainder of a division operation.
-func (_ StdMath) Mod(num, modulus *Number) *Value {
+func (_ StdMath) Mod(num, modulus *Number) *Number {
 	i1, i2 := num.Int(), modulus.Int()
 	if i1 == nil || i2 == nil {
 		// Do a funky floating-point modulus.
@@ -72,54 +64,51 @@ func (_ StdMath) Mod(num, modulus *Number) *Value {
 		f1, f2 := num.Float(), modulus.Float()
 		quot := math.Floor(f1 / f2)
 		res := f1 - quot*f2
-		return NewValueNumber(NewNumberFloat(res))
+		return NewNumberFloat(res)
 	}
 	var resNum big.Int
 	resNum.Mod(i1, i2)
-	return NewValueNumber(NewNumberBig(&resNum))
+	return NewNumberBig(&resNum)
 }
 
 // Mul multiplies a list of numbers.
-func (_ StdMath) Mul(nums []*Number) *Value {
+func (_ StdMath) Mul(nums ...*Number) *Number {
 	res := NewNumberInt(1)
 	for _, num := range nums {
 		res = MultiplyNumbers(res, num)
 	}
-	return NewValueNumber(res)
+	return res
 }
 
 // Pi returns the value of pi.
-func (_ StdMath) Pi() *Value {
-	return NewValueNumber(NewNumberFloat(math.Pi))
+func (_ StdMath) Pi() float64 {
+	return math.Pi
 }
 
 // Pow raises the first argument to the power of the second.
-func (_ StdMath) Pow(n1, n2 *Number) *Value {
-	return NewValueNumber(ExponentiateNumber(n1, n2))
+func (_ StdMath) Pow(n1, n2 *Number) *Number {
+	return ExponentiateNumber(n1, n2)
 }
 
 // Rand generates a random floating point number in [0.0, 1.0).
-func (_ StdMath) Rand() *Value {
-	f := rand.Float64()
-	return NewValueNumber(NewNumberFloat(f))
+func (_ StdMath) Rand() float64 {
+	return rand.Float64()
 }
 
 // Round turns a floating point into a whole number by rounding it.
-func (_ StdMath) Round(num *Number) *Value {
-	f := num.Float()
+func (_ StdMath) Round(f float64) *Number {
 	rounded := math.Floor(f + 0.5)
 	rat := big.NewRat(0, 1)
 	rat.SetFloat64(rounded)
-	return NewValueNumber(NewNumberBig(rat.Num()))
+	return NewNumberBig(rat.Num())
 }
 
 // Sin returns the sine of its argument (which is in radians).
-func (_ StdMath) Sin(num *Number) *Value {
-	res := math.Sin(num.Float())
-	return NewValueNumber(NewNumberFloat(res))
+func (_ StdMath) Sin(f float64) float64 {
+	return math.Sin(f)
 }
 
 // Sub subtracts the second argument from the first.
-func (_ StdMath) Sub(n1, n2 *Number) *Value {
-	return NewValueNumber(SubtractNumbers(n1, n2))
+func (_ StdMath) Sub(n1, n2 *Number) *Number {
+	return SubtractNumbers(n1, n2)
 }

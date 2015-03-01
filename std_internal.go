@@ -9,28 +9,16 @@ import (
 )
 
 // StdInternal implements built-in commands that make the language usable.
-type StdInternal struct {
-	Variables map[string]*Value
-	Runner    *Runner
-}
-
-// NewStdInternal creates a StdInternal with some default variables.
-func NewStdInternal() StdInternal {
-	return StdInternal{map[string]*Value{}, nil}
-}
+type StdInternal struct{}
 
 // Count returns the number of elements in a list.
-func (_ StdInternal) Count(args []string) *Value {
+func (_ StdInternal) Count(args []*Value) *Value {
 	count := int64(len(args))
 	return NewValueNumber(NewNumberInt(count))
 }
 
 // Eval runs some pragmash code inside the current runner.
-func (s StdInternal) Eval(code string) (*Value, error) {
-	if s.Runner == nil || *s.Runner == nil {
-		return nil, errors.New("no Runner")
-	}
-
+func (_ StdInternal) Eval(r Runner, code string) (*Value, error) {
 	lines, contexts, err := TokenizeString(code)
 	if err != nil {
 		return nil, err
@@ -46,7 +34,7 @@ func (s StdInternal) Eval(code string) (*Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	if val, bo := runnable.Run(*s.Runner); bo == nil {
+	if val, bo := runnable.Run(r); bo == nil {
 		return val, nil
 	} else if bo.Type() == BreakoutTypeReturn {
 		return bo.Value(), nil
@@ -57,11 +45,7 @@ func (s StdInternal) Eval(code string) (*Value, error) {
 
 // Exec runs a pragmash script inside the current runner. It will be able to
 // affect variables, throw exceptions, print to the console, etc.
-func (s StdInternal) Exec(path string) (*Value, error) {
-	if s.Runner == nil || *s.Runner == nil {
-		return nil, errors.New("no Runner")
-	}
-
+func (s StdInternal) Exec(r Runner, path string) (*Value, error) {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -81,7 +65,7 @@ func (s StdInternal) Exec(path string) (*Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	if val, bo := runnable.Run(*s.Runner); bo == nil {
+	if val, bo := runnable.Run(r); bo == nil {
 		return val, nil
 	} else if bo.Type() == BreakoutTypeReturn {
 		return bo.Value(), nil
@@ -91,7 +75,7 @@ func (s StdInternal) Exec(path string) (*Value, error) {
 }
 
 // Exit exits the current program with an optional exit code.
-func (_ StdInternal) Exit(args []*Value) {
+func (_ StdInternal) Exit(args ...*Value) {
 	if len(args) != 1 {
 		os.Exit(0)
 	} else {
@@ -99,38 +83,23 @@ func (_ StdInternal) Exit(args []*Value) {
 		if err != nil {
 			os.Exit(1)
 		}
-		i := num.Int()
-		if i != nil {
-			os.Exit(int(i.Int64()))
-		} else {
-			os.Exit(int(num.Float()))
-		}
+		os.Exit(int(num.Float()))
 	}
-}
-
-// Get gets a variable.
-func (s StdInternal) Get(name string) (*Value, error) {
-	if val, ok := s.Variables[name]; ok {
-		return val, nil
-	}
-	return nil, errors.New("variable undefined: " + name)
 }
 
 // Len returns the length of a string in bytes.
-func (_ StdInternal) Len(val string) *Value {
-	num := int64(len(val))
-	return NewValueNumber(NewNumberInt(num))
+func (_ StdInternal) Len(val string) int {
+	return len(val)
 }
 
 // Pragmash runs a script with a given set of arguments in a new, standard
 // runner. This is different from Exec because it isolates the variables of the
 // new script and it sets its $DIR and $ARGV variables.
-func (_ StdInternal) Pragmash(args []*Value) (*Value, error) {
+func (_ StdInternal) Pragmash(path string, args ...*Value) (*Value, error) {
 	if len(args) == 0 {
 		return nil, errors.New("missing file path")
 	}
 
-	path := args[0].String()
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -152,9 +121,10 @@ func (_ StdInternal) Pragmash(args []*Value) (*Value, error) {
 	}
 
 	// Generate the runner
+	dirPath := filepath.Clean(filepath.Dir(path))
 	variables := map[string]*Value{
-		"DIR":  NewValueString(filepath.Dir(path)),
-		"ARGV": NewValueArray(args[1:]),
+		"DIR":  NewValueString(dirPath),
+		"ARGV": NewValueArray(args),
 	}
 	runner := NewStdRunner(variables)
 
@@ -168,13 +138,8 @@ func (_ StdInternal) Pragmash(args []*Value) (*Value, error) {
 	}
 }
 
-// Set sets a variable.
-func (s StdInternal) Set(name string, val *Value) {
-	s.Variables[name] = val
-}
-
 // Throw throws an exception.
-func (_ StdInternal) Throw(args []*Value) error {
+func (_ StdInternal) Throw(args ...*Value) error {
 	strArgs := make([]string, len(args))
 	for i, x := range args {
 		strArgs[i] = x.String()

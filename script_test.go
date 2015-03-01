@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -35,19 +34,34 @@ type testScript struct {
 }
 
 func (t *testScript) run() error {
-	_, filename, _, _ := runtime.Caller(0)
-	mainPath := filepath.Join(filepath.Dir(filename), "pragmash", "main.go")
-	goCmd, err := exec.LookPath("go")
+	variables := map[string]*Value{
+		"ARGV": NewValueArray([]*Value{}),
+		"DIR": NewValueString(filepath.Dir(t.path)),
+	}
+	runner := NewStdRunner(variables)
+	
+	// Create the script
+	contents, err := ioutil.ReadFile(t.path)
 	if err != nil {
 		return err
 	}
-	cmd := exec.Command(goCmd, "run", mainPath, t.path)
-	output, err := cmd.Output()
+	
+	// Parse the script
+	lines, contexts, err := TokenizeString(string(contents))
 	if err != nil {
 		return err
 	}
-	if string(output) != t.expect {
-		return errors.New("unexpected output for script: " + t.path)
+	runnable, err := ScanAll(lines, contexts)
+	if err != nil {
+		return err
+	}
+	
+	if _, bo := runnable.Run(runner); bo == nil {
+		return errors.New("no breakout")
+	} else if bo.Type() != BreakoutTypeReturn {
+		return errors.New("unexpected breakout")
+	} else if bo.Value().String() != t.expect {
+		return errors.New("unexpected output: " + bo.Value().String())
 	}
 	return nil
 }
