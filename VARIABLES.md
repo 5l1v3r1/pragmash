@@ -8,4 +8,12 @@ This is an array of arguments passed to the script. This will not include the sc
 
 # DIR
 
-This is the directory which contains the main script. This will not change or do anything fancy for the `exec` command.
+This is the directory which contains the main script. This will not be changed for the `exec` command, only for the `pragmash` command.
+
+# SCRIPT
+
+This contains the path to the main script. This will not be changed for the `exec` command, only for the `pragmash` command.
+
+# VERSION
+
+This is the human-readable version number of pragmash.

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -96,10 +95,6 @@ func (_ StdInternal) Len(val string) int {
 // runner. This is different from Exec because it isolates the variables of the
 // new script and it sets its $DIR and $ARGV variables.
 func (_ StdInternal) Pragmash(path string, args ...*Value) (*Value, error) {
-	if len(args) == 0 {
-		return nil, errors.New("missing file path")
-	}
-
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -121,11 +116,7 @@ func (_ StdInternal) Pragmash(path string, args ...*Value) (*Value, error) {
 	}
 
 	// Generate the runner
-	dirPath := filepath.Clean(filepath.Dir(path))
-	variables := map[string]*Value{
-		"DIR":  NewValueString(dirPath),
-		"ARGV": NewValueArray(args),
-	}
+	variables := CreateStandardVariables(path, args)
 	runner := NewStdRunner(variables)
 
 	// Run the file.

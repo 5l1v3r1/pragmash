@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -39,10 +37,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	variables := map[string]*pragmash.Value{
-		"ARGV": pragmash.NewValueString(strings.Join(os.Args[2:], "\n")),
-		"DIR":  pragmash.NewValueString(filepath.Dir(os.Args[1])),
+	argv := make([]*pragmash.Value, len(os.Args)-2)
+	for i := 2; i < len(os.Args); i++ {
+		argv[i-2] = pragmash.NewValueString(os.Args[i])
 	}
+	variables := pragmash.CreateStandardVariables(os.Args[1], argv)
 	runner := pragmash.NewStdRunner(variables)
 
 	if _, bo := runnable.Run(runner); bo != nil {
