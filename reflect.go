@@ -82,10 +82,10 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 	vals []*Value) ([]reflect.Value, error) {
 	// The resulting arguments will be appended to this slice.
 	res := make([]reflect.Value, 0, t.NumIn())
-	
+
 	// This will be incremented whenever a value from vals is used.
 	valIdx := 0
-	
+
 	// If there are variadic arguments, the last argument is actually a slice
 	// and doesn't count towards the expected argument count.
 	expectedArgs := t.NumIn()
@@ -99,7 +99,7 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 			break
 		}
 		argType := t.In(i)
-		
+
 		// If the argument is a Runner, no value is associated with it.
 		if argType == runnerType {
 			res = append(res, reflect.ValueOf(r))
@@ -120,7 +120,7 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 					strconv.Itoa(expectedArgs) + " arguments")
 			}
 		}
-		
+
 		// Process a regular argument.
 		val, err := pragmashValueToGo(argType, vals[valIdx])
 		if err != nil {

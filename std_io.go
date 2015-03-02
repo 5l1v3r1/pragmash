@@ -19,20 +19,20 @@ func (_ StdIo) Cmd(args ...string) (string, error) {
 	if len(args) == 0 {
 		return "", errors.New("expected at least 1 argument")
 	}
-	
+
 	// Find the command.
 	cmdName, err := exec.LookPath(args[0])
 	if err != nil {
 		return "", err
 	}
-	
+
 	// Run the command.
 	cmd := exec.Command(cmdName, args[1:]...)
 	res, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", err
 	}
-	
+
 	return string(res), nil
 }
 

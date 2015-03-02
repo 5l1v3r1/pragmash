@@ -24,9 +24,9 @@ func CreateStandardVariables(script string, args []*Value) map[string]*Value {
 		cleanPath = filepath.Clean(script)
 	}
 	return map[string]*Value{
-		"ARGV": NewValueArray(args),
-		"DIR": NewValueString(filepath.Dir(cleanPath)),
-		"SCRIPT": NewValueString(cleanPath),
+		"ARGV":    NewValueArray(args),
+		"DIR":     NewValueString(filepath.Dir(cleanPath)),
+		"SCRIPT":  NewValueString(cleanPath),
 		"VERSION": NewValueString(Version()),
 	}
 }
@@ -34,13 +34,13 @@ func CreateStandardVariables(script string, args []*Value) map[string]*Value {
 // NewStdRunner returns a Runner which implements the standard library.
 func NewStdRunner(variables map[string]*Value) Runner {
 	runner := NewReflectRunner(StdAll{}, OperatorRewrites)
-	
+
 	// Copy variables if necessary.
 	if variables != nil {
 		for name, value := range variables {
 			runner.variables[name] = value
 		}
 	}
-	
+
 	return runner
 }

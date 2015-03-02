@@ -36,16 +36,16 @@ type testScript struct {
 func (t *testScript) run() error {
 	variables := map[string]*Value{
 		"ARGV": NewValueArray([]*Value{}),
-		"DIR": NewValueString(filepath.Dir(t.path)),
+		"DIR":  NewValueString(filepath.Dir(t.path)),
 	}
 	runner := NewStdRunner(variables)
-	
+
 	// Create the script
 	contents, err := ioutil.ReadFile(t.path)
 	if err != nil {
 		return err
 	}
-	
+
 	// Parse the script
 	lines, contexts, err := TokenizeString(string(contents))
 	if err != nil {
@@ -55,7 +55,7 @@ func (t *testScript) run() error {
 	if err != nil {
 		return err
 	}
-	
+
 	if _, bo := runnable.Run(runner); bo == nil {
 		return errors.New("no breakout")
 	} else if bo.Type() != BreakoutTypeReturn {

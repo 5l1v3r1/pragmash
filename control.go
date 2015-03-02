@@ -27,7 +27,7 @@ func (c ContinueRunner) Run(r Runner) (*Value, *Breakout) {
 // A ReturnRunner returns a return breakout.
 type ReturnRunner struct {
 	Arguments []Runnable
-	Context string
+	Context   string
 }
 
 // Run generates a return string by running its arguments and joining them.
