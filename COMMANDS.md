@@ -97,6 +97,10 @@ This command takes 1 or more argument and executes it as a command. It returns t
 
 # Language functionality
 
+### call
+
+This command takes a command name and zero or more arrays to use as arguments. It executes the command with the specified arguments. For example, `call + 1\n2\n3` would yield 6.
+
 ### count
 
 This command takes one argument and returns how many elements it contains as a newline-delimited list.

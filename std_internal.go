@@ -10,6 +10,20 @@ import (
 // StdInternal implements built-in commands that make the language usable.
 type StdInternal struct{}
 
+// Call calls a function by expanding one or more lists of arguments.
+func (_ StdInternal) Call(r Runner, name string,
+	args ...[]*Value) (*Value, error) {
+	totalCount := 0
+	for _, x := range args {
+		totalCount += len(x)
+	}
+	allArgs := make([]*Value, 0, totalCount)
+	for _, x := range args {
+		allArgs = append(allArgs, x...)
+	}
+	return r.RunCommand(name, allArgs)
+}
+
 // Count returns the number of elements in a list.
 func (_ StdInternal) Count(args []*Value) *Value {
 	count := int64(len(args))
@@ -44,7 +58,7 @@ func (_ StdInternal) Eval(r Runner, code string) (*Value, error) {
 
 // Exec runs a pragmash script inside the current runner. It will be able to
 // affect variables, throw exceptions, print to the console, etc.
-func (s StdInternal) Exec(r Runner, path string) (*Value, error) {
+func (_ StdInternal) Exec(r Runner, path string) (*Value, error) {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
