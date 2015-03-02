@@ -33,7 +33,6 @@ Here are the commands that I'd like to add:
    * Is letter
    * Is digit
    * Add escmatch command for match with escapes
-   * Replace regex command
  * Math
    * Inverse trig
    * Sqrt
@@ -45,9 +44,4 @@ Here are the commands that I'd like to add:
 Here are improvements I'd like to make to the tools and/or implementation:
 
  * Support up arrow in REPL
- * Improve reflection calling mechanism
-   * Looser return types
-   * Take variable map as argument
-   * Take runner as argument
-   * Take variadic arguments
  * Unify standard variables

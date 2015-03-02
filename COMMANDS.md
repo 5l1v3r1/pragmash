@@ -183,6 +183,14 @@ This command takes three arguments. It replaces all occurances of the second arg
 
 For example, `rep heythere e E` yields "hEythErE".
 
+### repreg
+
+This command takes a regular expression, a string, and a replacement string. It replaces all occurances of the regular expression. Inside the replacement, `$1` can be used to refer to the first submatch, `$2` to the second, etc.
+
+For example, the following code yields "X e X tX e Xe bro"
+
+    repreg "[a-z](e)[a-z]" "hey there bro" "X $1 X"
+
 ### substr
 
 This command takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.

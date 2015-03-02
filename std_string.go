@@ -76,6 +76,18 @@ func (_ StdString) Rep(s, old, replacement string) string {
 	return strings.Replace(s, old, replacement, -1)
 }
 
+// Repreg replaces all occurances of a regular expression with an expandable
+// expression.
+func (_ StdString) Repreg(expr, haystack, rep string) (string, error) {
+	// Evaluate the regular expression.
+	r, err := regexp.Compile(expr)
+	if err != nil {
+		return "", err
+	}
+	// Perform the replacement
+	return r.ReplaceAllString(haystack, rep), nil
+}
+
 // Substr returns a substring of a large string.
 func (_ StdString) Substr(s string, start, end int) string {
 	if len(s) == 0 {
