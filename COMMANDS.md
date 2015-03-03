@@ -313,6 +313,10 @@ This computes the cosine of an angle in radians.
 
 This returns the lowest integer which is greater than or equal to a floating-point number.
 
+### log
+
+This computes a logarithm. If you supply one argument, this computes log base 10 of the argument. If there are two arguments, the first argument is treated as the base. If either argument is invalid, this will throw an exception.
+
 ### pi
 
 This takes no arguments and returns the value of pi.

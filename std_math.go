@@ -1,6 +1,7 @@
 package pragmash
 
 import (
+	"errors"
 	"math"
 	"math/big"
 	"math/rand"
@@ -53,6 +54,28 @@ func (_ StdMath) Floor(f float64) *Number {
 	rat := big.NewRat(0, 1)
 	rat.SetFloat64(rounded)
 	return NewNumberBig(rat.Num())
+}
+
+// Log computes a logarithm.
+// If Log is given one argument, this computes log base 10.
+// If two arguments are given, the first is used as the base and the second is
+// used as the argument.
+func (s StdMath) Log(arg1 float64, args ...float64) (float64, error) {
+	if len(args) > 1 {
+		return 0, errors.New("expected 1 or 2 arguments")
+	}
+	if len(args) == 0 {
+		return s.Log(10, arg1)
+	}
+	conversion := math.Log(arg1)
+	if math.IsNaN(conversion) || math.IsInf(conversion, 0) || conversion == 0 {
+		return 0, errors.New("invalid base")
+	}
+	res := math.Log(args[0])
+	if math.IsNaN(res) || math.IsInf(res, 0) {
+		return 0, errors.New("invalid argument")
+	}
+	return res / conversion, nil
 }
 
 // Mod computes the remainder of a division operation.
