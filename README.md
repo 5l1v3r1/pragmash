@@ -36,7 +36,6 @@ Here are the commands that I'd like to add:
  * Math
    * Inverse trig
    * Sqrt
-   * Factorial
    * Exp
  * Networking
    * Cookies
