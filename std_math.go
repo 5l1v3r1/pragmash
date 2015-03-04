@@ -47,6 +47,32 @@ func (_ StdMath) Div(n1, n2 *Number) (*Number, error) {
 	return DivideNumbers(n1, n2)
 }
 
+// Factorial returns the factorial of a number.
+// If the number is not an integer, this uses the gamma fuction to compute an
+// answer.
+func (_ StdMath) Factorial(n *Number) (*Number, error) {
+	i := n.Int()
+	if i == nil || CompareNumbers(n, NewNumberInt(0)) < 0 {
+		ans := math.Gamma(n.Float())
+		if math.IsNaN(ans) || math.IsInf(ans, 0) {
+			return nil, errors.New("cannot compute gamma result")
+		}
+		return NewNumberFloat(ans), nil
+	}
+
+	// Compute the integer factorial
+	if CompareNumbers(n, NewNumberInt(65536)) >= 0 {
+		return nil, errors.New("argument too big")
+	}
+	res := big.NewInt(1)
+	num := big.Int{}
+	for i := 2; i < int(n.Float()); i++ {
+		num.SetInt64(int64(i))
+		res.Mul(res, &num)
+	}
+	return NewNumberBig(res), nil
+}
+
 // Floor returns the lowest integer which is greater than or equal to a floating
 // point.
 func (_ StdMath) Floor(f float64) *Number {
