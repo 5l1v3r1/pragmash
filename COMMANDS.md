@@ -309,6 +309,10 @@ This returns the greatest integer which is less than or equal to a floating-poin
 
 This computes the cosine of an angle in radians.
 
+### exp
+
+This takes an argument x and computes e^x. If no arguments are given, this returns the value of e.
+
 ### factorial
 
 This takes a number and returns its factorial. If the number is not a positive integer, this uses the Gamma function to compute a fractional answer.

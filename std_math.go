@@ -47,6 +47,18 @@ func (_ StdMath) Div(n1, n2 *Number) (*Number, error) {
 	return DivideNumbers(n1, n2)
 }
 
+// Exp computes the exponential fuction e^x.
+// If no arguments are provided, this returns e^1.
+func (_ StdMath) Exp(exponent ...float64) (*Number, error) {
+	if len(exponent) == 0 {
+		return NewNumberFloat(math.E), nil
+	} else if len(exponent) != 1 {
+		return nil, errors.New("expected 0 or 1 argument")
+	}
+	f := math.Exp(exponent[0])
+	return NewNumberFloat(f), nil
+}
+
 // Factorial returns the factorial of a number.
 // If the number is not an integer, this uses the gamma fuction to compute an
 // answer.
