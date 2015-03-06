@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"time"
 )
 
 // StdFs provides commands for file system manipulation.
@@ -68,4 +69,24 @@ func (_ StdFs) Rm(path string) error {
 // Rmall removes a file or directory and all its children.
 func (_ StdFs) Rmall(path string) error {
 	return os.RemoveAll(path)
+}
+
+// Touch updates the timestamp on one or more files.
+// This returns the first error it encounters.
+func (_ StdFs) Touch(paths ...string) error {
+	now := time.Now()
+	for _, path := range paths {
+		if err := os.Chtimes(path, now, now); err != nil {
+			if os.IsNotExist(err) {
+				if file, err := os.Create(path); err != nil {
+					return err
+				} else {
+					file.Close()
+				}
+			} else {
+				return err
+			}
+		}
+	}
+	return nil
 }

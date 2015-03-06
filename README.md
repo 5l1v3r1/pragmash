@@ -25,7 +25,6 @@ Here are the commands that I'd like to add:
 
  * File system manipulation functions
    * Chmod
-   * Touch
    * Link
  * Time manipulation functions
    * Parse/format dates

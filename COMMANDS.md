@@ -295,6 +295,10 @@ This deletes a file or an empty directory.
 
 This deletes a file or directory recursively.
 
+### touch
+
+This creates one or more files or updates their timestamps to the current time.
+
 # Math
 
 ### abs
