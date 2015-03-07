@@ -19,6 +19,15 @@ func (_ StdMath) Abs(num *Number) *Number {
 	return num
 }
 
+// Asin computes the inverse cosine of a value.
+func (_ StdMath) Acos(val float64) (float64, error) {
+	res := math.Acos(val)
+	if math.IsNaN(res) {
+		return 0, errors.New("invalid argument")
+	}
+	return res, nil
+}
+
 // Add adds a list of numbers.
 func (_ StdMath) Add(nums ...*Number) *Number {
 	res := NewNumberInt(0)
@@ -26,6 +35,25 @@ func (_ StdMath) Add(nums ...*Number) *Number {
 		res = AddNumbers(res, num)
 	}
 	return res
+}
+
+// Asin computes the inverse sine of a value.
+func (_ StdMath) Asin(val float64) (float64, error) {
+	res := math.Asin(val)
+	if math.IsNaN(res) {
+		return 0, errors.New("invalid argument")
+	}
+	return res, nil
+}
+
+// Atan computes the inverse tangent of a value.
+func (_ StdMath) Atan(val float64) float64 {
+	return math.Atan(val)
+}
+
+// Atan2 computes the inverse tangent given a y and an x.
+func (_ StdMath) Atan2(y, x float64) float64 {
+	return math.Atan2(y, x)
 }
 
 // Ceil returns the greatest integer which is less than or equal to a floating

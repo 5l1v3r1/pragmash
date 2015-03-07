@@ -78,14 +78,14 @@ func (_ StdString) Rep(s, old, replacement string) string {
 
 // Repreg replaces all occurances of a regular expression with an expandable
 // expression.
-func (_ StdString) Repreg(expr, haystack, rep string) (string, error) {
+func (_ StdString) Repreg(s, expr, replacement string) (string, error) {
 	// Evaluate the regular expression.
 	r, err := regexp.Compile(expr)
 	if err != nil {
 		return "", err
 	}
 	// Perform the replacement
-	return r.ReplaceAllString(haystack, rep), nil
+	return r.ReplaceAllString(s, replacement), nil
 }
 
 // Substr returns a substring of a large string.

@@ -33,7 +33,6 @@ Here are the commands that I'd like to add:
    * Is digit
    * Add escmatch command for match with escapes
  * Math
-   * Inverse trig
    * Sqrt
  * Networking
    * Cookies
@@ -43,3 +42,4 @@ Here are the commands that I'd like to add:
 Here are improvements I'd like to make to the tools and/or implementation:
 
  * Support up arrow in REPL
+ * Trigger error when too many arguments are supplied

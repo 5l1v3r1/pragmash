@@ -1,67 +1,96 @@
 # Overview
 
-A standard pragmash environment has a standard library of functions. These functions include file manipulation commands, mathematical operations, and a host of other things. This file lists each command and explains it in a decent amount of detail.
+A standard pragmash environment should have a basic set of commands. These commands offer everything from network I/O to string manipulation. This file lists these command.
 
 # Operators
 
-Unlike most other programming languages, pragmash does not include built-in operators. Instead, commands serve to provide basic operations.  Here's a list of commands and brief examples for each one.
+Unlike most other programming languages, pragmash does not include built-in operators. In their place, it provides symbolically-named commands.  Here's the list of these commands.
 
-### The + and * operators
+### The + command
 
-These operators both take 0 or more arguments and perform arithmetic on either big integers on floating points. Here are some examples:
+This takes 0 or more arguments and returns their sum. If no numbers are provided, "0" is returned. The numbers can be floating-points or big integers.
+
+Examples:
+
+ * `+` yields "0"
+ * `+ 1 2 3` yields "6"
+ * `+ 3 -2 1` yields "2"
+ * `+ 1.5 2.5` yields "4"
+
+### The * command
+
+This takes 0 or more arguments and returns their product. If no numbers are provided, "1" is returned. The numbers can be floating-points or big integers.
 
  * `* 3 5` yields "15"
  * `* 1 2 3 4` yields "24"
- * `+ 1 2 3` yields "6"
- * `* 1.5 2.5` yields "3.7500000000"
+ * `* 1.5 2.5` yields "3.75"
 
-### The / operator
+### The / command
 
-This operator takes two arguments, a and b, and returns a/b. Both arguments are parsed as floating points. For example, `/ 3 2` yields "1.5000000000".
+This takes exactly two arguments and returns the first divided by the second. If both numbers are big integers, this may return a big integer if the quotient is a whole number. If the denominator is 0, this throws an exception.
 
-### The - operator
+Examples:
 
-This operator takes two arguments, a and b, and returns a-b. The arguments can be big integers or floating points.
+ * `/ 2 3` yields "0.6666666666666666"
+ * `/ 9 3` yields "3"
+ * `/ 1 0` throws an exception
+ * `/ 1000000000000000000000000000000000000000000000010 10` yields "100000000000000000000000000000000000000000000001"
 
-### The % operator
+### The - command
 
-This is the modulus operator. It takes two arguments, a and b, and finds a mod b. If either argument is a floating point, this computes a - b*floor(a/b).
+This takes exactly two arguments and returns the first minus the second.
 
-### The [] operator
+Examples:
 
-The subscript operator (denoted with two brackets `[]`) is used to access an element in a newline-delimited list. The first argument is the list, the second is the index. For example:
+ * `- 3 2` yields "1"
+ * `- 2 3` yields "-1"
+ * `- 2 1.5` yields "0.5"
+
+### The % command
+
+This takes two arguments and returns the first modulo the second. If either argument is not an integer, this computes `a - b*floor(a/b)` where *a* is the first argument and *b* is the second.
+
+Examples:
+
+ * `% 3 2` yields "1"
+ * `% -10 3` yields "2"
+ * `% 30.5 10` yields "0.5"
+
+### The [] command
+
+This is used to access an element in a list which is delimited by newlines. The first argument is the list, the second is the index. For example:
 
  * `[] "hey\nthere" 0` yields "hey"
  * `[] "hey\nthere" 1` yields "there"
  * `[] "hey\nthere" 2` throws an exception.
 
-### The <= operator
+### The &lt;= operator
 
-This operator checks if the first numerical argument is less than or equal to the second. It returns "true" in such a case, and "" otherwise.
+This takes two numerical arguments and checks if the first is less than or equal to the second. It returns "true" in such a case, and "" otherwise.
 
-### The >= operator
+### The &gt;= operator
 
-This operator checks if the first numerical argument is greater than or equal to the second. It returns "true" in such a case, and "" otherwise.
+This takes two numerical arguments and checks if the first is greater than or equal to the second. It returns "true" in such a case, and "" otherwise.
 
-### The < operator
+### The &lt; operator
 
-This operator checks if the first numerical argument is less than the second. It returns "true" in such a case, and "" otherwise.
+This takes two numerical arguments and checks if the first is less than the second. It returns "true" in such a case, and "" otherwise.
 
-### The > operator
+### The &gt; operator
 
-This operator checks if the first numerical argument is greater than the second. It returns "true" in such a case, and "" otherwise.
+This takes two numerical arguments and checks if the first is greater than the second. It returns "true" in such a case, and "" otherwise.
 
 ### The = operator
 
-This returns "true" if all its arguments are equal (when compared as strings). Returns "" otherwise.
+This takes zero or more arguments and returns "true" if and only if all its arguments are equal when compared as strings. Otherwise, this returns "".
 
-### The && operator
+### The &amp;&amp; operator
 
-If none of the arguments are empty, this returns "true". Otherwise, it returns "".
+This takes zero or more arguments and returns "true" if none of the arguments are empty. Otherwise, this returns "".
 
 ### The || operator
 
-This returns its first non-empty argument. If all arguments are empty, this returns "".
+This takes zero or more arguments and returns its first non-empty argument. If all arguments are empty or no arguments were supplied, this returns "".
 
 # I/O
 
@@ -69,73 +98,80 @@ This returns its first non-empty argument. If all arguments are empty, this retu
 
 ### gets
 
-This command reads a line from the console and takes no arguments. The newline is not included in the returned string.
+This reads a line from the console and returns it. A newline character is not included in the resulting string.
 
-### print
+### print \[string...\]
 
-This command prints all of its arguments (separated by spaces) to the console. It does not print a newline, but it does flush the output.
+This prints all of its arguments to the console separated by spaces. It does not print a newline, but it does flush the output.
 
-### puts
+### puts \[string...\]
 
-This command prints all of its arguments (separated by spaces), followed by a newline, to the console.
+This prints all of its arguments to the console separated by spaces. It follows this output with a newline character.
 
 ## The web and filesystem
 
-### read
+### read &lt;resource&gt;
 
-This command takes one argument which is either a filepath or a URL. It returns a string representing the contents of the specified resource, or throws an exception.
+This takes one argument which is either a file path or a URL. It returns a string representing the contents of the specified resource, or throws an exception if the resource cannot be read.
 
-### write
+### write &lt;path&gt; &lt;data&gt;
 
-This command takes two arguments: first a path; second, some data to write to the path. It throws an exception if the data cannot be written.
+This writes a string to a file. It throws an exception if the data cannot be written.
 
 ## OS commands
 
-### cmd
+### cmd &lt;name&gt; \[arguments...\]
 
-This command takes 1 or more argument and executes it as a command. It returns the combined output (stdout+stderr) of the command, or throws an error.
+This executes a command on the system. On UNIX-based systems, this is similar to running a command in a shell. It returns the combined output (stdout+stderr) of the command. This throws an exception if the command cannot be executed or if it fails in some platform-specific way.
 
 # Language functionality
 
-### call
+### call &lt;name&gt; \[arrays...\]
 
-This command takes a command name and zero or more arrays to use as arguments. It executes the command with the specified arguments. For example, `call + 1\n2\n3` would yield 6.
+This takes a command name and zero or more arrays to use as arguments. It executes the command with the specified arguments.
 
-### count
+Examples:
 
-This command takes one argument and returns how many elements it contains as a newline-delimited list.
+ * `call + 1\n2\n3` yields "6".
+ * `call echo (arr a b c)` yields "a b c".
+ * `call call echo (arr a\nb\nc d\ne\nf)` yields "a b c d e f"
 
-### eval
+### count &lt;array&gt;
 
-This command executes a block of pragmash code. The code which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the code runs as if it were part of the main script. The code may use the "return" keyword to return values.
+This takes a newline-delimited list and returns the number of elements it contains. If the argument is "", this returns 0.
 
-Example: `eval "puts hey"`
+### eval &lt;code&gt;
 
-### exec
+This executes a block of pragmash code. The code which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the code runs as if it were part of the main script. The only difference is that the code may use the "return" keyword to return values.
 
-This command executes a pragmash file. The scirpt which is executed will have complete access to the main script's variables. It will be able to throw exceptions. It will be able to print to the console. In essence, the script runs as if it were part of the main script. The executed file can use the "return" keyword to return values.
+Examples:
 
-Example: `exec (join $DIR /some_file.pragmash)`
+ * `eval "return test"` yields "test"
+ * `eval "print test"` prints "test" to the console
 
-### exit
+### exec &lt;file&gt;
 
-This command exits the program. It takes an optional integer argument with a return value. If this argument is specified but is not a valid integer, the command throws an exception.
+This executes a pragmash file. `exec <file>` is almost exactly equivalent to `eval (read <file>)`. The only difference is that exceptions generated from the exec'd script include the script's filename.
 
-### get
+### exit \[exit code\]
 
-This command takes one argument--a variable name--and returns its contents. It throws an exception if the variable is not defined.
+This exits the program. If the exit code is specified, it will be used as the numerical return value of the pragmash executable. If the exit code is not a valid number, an exit code of 1 is used.
 
-### len
+### get &lt;variable&gt;
 
-This command takes one string argument and returns its length, in bytes.
+This returns the contents of a variable. It throws an exception if the variable is not defined.
 
-### pragmash
+### len &lt;string&gt;
 
-This command takes one or more arguments. This executes the script (specified by the first argument) in a new context and returns its return value. The script runs with a new set of variables (including $ARGV and $DIR), but it may still print to the console or exit the program.
+This returns the length of a string in bytes.
+
+### pragmash &lt;path&gt; \[arguments...\]
+
+This executes a pragmash script in a new context and returns its return value. The script runs with a new set of variables (including the built-in ones), but it may still print to the console or exit the parent script. The optional arguments after the script path determine the child script's ARGV variable. The child script's DIR and SCRIPT variables will be based on the path of the child script.
 
 For example, suppose this is the contents of a file "main.pragmash":
 
-    pragmash foo.pragmash hey there
+    pragmash foo.pragmash arg1 arg2
     puts unreachable
 
 and this is the contents of the file "foo.pragmash":
@@ -143,97 +179,119 @@ and this is the contents of the file "foo.pragmash":
     puts ([] $ARGV 1)
     exit 1
 
-This would print "there" to the console and exit with status code 1. The "unreachable" print would not run.
+This would print "arg2" to the console and exit with status code 1. The string "unreachable" would not be printed to the screen.
 
-### set
+### set &lt;variable&gt; &lt;value&gt;
 
-This command takes two arguments and sets a variable. The first argument is a variable name, the second is a value to give the variable.
+This assigns a value to a given variable.
 
-### throw
+### throw \[string...\]
 
-This command raises an exception with the specified error message. It joins its arguments with spaces and uses them for the error message.
+This throws an exception. It joins its arguments with spaces and uses the result as the error message.
 
 # Strings
 
-### chars
+### chars &lt;string&gt;
 
-This generates a newline-delimited list of strings which correspond to each character of the string. Newline characters are encoded as the two-character "\n" escape sequence. For example, `chars 12\n3` yields `"1\n2\n\\n\n3"`.
+This generates a newline-delimited list of strings which correspond to each character of the argument. Newline characters are encoded as the two-character "\\\\n" escape sequence. For example, `chars 12\n3` yields `"1\n2\n\\n\n3"`.
 
-### echo
+### echo \[string...\]
 
-This command joins its arguments and inserts spaces between them.
+This joins its arguments with spaces and returns the result.
 
-### escape
+Examples:
 
-This command replaces backslashes with double backslashes and newlines with "\\n". This is helpful for storing strings with newlines as elements in arrays.
+ * `echo` yields ""
+ * `echo arg` yields "arg"
+ * `echo arg ument` yields "arg ument"
+ * `echo a  b    "c  d"` yields "a b c  d"
 
-### join
+### escape \[string...\]
 
-This command joins its arguments without inserting spaces between them.
+This replaces backslashes with double backslashes and newlines with "\\\\n". This makes it easier to represent array elements which contain newlines.
 
-### lowercase
+### join \[string...\]
+
+This joins its arguments without inserting spaces between them.
+
+### lowercase \[string...\]
 
 This joins its arguments with spaces and converts the result to lower-case.
 
-### match
+### match &lt;regexp&gt; &lt;haystack&gt;
 
-This command takes a regular expression and a string. It returns an array of matches. Each sub-match is its own element in the array.
+This matches a string against a regular expression. It returns an array of matches. Each sub-match is its own element in the array.
 
 For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
 
-### rep
+### rep &lt;haystack&gt; &lt;needle&gt; &lt;replacement&gt;
 
-This command takes three arguments. It replaces all occurances of the second argument with the third argument in the first argument.
+This performs a global find-and-replace operation. It replaces all occurances of a "needle" inside a "haystack" with a "replacement" string.
 
-For example, `rep heythere e E` yields "hEythErE".
+For example, `rep abcdcba a A` yields "AbcdcbA".
 
-### repreg
+### repreg &lt;haystack&gt; &lt;regexp&gt; &lt;replacement&gt;
 
-This command takes a regular expression, a string, and a replacement string. It replaces all occurances of the regular expression. Inside the replacement, `$1` can be used to refer to the first submatch, `$2` to the second, etc.
+This performs a global find-and-replace operation with regular expressions. Inside the replacement string, `$1` can be used to refer to the first submatch, `$2` to the second, etc.
 
-For example, the following code yields "X e X tX e Xe bro"
+Examples: "X e X tX e Xe bro"
 
-    repreg "[a-z](e)[a-z]" "hey there bro" "X $1 X"
+ * `repreg "Alex Nichol" [A-Z] _` yields "\_lex \_ichol"
+ * `repreg "Alex Nichol" "([A-Z])([a-z])" "$2$1"` yields "lAex iNchol"
+ * `repreg "10.50 20 30" "([0-9\\.]*)" "$$$1"` yields "$10.50 $20 $30"
 
-### substr
+### substr &lt;string&gt; &lt;start&gt; &lt;end&gt;
 
-This command takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
+This takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
 
 For example, `substr yoyo 1 3` yields "oy".
 
-### unescape
+### unescape &lt;string&gt;
 
-This command inverts the effect of the escape command.
+This inverts the effect of the escape command.
 
-### uppercase
+### uppercase \[string...\]
 
 This joins its arguments with spaces and converts the result to upper-case.
 
 # Arrays
 
-### arr
+### arr \[arrays...\]
 
-This command joins its arguments with newlines and throws away empty arguments. For example, `arr a b c` generates "a\nb\nc". As another example, `arr "" a ""` generates "a".
+This joins its arguments with newlines and throws away empty arguments.
 
-### contains
+Examples:
 
-This command takes an array and a string and returns "true" if the array contains the string.
+ * `arr a b c` yields "a\nb\nc"
+ * `arr "" a ""` yields "a"
 
-### delete
+### contains &lt;array&gt; &lt;element&gt;
 
-This command deletes an element from the array.
+This takes an array and a string and returns "true" if the array contains the string. Otherwise, it returns "".
 
-For example, `delete (arr a b c) 1` yields the array equivalent of `(arr a c)`
+### delete &lt;array&gt; &lt;index&gt;
 
-### insert
+This deletes an element from an array.
 
-This command inserts an element into the array.
+Examples:
 
-For example, `insert (arr a b c) 1 A` yields the array equivalent of `(arr a A b c)`
+ * `delete (arr a b c) 1` yields "a\nc"
+ * `delete (arr a b c) 0` yields "b\nc"
+ * `delete "" 0` throws an exception
 
-### range
+### insert &lt;array&gt; &lt;index&gt; &lt;element&gt;
 
-This command generates a newline-delimited list of integers.
+This inserts an element into an array.
+
+Examples:
+
+ * `insert (arr a b c) 1 A` yields "a\nA\nb\nc"
+ * `insert (arr a b c) 3 d` yields "a\nb\nc\nd"
+ * `insert (arr a b c) 4 d` throws an exception
+
+### range \[start\] &lt;end&gt; \[count\]
+
+This generates a newline-delimited list of integers.
 
 If the command is given one argument `N`, it will generate the ordered list of integers `i` such that `0 <= i < N`.
 
@@ -241,93 +299,117 @@ If the command is given two arguments `M` and `N`, it will generate the ordered 
 
 If the command is given three arguments, it generates the ordered list of integers starting with the first argument going to the second argument, stepping by the third argument each time. For example, `range 10 5 -2` yields `10\n8\n6`.
 
-### shuffle
+### shuffle &lt;array&gt;
 
-This command takes an array and returns an array. The resulting array will be permuted in a random order.
+This takes an array and returns an array with the same elements in a random order.
 
-### sort
+### sort &lt;array&gt;
 
-This command takes an array and returns an array. The resulting array will be sorted alphabetically.
+This takes an array and returns an alphabetically sorted version.
 
-### sortnums
+### sortnums &lt;array&gt;
 
-This command takes an array of numbers and returns the sorted array.
+This takes an array of numbers and returns the sorted array.
 
-### subarr
+### subarr &lt;array&gt; &lt;start&gt; &lt;end&gt;
 
-This command takes a string and two indices. It returns a slice of an array.
+This takes an array and two indices. It returns a portion of the original array.
 
-For example, `subarr (arr a b c) 1 3` returns the array equivalent to `arr b c`.
+Examples:
 
-### sum
+ * `subarr (arr a b c) 1 3` yields "b\nc"
+ * `subarr (arr a b c) 0 2` yields "a\nb"
 
-This command takes zero or more arrays of numbers and returns the sum of all the numbers.
+### sum \[arrays...\]
+
+This takes zero or more arrays of numbers and returns the sum of all the numbers.
 
 # Filesystem
 
-### exists
+### exists &lt;path&gt;
 
-This returns a boolean expression indicating whether or not a file exists. It may throw an error if it does not have permissions to check or if some other error occurs.
+This returns "true" if a file exists or "" if it does not. It may throw an exception if the file is inaccessible.
 
-### filetype
+### filetype &lt;path&gt;
 
-This returns the type of a named file. This can be "file", "dir", "link", or "other".
+This returns the type of a named file. This can be "file", "dir", "link", or "other". This will throw an exception if the file's type cannot be determined or if it does not exist.
 
-### glob
+### glob \[globs...\]
 
-This command takes any number of arguments and "globs" files by those names. 
+This takes any number of arguments and "globs" files by those names. 
 
 For example, if my current directory includes the files "foo" "bar" and "foobar", `glob foo*`, it would return the array equivalent to `arr foo foobar`.
 
-### mkdir
+### mkdir &lt;dir&gt;
 
-This command creates a directory at a given path. This will not create intermediate directories.
+This creates a directory at a given path. This will not create intermediate directories. This may return an exception if the directory cannot be created.
 
-### path
+### path \[comps...\]
 
-This command takens any number of string arguments and joins them as path components.
+This takes any number of string arguments and joins them as path components.
 
-### rm
+### rm &lt;path&gt;
 
-This deletes a file or an empty directory.
+This deletes a file or an empty directory. This will throw an exception if the file or directory cannot be deleted.
 
-### rmall
+### rmall &lt;path&gt;
 
-This deletes a file or directory recursively.
+This deletes a file or directory recursively. This will throw an exception if the file or directory cannot be deleted.
 
-### touch
+### touch \[path...\]
 
-This creates one or more files or updates their timestamps to the current time.
+This creates one or more files or updates their timestamps to the current time. This will throw an exception if the file's timestamp cannot be changed or if the file cannot be created.
 
 # Math
 
-### abs
+### abs &lt;number&gt;
 
-This takes the absolute value of its numerical argument. For example, `abs -2` yields `2`.
+This takes the absolute value of its numerical argument.
 
-### ceil
+Examples:
 
-This returns the greatest integer which is less than or equal to a floating-point number.
+ * `abs -2` yields "2"
+ * `abs 2` yields "2"
 
-### cos
+### acos &lt;number&gt;
+
+This returns the inverse cosine of a value. This will throw an exception if the number is less than -1 or greater than 1.
+
+### asin &lt;number&gt;
+
+This returns the inverse sine of a value. This will throw an exception if the number is less than -1 or greater than 1.
+
+### atan &lt;number&gt;
+
+This returns the inverse tangent of a value.
+
+### atan2 &lt;y&gt; &lt;x&gt;
+
+This returns the inverse tangent using an x and y coordinate.
+
+### ceil &lt;number&gt;
+
+This returns the greatest integer which is less than or equal to a given floating-point number.
+
+### cos &lt;angle&gt;
 
 This computes the cosine of an angle in radians.
 
-### exp
+### exp \[exponent\]
 
-This takes an argument x and computes e^x. If no arguments are given, this returns the value of e.
+This takes an argument x and computes e^x where e is Euler's constant. If no arguments are given, this returns the value of Euler's constant.
 
-### factorial
+### factorial &lt;number&gt;
 
-This takes a number and returns its factorial. If the number is not a positive integer, this uses the Gamma function to compute a fractional answer.
+This takes a number and returns its factorial. If the number is not a positive integer, this uses the [Gamma function](http://en.wikipedia.org/wiki/Gamma_function) to compute a fractional answer.
 
-### floor
+### floor &lt;number&gt;
 
-This returns the lowest integer which is greater than or equal to a floating-point number.
+This returns the lowest integer which is greater than or equal to a given floating-point number.
 
-### log
+### log \[base\] &lt;number&gt;
 
-This computes a logarithm. If you supply one argument, this computes log base 10 of the argument. If there are two arguments, the first argument is treated as the base. If either argument is invalid, this will throw an exception.
+This computes a logarithm. If you supply one argument, this computes log base 10 of its argument. If there are two arguments, the first argument is treated as the base. If either argument is invalid, this will throw an exception.
 
 ### pi
 
@@ -335,22 +417,22 @@ This takes no arguments and returns the value of pi.
 
 ### rand
 
-This returns a random floating point between 0.0 and 1.0.
+This returns a random floating-point number between 0.0 and 1.0.
 
-### round
+### round &lt;number&gt;
 
-This rounds a floating point number to the nearest integer.
+This rounds a floating-point number to the nearest integer.
 
-### sin
+### sin &lt;angle&gt;
 
 This computes the sine of an angle in radians.
 
 # Time
 
-### sleep
+### sleep &lt;seconds&gt;
 
-This takes a numerical argument and sleeps for that many seconds.
+This takes a numerical argument and sleeps for that many seconds. The argument may be a floating-point number.
 
 ### time
 
-This returns the current UNIX epoch time as a floating point in seconds.
+This returns the current UNIX epoch time as a floating-point in seconds.
