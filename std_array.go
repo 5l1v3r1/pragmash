@@ -36,6 +36,12 @@ func (_ StdArray) Contains(arr []string, val string) bool {
 	return false
 }
 
+// Count returns the number of elements in a list.
+func (_ StdInternal) Count(args []*Value) *Value {
+	count := int64(len(args))
+	return NewValueNumber(NewNumberInt(count))
+}
+
 // Delete removes an element at a certain index from the array.
 func (_ StdArray) Delete(arr []*Value, idx int) ([]*Value, error) {
 	if idx < 0 || idx >= len(arr) {

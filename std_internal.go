@@ -24,12 +24,6 @@ func (_ StdInternal) Call(r Runner, name string,
 	return r.RunCommand(name, allArgs)
 }
 
-// Count returns the number of elements in a list.
-func (_ StdInternal) Count(args []*Value) *Value {
-	count := int64(len(args))
-	return NewValueNumber(NewNumberInt(count))
-}
-
 // Eval runs some pragmash code inside the current runner.
 func (_ StdInternal) Eval(r Runner, code string) (*Value, error) {
 	lines, contexts, err := TokenizeString(code)
@@ -98,11 +92,6 @@ func (_ StdInternal) Exit(args ...*Value) {
 		}
 		os.Exit(int(num.Float()))
 	}
-}
-
-// Len returns the length of a string in bytes.
-func (_ StdInternal) Len(val string) int {
-	return len(val)
 }
 
 // Pragmash runs a script with a given set of arguments in a new, standard

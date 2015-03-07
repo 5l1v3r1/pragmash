@@ -1,7 +1,19 @@
 # Overview
 
-A standard pragmash environment should have a basic set of commands. These commands offer everything from network I/O to string manipulation. This file lists these command.
+A standard pragmash environment should have a basic set of commands. These commands offer everything from network I/O to string manipulation. This file lists these commands.
 
+These commands are divided into several categories. Here are the categories:
+
+ * [Operators](#api-operators)
+ * [I/O](#api-io)
+ * [Language essentials](#api-language)
+ * [Strings](#api-strings)
+ * [Arrays](#api-arrays)
+ * [Filesystem](#api-filesystem)
+ * [Math](#api-math)
+ * [Time](#api-time)
+
+<a name="api-operators"></a>
 # Operators
 
 Unlike most other programming languages, pragmash does not include built-in operators. In their place, it provides symbolically-named commands.  Here's the list of these commands.
@@ -92,6 +104,7 @@ This takes zero or more arguments and returns "true" if none of the arguments ar
 
 This takes zero or more arguments and returns its first non-empty argument. If all arguments are empty or no arguments were supplied, this returns "".
 
+<a name="api-io"></a>
 # I/O
 
 ## The console
@@ -124,7 +137,8 @@ This writes a string to a file. It throws an exception if the data cannot be wri
 
 This executes a command on the system. On UNIX-based systems, this is similar to running a command in a shell. It returns the combined output (stdout+stderr) of the command. This throws an exception if the command cannot be executed or if it fails in some platform-specific way.
 
-# Language functionality
+<a name="api-language"></a>
+# Language essentials
 
 ### call &lt;name&gt; \[arrays...\]
 
@@ -135,10 +149,6 @@ Examples:
  * `call + 1\n2\n3` yields "6".
  * `call echo (arr a b c)` yields "a b c".
  * `call call echo (arr a\nb\nc d\ne\nf)` yields "a b c d e f"
-
-### count &lt;array&gt;
-
-This takes a newline-delimited list and returns the number of elements it contains. If the argument is "", this returns 0.
 
 ### eval &lt;code&gt;
 
@@ -160,10 +170,6 @@ This exits the program. If the exit code is specified, it will be used as the nu
 ### get &lt;variable&gt;
 
 This returns the contents of a variable. It throws an exception if the variable is not defined.
-
-### len &lt;string&gt;
-
-This returns the length of a string in bytes.
 
 ### pragmash &lt;path&gt; \[arguments...\]
 
@@ -189,6 +195,7 @@ This assigns a value to a given variable.
 
 This throws an exception. It joins its arguments with spaces and uses the result as the error message.
 
+<a name="api-strings"></a>
 # Strings
 
 ### chars &lt;string&gt;
@@ -213,6 +220,10 @@ This replaces backslashes with double backslashes and newlines with "\\\\n". Thi
 ### join \[string...\]
 
 This joins its arguments without inserting spaces between them.
+
+### len &lt;string&gt;
+
+This returns the length of a string in bytes.
 
 ### lowercase \[string...\]
 
@@ -254,6 +265,7 @@ This inverts the effect of the escape command.
 
 This joins its arguments with spaces and converts the result to upper-case.
 
+<a name="api-arrays"></a>
 # Arrays
 
 ### arr \[arrays...\]
@@ -268,6 +280,10 @@ Examples:
 ### contains &lt;array&gt; &lt;element&gt;
 
 This takes an array and a string and returns "true" if the array contains the string. Otherwise, it returns "".
+
+### count &lt;array&gt;
+
+This takes a newline-delimited list and returns the number of elements it contains. If the argument is "", this returns 0.
 
 ### delete &lt;array&gt; &lt;index&gt;
 
@@ -324,6 +340,7 @@ Examples:
 
 This takes zero or more arrays of numbers and returns the sum of all the numbers.
 
+<a name="api-filesystem"></a>
 # Filesystem
 
 ### exists &lt;path&gt;
@@ -360,6 +377,7 @@ This deletes a file or directory recursively. This will throw an exception if th
 
 This creates one or more files or updates their timestamps to the current time. This will throw an exception if the file's timestamp cannot be changed or if the file cannot be created.
 
+<a name="api-math"></a>
 # Math
 
 ### abs &lt;number&gt;
@@ -427,6 +445,7 @@ This rounds a floating-point number to the nearest integer.
 
 This computes the sine of an angle in radians.
 
+<a name="api-time"></a>
 # Time
 
 ### sleep &lt;seconds&gt;

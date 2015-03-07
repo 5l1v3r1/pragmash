@@ -46,6 +46,11 @@ func (_ StdString) Join(args ...string) string {
 	return buffer.String()
 }
 
+// Len returns the length of a string in bytes.
+func (_ StdInternal) Len(val string) int {
+	return len(val)
+}
+
 // Lowercase joins its arguments with spaces and returns the result, converted
 // to lower-case.
 func (s StdString) Lowercase(args ...string) string {
