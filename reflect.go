@@ -94,10 +94,7 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 	}
 
 	// Process the normal (non-variadic) arguments.
-	for i := 0; i < t.NumIn(); i++ {
-		if i == t.NumIn()-1 && t.IsVariadic() {
-			break
-		}
+	for i := 0; i < expectedArgs; i++ {
 		argType := t.In(i)
 
 		// If the argument is a Runner, no value is associated with it.
@@ -105,20 +102,8 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 			res = append(res, reflect.ValueOf(r))
 			continue
 		} else if valIdx == len(vals) {
-			// They are missing some arguments.
-			if t.IsVariadic() {
-				if expectedArgs == 1 {
-					return nil, errors.New("expected at least 1 argument")
-				}
-				return nil, errors.New("expected at least " +
-					strconv.Itoa(expectedArgs) + " arguments")
-			} else {
-				if expectedArgs == 1 {
-					return nil, errors.New("expected 1 argument")
-				}
-				return nil, errors.New("expected " +
-					strconv.Itoa(expectedArgs) + " arguments")
-			}
+			// They are missing at least one argument.
+			return nil, argumentsError(t.IsVariadic(), expectedArgs)
 		}
 
 		// Process a regular argument.
@@ -141,6 +126,8 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 			res = append(res, val)
 			valIdx++
 		}
+	} else if valIdx < len(vals) {
+		return nil, argumentsError(false, expectedArgs)
 	}
 
 	return res, nil
@@ -164,6 +151,22 @@ func (r *ReflectRunner) setCommand(vals []*Value) (*Value, error) {
 	}
 	r.variables[vals[0].String()] = vals[1]
 	return emptyValue, nil
+}
+
+func argumentsError(variadic bool, count int) error {
+	// If it's variadic, we add "at least" to the error message.
+	if variadic {
+		if count == 1 {
+			return errors.New("expected at least 1 argument")
+		}
+		return errors.New("expected at least " + strconv.Itoa(count) +
+			" arguments")
+	}
+	
+	if count == 1 {
+		return errors.New("expected 1 argument")
+	}
+	return errors.New("expected " + strconv.Itoa(count) + " arguments")
 }
 
 func goValueToPragmash(v interface{}) (*Value, error) {
