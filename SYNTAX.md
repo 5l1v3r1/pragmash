@@ -160,6 +160,18 @@ This could be used for other purposes as well, such as iterating through a small
     }
     puts Lift-off!
 
+The variable parameter of the for loop can be omitted if each element is unneeded:
+
+    for (range 10) {
+        ...
+    }
+
+You can also add a second variable argument to get the index of each iteration:
+
+    for i x (arr a b c) {
+        puts index is $i element is $x
+	}
+
 An iteration of a for loop can be skipped with the `continue` built-in command. The for loop can be completely terminated using the `break` built-in command.
 
 ## Try blocks

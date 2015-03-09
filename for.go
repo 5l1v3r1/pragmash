@@ -10,6 +10,10 @@ type For struct {
 	Context    string
 	Expression Runnable
 
+	// The index is an optional field. If this is non-nil, it will be used as a
+	// variable for the current index in the loop.
+	Index Runnable
+
 	// The variable is an optional field. If this is nil, the loop has no
 	// variable.
 	Variable Runnable
@@ -22,6 +26,8 @@ func (f For) Run(r Runner) (*Value, *Breakout) {
 	if bo != nil {
 		return nil, bo
 	}
+
+	// Get variable names for loop.
 	var variable *Value
 	if f.Variable != nil {
 		variable, bo = f.Variable.Run(r)
@@ -29,9 +35,24 @@ func (f For) Run(r Runner) (*Value, *Breakout) {
 			return nil, bo
 		}
 	}
-	for _, val := range expr.Array() {
+	var index *Value
+	if f.Index != nil {
+		index, bo = f.Index.Run(r)
+		if bo != nil {
+			return nil, bo
+		}
+	}
+
+	for i, val := range expr.Array() {
 		if variable != nil {
 			_, err := r.RunCommand("set", []*Value{variable, val})
+			if err != nil {
+				return nil, NewBreakoutException(f.Context, err)
+			}
+		}
+		if index != nil {
+			iVal := NewValueNumber(NewNumberInt(int64(i)))
+			_, err := r.RunCommand("set", []*Value{index, iVal})
 			if err != nil {
 				return nil, NewBreakoutException(f.Context, err)
 			}
@@ -51,6 +72,7 @@ func (f For) Run(r Runner) (*Value, *Breakout) {
 // A ForScanner scans a for-loop.
 type ForScanner struct {
 	context  string
+	index    Runnable
 	scanner  SemanticScanner
 	value    Runnable
 	variable Runnable
@@ -59,8 +81,8 @@ type ForScanner struct {
 // NewForScanner starts a ForScanner or fails if the initiating line is invalid.
 func NewForScanner(l Line, context string) (*ForScanner, error) {
 	// Validate the line.
-	if len(l.Tokens) < 2 || len(l.Tokens) > 3 {
-		return nil, errors.New("for loop takes one or two arguments")
+	if len(l.Tokens) < 2 || len(l.Tokens) > 4 {
+		return nil, errors.New("for loop takes one, two, or three arguments")
 	} else if l.Tokens[0].String != "for" {
 		return nil, errors.New("for loop must start with 'for' token")
 	} else if l.Close || !l.Open {
@@ -69,10 +91,13 @@ func NewForScanner(l Line, context string) (*ForScanner, error) {
 	}
 
 	// Generate the result
-	res := &ForScanner{context, newGenericScanner(true), nil, nil}
+	res := &ForScanner{context, nil, newGenericScanner(true), nil, nil}
 	res.value = l.Tokens[len(l.Tokens)-1].Runnable(context)
 	if len(l.Tokens) == 3 {
 		res.variable = l.Tokens[1].Runnable(context)
+	} else if len(l.Tokens) == 4 {
+		res.index = l.Tokens[1].Runnable(context)
+		res.variable = l.Tokens[2].Runnable(context)
 	}
 	return res, nil
 }
@@ -95,7 +120,7 @@ func (f *ForScanner) Line(l Line, context string) (Runnable, error) {
 		if len(l.Tokens) > 0 {
 			return nil, errors.New("unexpected tokens after for block")
 		}
-		return For{res, f.context, f.value, f.variable}, nil
+		return For{res, f.context, f.value, f.index, f.variable}, nil
 	}
 	return nil, nil
 }
