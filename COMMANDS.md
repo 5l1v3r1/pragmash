@@ -131,11 +131,11 @@ This disables cookie saving for httpGet httpPost. This will delete all existing 
 
 This enables cookie saving for httpGet and httpPost. This will delete all existing cookies.
 
-### httpGet <url>
+### httpGet &lt;url&gt;
 
 This runs an HTTP get request. This uses cookies if cookies are enabled.
 
-### httpPost <url> <content-type> <body>
+### httpPost &lt;url&gt; &lt;content-type&gt; &lt;body&gt;
 
 This runs an HTTP post request. This uses cookies if cookies are enabled.
 
