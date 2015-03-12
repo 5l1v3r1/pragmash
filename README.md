@@ -34,9 +34,6 @@ Here are the commands that I'd like to add:
    * Add escmatch command for match with escapes
  * Math
    * Sqrt
- * Networking
-   * Cookies
-   * POST
 
 Here are improvements I'd like to make to the tools and/or implementation:
 

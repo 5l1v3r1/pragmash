@@ -123,9 +123,27 @@ This prints all of its arguments to the console separated by spaces. It follows 
 
 ## The web and filesystem
 
+### httpCookiesOff
+
+This disables cookie saving for httpGet httpPost. This will delete all existing cookies.
+
+### httpCookiesOn
+
+This enables cookie saving for httpGet and httpPost. This will delete all existing cookies.
+
+### httpGet <url>
+
+This runs an HTTP get request. This uses cookies if cookies are enabled.
+
+### httpPost <url> <content-type> <body>
+
+This runs an HTTP post request. This uses cookies if cookies are enabled.
+
 ### read &lt;resource&gt;
 
 This takes one argument which is either a file path or a URL. It returns a string representing the contents of the specified resource, or throws an exception if the resource cannot be read.
+
+This does not use or save cookies if the argument is a URL.
 
 ### write &lt;path&gt; &lt;data&gt;
 

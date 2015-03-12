@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/cookiejar"
 	"os"
 	"os/exec"
 	"strings"
 )
 
 // StdIo implements the standard I/O routines.
-type StdIo struct{}
+type StdIo struct {
+	Client http.Client
+}
 
 // Cmd executes a shell command and returns its combined output.
 func (_ StdIo) Cmd(args ...string) (string, error) {
@@ -49,6 +52,47 @@ func (_ StdIo) Gets() (string, error) {
 	return scanner.Text(), nil
 }
 
+// HttpCookiesOff disables cookie storage.
+func (s StdIo) HttpCookiesOff() {
+	s.Client.Jar = nil
+}
+
+// HttpCookiesOn enables cookie storage.
+func (s StdIo) HttpCookiesOn() {
+	// TODO: use a public suffix list
+	s.Client.Jar, _ = cookiejar.New(nil)
+}
+
+// HttpGet runs an HTTP get request. This respects the current cookie settings.
+func (s StdIo) HttpGet(url string) (string, error) {
+	resp, err := s.Client.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
+}
+
+// HttpPost runs an HTTP post request. This respects the current cookie
+// settings.
+func (s StdIo) HttpPost(url, contentType, body string) (string, error) {
+	bodyReader := strings.NewReader(body)
+	resp, err := s.Client.Post(url, contentType, bodyReader)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(res), nil
+}
+
 // Print prints text to the console with no newline.
 func (_ StdIo) Print(vals ...string) {
 	for i, s := range vals {
@@ -71,6 +115,7 @@ func (_ StdIo) Puts(vals ...string) {
 }
 
 // Read reads the contents of a file or a URL.
+// This will not use the cookies set by "http" commands.
 func (_ StdIo) Read(resource string) (string, error) {
 	// Read a web URL if applicable.
 	if strings.HasPrefix(resource, "http://") ||

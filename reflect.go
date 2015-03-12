@@ -162,7 +162,7 @@ func argumentsError(variadic bool, count int) error {
 		return errors.New("expected at least " + strconv.Itoa(count) +
 			" arguments")
 	}
-	
+
 	if count == 1 {
 		return errors.New("expected 1 argument")
 	}
