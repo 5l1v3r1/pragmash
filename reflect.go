@@ -49,7 +49,6 @@ func (r *ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
 
 	// Lookup the method.
 	n := r.RewriteName(name)
-	n = strings.ToUpper(n[:1]) + n[1:]
 	method := r.value.MethodByName(n)
 	if !method.IsValid() {
 		return nil, errors.New("unknown command: " + name)
@@ -68,11 +67,19 @@ func (r *ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
 }
 
 // RewriteName uses the ReflectRunner's rewrite table to rewrite a given command
-// name.
+// name. If no rewrite rule is found, underscores are replaced with camel case.
 func (r *ReflectRunner) RewriteName(name string) string {
 	if r.rewrite != nil {
 		if n, ok := r.rewrite[name]; ok {
 			return n
+		}
+	}
+	// Capitalize the first letter.
+	name = strings.ToUpper(name[:1]) + name[1:]
+	// Replace "a_b" with "aB"
+	for i := 1; i < len(name)-1; i++ {
+		if name[i] == '_' {
+			name = name[:i] + strings.ToUpper(name[i+1 : i+2]) + name[i+2:]
 		}
 	}
 	return name

@@ -123,19 +123,19 @@ This prints all of its arguments to the console separated by spaces. It follows 
 
 ## The web and filesystem
 
-### httpCookiesOff
+### http_cookies_off
 
 This disables cookie saving for httpGet httpPost. This will delete all existing cookies.
 
-### httpCookiesOn
+### http_cookies_on
 
 This enables cookie saving for httpGet and httpPost. This will delete all existing cookies.
 
-### httpGet &lt;url&gt;
+### http_get &lt;url&gt;
 
 This runs an HTTP get request. This uses cookies if cookies are enabled.
 
-### httpPost &lt;url&gt; &lt;content-type&gt; &lt;body&gt;
+### http_post &lt;url&gt; &lt;content-type&gt; &lt;body&gt;
 
 This runs an HTTP post request. This uses cookies if cookies are enabled.
 
