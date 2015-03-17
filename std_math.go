@@ -197,6 +197,15 @@ func (_ StdMath) Sin(f float64) float64 {
 	return math.Sin(f)
 }
 
+// Sqrt returns the square root of a number. It throws an exception if the
+// number is negative.
+func (_ StdMath) Sqrt(f float64) (float64, error) {
+	if f < 0 {
+		return 0, errors.New("cannot represent imaginary numbers")
+	}
+	return math.Sqrt(f), nil
+}
+
 // Sub subtracts the second argument from the first.
 func (_ StdMath) Sub(n1, n2 *Number) *Number {
 	return SubtractNumbers(n1, n2)

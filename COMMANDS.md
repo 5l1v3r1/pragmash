@@ -463,6 +463,10 @@ This rounds a floating-point number to the nearest integer.
 
 This computes the sine of an angle in radians.
 
+### sqrt &lt;argument&gt;
+
+This takes the square root of a number. If the number is negative, this throws an exception.
+
 <a name="api-time"></a>
 # Time
 
