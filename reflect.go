@@ -71,7 +71,7 @@ func (r *ReflectRunner) RunCommand(name string, vals []*Value) (*Value, error) {
 func (r *ReflectRunner) RewriteName(name string) string {
 	if r.rewrite != nil {
 		if n, ok := r.rewrite[name]; ok {
-			return n
+			name = n
 		}
 	}
 	// Capitalize the first letter.

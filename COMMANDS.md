@@ -477,3 +477,27 @@ This takes a numerical argument and sleeps for that many seconds. The argument m
 ### time
 
 This returns the current UNIX epoch time as a floating-point in seconds.
+
+### time_day <timestamp>
+
+This returns the day of the month for a given timestamp.
+
+### time_hour <timestamp>
+
+This returns the hour of the day for a given timestamp.
+
+### time_minute <timestamp>
+
+This returns the minute of the hour for a given timestamp.
+
+### time_month <timestamp>
+
+This returns the month of the year for a given timestamp.
+
+### time_second <timestamp>
+
+This returns the second of the minute for a given timestamp.
+
+### time_year <timestamp>
+
+This returns the year for a given timestamp.
