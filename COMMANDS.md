@@ -131,13 +131,13 @@ This disables cookie saving for httpGet httpPost. This will delete all existing 
 
 This enables cookie saving for httpGet and httpPost. This will delete all existing cookies.
 
-### http_get &lt;url&gt;
+### http_get &lt;url&gt; \[headers...\]
 
-This runs an HTTP get request. This uses cookies if cookies are enabled.
+This runs an HTTP get request. This uses cookies if cookies are enabled. Each header should be of the form "Name: value".
 
-### http_post &lt;url&gt; &lt;content-type&gt; &lt;body&gt;
+### http_post &lt;url&gt; &lt;content-type&gt; &lt;body&gt; \[headers...\]
 
-This runs an HTTP post request. This uses cookies if cookies are enabled.
+This runs an HTTP post request. This uses cookies if cookies are enabled. Each header should be of the form "Name: value".
 
 ### read &lt;resource&gt;
 
