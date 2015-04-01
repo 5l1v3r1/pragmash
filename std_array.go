@@ -53,6 +53,17 @@ func (_ StdArray) Delete(arr []*Value, idx int) ([]*Value, error) {
 	return res, nil
 }
 
+// Index finds an element in an array and returns its index, or -1 if the item
+// was not present.
+func (_ StdArray) Index(arr []string, val string) int {
+	for i := 0; i < len(arr); i++ {
+		if arr[i] == val {
+			return i
+		}
+	}
+	return -1
+}
+
 // Insert inserts an element at a certain index in the array.
 func (_ StdArray) Insert(arr []*Value, idx int, val *Value) ([]*Value, error) {
 	if idx < 0 || idx > len(arr) {

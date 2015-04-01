@@ -313,6 +313,15 @@ Examples:
  * `delete (arr a b c) 0` yields "b\nc"
  * `delete "" 0` throws an exception
 
+### index &lt;array&gt; &lt;string&gt;
+
+This returns the index of a string in an array, or -1 if the string was not present in the array.
+
+Examples:
+
+ * `index (arr a b c) b` yields "1"
+ * `index (arr a b c) d` yields "-1"
+
 ### insert &lt;array&gt; &lt;index&gt; &lt;element&gt;
 
 This inserts an element into an array.
