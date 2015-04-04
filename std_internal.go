@@ -132,6 +132,25 @@ func (_ StdInternal) Pragmash(path string, args ...*Value) (*Value, error) {
 	}
 }
 
+// Swap swaps the values of two variables.
+func (_ StdInternal) Swap(r Runner, a, b *Value) error {
+	v1, err := r.RunCommand("get", []*Value{a})
+	if err != nil {
+		return err
+	}
+	v2, err := r.RunCommand("get", []*Value{b})
+	if err != nil {
+		return err
+	}
+	if _, err := r.RunCommand("set", []*Value{a, v2}); err != nil {
+		return err
+	}
+	if _, err := r.RunCommand("set", []*Value{b, v1}); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Throw throws an exception.
 func (_ StdInternal) Throw(args ...*Value) error {
 	strArgs := make([]string, len(args))

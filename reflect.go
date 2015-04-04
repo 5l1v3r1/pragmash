@@ -96,6 +96,7 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 	// If there are variadic arguments, the last argument is actually a slice
 	// and doesn't count towards the expected argument count.
 	expectedArgs := t.NumIn()
+	printArgs := expectedArgs
 	if t.IsVariadic() {
 		expectedArgs--
 	}
@@ -107,10 +108,11 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 		// If the argument is a Runner, no value is associated with it.
 		if argType == runnerType {
 			res = append(res, reflect.ValueOf(r))
+			printArgs--
 			continue
 		} else if valIdx == len(vals) {
 			// They are missing at least one argument.
-			return nil, argumentsError(t.IsVariadic(), expectedArgs)
+			return nil, argumentsError(t.IsVariadic(), printArgs)
 		}
 
 		// Process a regular argument.
@@ -134,7 +136,7 @@ func (r *ReflectRunner) arguments(t reflect.Type,
 			valIdx++
 		}
 	} else if valIdx < len(vals) {
-		return nil, argumentsError(false, expectedArgs)
+		return nil, argumentsError(false, printArgs)
 	}
 
 	return res, nil

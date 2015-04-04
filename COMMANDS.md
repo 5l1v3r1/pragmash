@@ -209,6 +209,10 @@ This would print "arg2" to the console and exit with status code 1. The string "
 
 This assigns a value to a given variable.
 
+### swap &lt;variable1&gt; &lt;variable2&gt;
+
+This swaps the value of two variables.
+
 ### throw \[string...\]
 
 This throws an exception. It joins its arguments with spaces and uses the result as the error message.
@@ -294,6 +298,15 @@ Examples:
 
  * `arr a b c` yields "a\nb\nc"
  * `arr "" a ""` yields "a"
+
+### change &lt;array&gt; &lt;index&gt; &lt;element&gt;
+
+This changes an element at a given index.
+
+Examples:
+
+ * `change (arr a b c) 1 B` yields "a\nB\nc"
+ * `change (arr a b c) 3 D` throws an exception
 
 ### contains &lt;array&gt; &lt;element&gt;
 
