@@ -500,37 +500,37 @@ This takes a numerical argument and sleeps for that many seconds. The argument m
 
 This returns the current UNIX epoch time as a floating-point in seconds.
 
-### time_day <timestamp> [location]
+### time_day &lt;timestamp&gt; \[location\]
 
 This returns the day of the month for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_hour <timestamp> [location]
+### time_hour &lt;timestamp&gt; \[location\]
 
 This returns the hour of the day for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_minute <timestamp> [location]
+### time_minute &lt;timestamp&gt; \[location\]
 
 This returns the minute of the hour for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_month <timestamp> [location]
+### time_month &lt;timestamp&gt; \[location\]
 
 This returns the month of the year for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_second <timestamp> [location]
+### time_second &lt;timestamp&gt; \[location\]
 
 This returns the second of the minute for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_year <timestamp> [location]
+### time_year &lt;timestamp&gt; \[location\]
 
 This returns the year for a given timestamp.
 
