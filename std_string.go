@@ -76,6 +76,14 @@ func (_ StdString) Match(expr, haystack string) ([]string, error) {
 	return list, nil
 }
 
+// PadZero pads a string with zeroes on the left until it's a certain length.
+func (_ StdString) PadZero(length int, str string) string {
+	for len(str) < length {
+		str = "0" + str
+	}
+	return str
+}
+
 // Rep replaces all occurances of a string with another string.
 func (_ StdString) Rep(s, old, replacement string) string {
 	return strings.Replace(s, old, replacement, -1)

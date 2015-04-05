@@ -257,6 +257,16 @@ This matches a string against a regular expression. It returns an array of match
 
 For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
 
+### pad_zero &lt;length&gt; &lt;string&gt;
+
+This pads a value with zeroes on the left.
+
+Examples:
+
+ * `pad_zero 3 14` yields "014"
+ * `pad_zero 2 14` yields "14"
+ * `pad_zero 1 14` yields "14"
+
 ### rep &lt;haystack&gt; &lt;needle&gt; &lt;replacement&gt;
 
 This performs a global find-and-replace operation. It replaces all occurances of a "needle" inside a "haystack" with a "replacement" string.
@@ -267,7 +277,7 @@ For example, `rep abcdcba a A` yields "AbcdcbA".
 
 This performs a global find-and-replace operation with regular expressions. Inside the replacement string, `$1` can be used to refer to the first submatch, `$2` to the second, etc.
 
-Examples: "X e X tX e Xe bro"
+Examples:
 
  * `repreg "Alex Nichol" [A-Z] _` yields "\_lex \_ichol"
  * `repreg "Alex Nichol" "([A-Z])([a-z])" "$2$1"` yields "lAex iNchol"
