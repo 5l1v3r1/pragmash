@@ -269,7 +269,7 @@ Examples:
 
 ### rep &lt;haystack&gt; &lt;needle&gt; &lt;replacement&gt;
 
-This performs a global find-and-replace operation. It replaces all occurances of a "needle" inside a "haystack" with a "replacement" string.
+This performs a global find-and-replace operation. It replaces all occurences of a "needle" inside a "haystack" with a "replacement" string.
 
 For example, `rep abcdcba a A` yields "AbcdcbA".
 
