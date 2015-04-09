@@ -129,9 +129,18 @@ func (_ StdArray) Sortnums(arr []*Value) ([]*Value, error) {
 }
 
 // Subarr returns a portion from an array.
-func (_ StdArray) Subarr(arr []*Value, start, end int) []*Value {
+func (_ StdArray) Subarr(arr []*Value, start int, e ...int) ([]*Value, error) {
+	var end int
+	if len(e) > 1 {
+		return nil, errors.New("expected 2 or 3 arguments")
+	} else if len(e) == 0 {
+		end = len(arr)
+	} else {
+		end = e[0]
+	}
+
 	if len(arr) == 0 {
-		return arr
+		return arr, nil
 	}
 
 	// Sanitize the range
@@ -146,7 +155,7 @@ func (_ StdArray) Subarr(arr []*Value, start, end int) []*Value {
 		end = len(arr)
 	}
 
-	return arr[start:end]
+	return arr[start:end], nil
 }
 
 // Sum takes arrays of numbers and returns their total sum.

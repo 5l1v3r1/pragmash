@@ -2,6 +2,7 @@ package pragmash
 
 import (
 	"bytes"
+	"errors"
 	"regexp"
 	"strings"
 )
@@ -94,9 +95,18 @@ func (_ StdString) Repreg(s, expr, replacement string) (string, error) {
 }
 
 // Substr returns a substring of a large string.
-func (_ StdString) Substr(s string, start, end int) string {
+func (_ StdString) Substr(s string, start int, e ...int) (string, error) {
 	if len(s) == 0 {
-		return ""
+		return "", nil
+	}
+
+	var end int
+	if len(e) > 1 {
+		return "", errors.New("expected 2 or 3 arguments")
+	} else if len(e) == 1 {
+		end = e[0]
+	} else {
+		end = len(s)
 	}
 
 	// Any inputs are sanitized and accepted.
@@ -111,7 +121,7 @@ func (_ StdString) Substr(s string, start, end int) string {
 		end = len(s)
 	}
 
-	return s[start:end]
+	return s[start:end], nil
 }
 
 // Unescape replaces "\\" with "\" and "\n" with a newline.

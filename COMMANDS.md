@@ -269,7 +269,7 @@ Examples: "X e X tX e Xe bro"
  * `repreg "Alex Nichol" "([A-Z])([a-z])" "$2$1"` yields "lAex iNchol"
  * `repreg "10.50 20 30" "([0-9\\.]*)" "$$$1"` yields "$10.50 $20 $30"
 
-### substr &lt;string&gt; &lt;start&gt; &lt;end&gt;
+### substr &lt;string&gt; &lt;start&gt; \[end\]
 
 This takes three arguments and performs bytewise substring. The first is a string, the second is the starting index, and the third is the ending index.
 
@@ -354,7 +354,7 @@ This takes an array and returns an alphabetically sorted version.
 
 This takes an array of numbers and returns the sorted array.
 
-### subarr &lt;array&gt; &lt;start&gt; &lt;end&gt;
+### subarr &lt;array&gt; &lt;start&gt; \[end\]
 
 This takes an array and two indices. It returns a portion of the original array.
 
