@@ -1,0 +1,28 @@
+# "abc"
+
+set res ""
+
+try {
+  swap a b
+  set res A
+} catch e {
+  set res a
+}
+
+try {
+  swap
+  set res (join $res B)
+} catch e {
+  set res (join $res b)
+}
+
+set a x
+set b y
+swap a b
+if (and (= $a y) (= $b x)) {
+  set res (join $res c)
+} else {
+  set res (join $res C)
+}
+
+return $res

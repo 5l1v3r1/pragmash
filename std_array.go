@@ -26,6 +26,17 @@ func (_ StdArray) Arr(args ...*Value) []*Value {
 	return values
 }
 
+// Change sets the element at an index.
+func (_ StdArray) Change(arr []*Value, idx int, v *Value) ([]*Value, error) {
+	if idx < 0 || idx >= len(arr) {
+		return nil, errors.New("index out of bounds: " + strconv.Itoa(idx))
+	}
+	res := make([]*Value, len(arr))
+	copy(res, arr)
+	res[idx] = v
+	return res, nil
+}
+
 // Contains checks if an array contains a value.
 func (_ StdArray) Contains(arr []string, val string) bool {
 	for _, s := range arr {

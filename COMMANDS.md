@@ -209,6 +209,10 @@ This would print "arg2" to the console and exit with status code 1. The string "
 
 This assigns a value to a given variable.
 
+### swap &lt;variable1&gt; &lt;variable2&gt;
+
+This swaps the value of two variables.
+
 ### throw \[string...\]
 
 This throws an exception. It joins its arguments with spaces and uses the result as the error message.
@@ -253,9 +257,19 @@ This matches a string against a regular expression. It returns an array of match
 
 For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
 
+### pad_zero &lt;length&gt; &lt;string&gt;
+
+This pads a value with zeroes on the left.
+
+Examples:
+
+ * `pad_zero 3 14` yields "014"
+ * `pad_zero 2 14` yields "14"
+ * `pad_zero 1 14` yields "14"
+
 ### rep &lt;haystack&gt; &lt;needle&gt; &lt;replacement&gt;
 
-This performs a global find-and-replace operation. It replaces all occurances of a "needle" inside a "haystack" with a "replacement" string.
+This performs a global find-and-replace operation. It replaces all occurences of a "needle" inside a "haystack" with a "replacement" string.
 
 For example, `rep abcdcba a A` yields "AbcdcbA".
 
@@ -263,7 +277,7 @@ For example, `rep abcdcba a A` yields "AbcdcbA".
 
 This performs a global find-and-replace operation with regular expressions. Inside the replacement string, `$1` can be used to refer to the first submatch, `$2` to the second, etc.
 
-Examples: "X e X tX e Xe bro"
+Examples:
 
  * `repreg "Alex Nichol" [A-Z] _` yields "\_lex \_ichol"
  * `repreg "Alex Nichol" "([A-Z])([a-z])" "$2$1"` yields "lAex iNchol"
@@ -294,6 +308,15 @@ Examples:
 
  * `arr a b c` yields "a\nb\nc"
  * `arr "" a ""` yields "a"
+
+### change &lt;array&gt; &lt;index&gt; &lt;element&gt;
+
+This changes an element at a given index.
+
+Examples:
+
+ * `change (arr a b c) 1 B` yields "a\nB\nc"
+ * `change (arr a b c) 3 D` throws an exception
 
 ### contains &lt;array&gt; &lt;element&gt;
 
@@ -487,37 +510,37 @@ This takes a numerical argument and sleeps for that many seconds. The argument m
 
 This returns the current UNIX epoch time as a floating-point in seconds.
 
-### time_day <timestamp> [location]
+### time_day &lt;timestamp&gt; \[location\]
 
 This returns the day of the month for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_hour <timestamp> [location]
+### time_hour &lt;timestamp&gt; \[location\]
 
 This returns the hour of the day for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_minute <timestamp> [location]
+### time_minute &lt;timestamp&gt; \[location\]
 
 This returns the minute of the hour for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_month <timestamp> [location]
+### time_month &lt;timestamp&gt; \[location\]
 
 This returns the month of the year for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_second <timestamp> [location]
+### time_second &lt;timestamp&gt; \[location\]
 
 This returns the second of the minute for a given timestamp.
 
 If no location is specified, this uses the local location. Otherwise, the location must be in the IANA Time Zone database.
 
-### time_year <timestamp> [location]
+### time_year &lt;timestamp&gt; \[location\]
 
 This returns the year for a given timestamp.
 
