@@ -239,6 +239,14 @@ Examples:
 
 This replaces backslashes with double backslashes and newlines with "\\\\n". This makes it easier to represent array elements which contain newlines.
 
+### is_digit \[string\]
+
+This returns "true" if the provided argument is a single-character string which represents a digit. Otherwise, it returns "".
+
+### is_letter \[string\]
+
+This returns "true" if the provided argument is a single-character string which represents a letter. Otherwise, it returns "".
+
 ### join \[string...\]
 
 This joins its arguments without inserting spaces between them.

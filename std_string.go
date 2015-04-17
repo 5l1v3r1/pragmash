@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 // StdString implements ways of manipulating or creating strings
@@ -35,6 +36,25 @@ func (_ StdString) Escape(str string) string {
 	s := strings.Replace(str, "\\", "\\\\", -1)
 	s = strings.Replace(s, "\n", "\\n", -1)
 	return s
+}
+
+// IsDigit returns true if the provided argument is a number.
+func (_ StdString) IsDigit(s string) bool {
+	runes := []rune(s)
+	if len(runes) != 1 {
+		return false
+	}
+	return unicode.IsDigit(runes[0])
+}
+
+// IsLetter returns true if the provided argument is a capital or lowercase
+// character in the English alphabet.
+func (_ StdString) IsLetter(s string) bool {
+	runes := []rune(s)
+	if len(runes) != 1 {
+		return false
+	}
+	return unicode.IsLetter(runes[0])
 }
 
 // Join joins its arguments without spaces.

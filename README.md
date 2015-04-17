@@ -29,8 +29,7 @@ Here are the commands that I'd like to add:
  * Time manipulation functions
    * Parse/format dates
  * Strings
-   * Is letter
-   * Is digit
+   * ASCII code conversion
    * Add escmatch command for match with escapes
 
 Here are improvements I'd like to make to the tools and/or implementation:
