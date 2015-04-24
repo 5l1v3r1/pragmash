@@ -133,16 +133,16 @@ func (_ StdIo) Write(path, data string) error {
 
 // doRequest performs a request given some arguments.
 func (s StdIo) doRequest(url, method string, body io.Reader,
-    headers []string) (string, error) {
+	headers []string) (string, error) {
 	// Create the request.
-    req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return "", err
 	}
-    for _, headerLine := range headers {
-        idx := strings.Index(headerLine, ": ")
-        if idx < 0 {
-            return "", errors.New("Invalid header: " + headerLine)
+	for _, headerLine := range headers {
+		idx := strings.Index(headerLine, ": ")
+		if idx < 0 {
+			return "", errors.New("Invalid header: " + headerLine)
 		}
 		name := headerLine[:idx]
 		value := headerLine[idx+2:]
@@ -150,8 +150,8 @@ func (s StdIo) doRequest(url, method string, body io.Reader,
 		if strings.ToLower(name) == "host" {
 			req.Host = value
 		}
-    }
-	
+	}
+
 	// Send the request.
 	resp, err := s.Client.Do(req)
 	if err != nil {

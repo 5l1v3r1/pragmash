@@ -79,7 +79,7 @@ func (r *ReflectRunner) RewriteName(name string) string {
 	// Replace "a_b" with "aB"
 	for i := 1; i < len(name)-1; i++ {
 		if name[i] == '_' {
-			name = name[:i] + strings.ToUpper(name[i+1 : i+2]) + name[i+2:]
+			name = name[:i] + strings.ToUpper(name[i+1:i+2]) + name[i+2:]
 		}
 	}
 	return name

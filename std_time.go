@@ -79,7 +79,7 @@ func timestampToTime(t float64, location []string) (time.Time, error) {
 	if len(location) > 1 {
 		return time.Time{}, errors.New("expected 1 or 2 arguments")
 	}
-	
+
 	// Extract nanoseconds and seconds from fractional timestamp.
 	var nanos int64
 	var seconds int64
@@ -90,9 +90,9 @@ func timestampToTime(t float64, location []string) (time.Time, error) {
 		nanos = -int64(1000000000 * (-t - math.Floor(-t)))
 		seconds = -int64(-t)
 	}
-	
+
 	res := time.Unix(seconds, nanos)
-	
+
 	if len(location) == 0 {
 		return res, nil
 	}

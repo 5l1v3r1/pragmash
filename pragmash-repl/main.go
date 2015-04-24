@@ -39,7 +39,7 @@ func escapeResult(res string) string {
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	
+
 	fmt.Println("pragmash version " + pragmash.Version())
 
 	statements := make(chan pragmash.Runnable)
