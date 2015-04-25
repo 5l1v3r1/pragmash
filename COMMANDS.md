@@ -239,11 +239,19 @@ Examples:
 
 This replaces backslashes with double backslashes and newlines with "\\\\n". This makes it easier to represent array elements which contain newlines.
 
-### is_digit \[string\]
+### has_prefix &lt;string&gt; &lt;prefix&gt;
+
+This returns "true" if the first argument starts with the second argument. Otherwise, it returns "".
+
+### has_suffix &lt;string&gt; &lt;prefix&gt;
+
+This returns "true" if the first argument ends with the second argument. Otherwise, it returns "".
+
+### is_digit &lt;string&gt;
 
 This returns "true" if the provided argument is a single-character string which represents a digit. Otherwise, it returns "".
 
-### is_letter \[string\]
+### is_letter &lt;string&gt;
 
 This returns "true" if the provided argument is a single-character string which represents a letter. Otherwise, it returns "".
 

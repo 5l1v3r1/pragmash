@@ -39,6 +39,16 @@ func (_ StdString) Escape(str string) string {
 	return s
 }
 
+// HasPrefix returns true if the first argument begins with the second.
+func (_ StdString) HasPrefix(s, prefix string) bool {
+	return strings.HasPrefix(s, prefix)
+}
+
+// HasSuffix returns true if the first argument ends with the second.
+func (_ StdString) HasSuffix(s, suffix string) bool {
+	return strings.HasSuffix(s, suffix)
+}
+
 // IsDigit returns true if the provided argument is a number.
 func (_ StdString) IsDigit(s string) bool {
 	runes := []rune(s)
