@@ -1,8 +1,0 @@
-# "a b"
-
-try {
-  throw b
-  return problem!
-} catch e {
-  return a $e
-}

@@ -1,4 +1,0 @@
-for x (range 10 0 -1) {
-  print (join $x ", ")
-}
-puts Liftoff!
