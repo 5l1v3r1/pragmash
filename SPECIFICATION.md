@@ -1,6 +1,6 @@
-# Syntax Guide
+# Abstract
 
-This is the pragmash syntax guide. It uses human-readable langugae and tries to be concise.
+This document describes every feature of pragmash. It uses human-readable langugae and tries to be concise.
 
 # Charset
 
@@ -265,3 +265,9 @@ Here are some examples of `try` blocks:
     } catch c e {
       puts Error joining files: $e. Error was at: $c
     }
+
+# Lists
+
+Strings are the only real datatype in pragmash. However, in certain contexts, a string can be treated as a newline-separated list. In these contexts, the string `"1\n2\n3\n4"` would represent the array `[1, 2, 3, 4]`. One unusual thing about newline-separated lists is that the empty string corresponds to the empty array, whereas one might expect it to correspond to an array with one empty string element.
+
+For practical purposes, newline-separated lists are acceptable and often very useful. In some rare cases, however, it might be necessary to store arrays of strings which contain newlines. In these cases, it is necessary to escape the elements of the list.
