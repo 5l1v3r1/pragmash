@@ -49,21 +49,29 @@ Every argument to every command is a string. Variables contain strings and their
 
 A string can be expressed without quotes, provided it has no unescaped whitespace. In addition, strings can be surrounded by `'` \(single quotes\) and `"` \(double quotes\). In these cases, unescaped whitespace can be present.
 
-An escaped character within a string begins with a backslash. To escape a space, use `\ `. To escape a backslash, use `\\`. Inside of single quotes, it is necessary to escape single quotes as `\'`. Likewise, you should use `\"` if you want to include quotes inside of a quoted string.
+An escaped character within a string begins with a backslash. To escape a space, use a backspace before it such as in `escaped\ whitespace`. To escape a backslash, use `\\`. Inside of single quotes, it is necessary to escape single quotes as `\'`. Likewise, you should use `\"` if you want to include quotes inside of a quoted string.
 
 Escapes can also be used to write out characters which a programmer cannot easily enter from their keyboard. These are the available escape sequences, not including the ones discussed above:
 
 | Sequence   | Description         | Hex Code (if applicable) |
 |------------|---------------------|--------------------------|
-| \?         | Question mark       | 0x3f                     |
-| \a         | Bell                | 0x07                     |
-| \b         | Backspace           | 0x08                     |
-| \f         | New page            | 0x0c                     |
-| \n         | New line            | 0x0a                     |
-| \r         | Carriage return     | 0x0d                     |
-| \t         | Tab                 | 0x09                     |
-| \v         | Vertical tab        | 0x0b                     |
-| \nnn       | 3-digit octal value |                          |
-| \xnn       | 2-digit hex value   |                          |
-| \unnnn     | Unicode value       |                          |
-| \Unnnnnnnn | Unicode value       |                          |
+| \\?         | Question mark       | 0x3f                     |
+| \\a         | Bell                | 0x07                     |
+| \\b         | Backspace           | 0x08                     |
+| \\f         | New page            | 0x0c                     |
+| \\n         | New line            | 0x0a                     |
+| \\r         | Carriage return     | 0x0d                     |
+| \\t         | Tab                 | 0x09                     |
+| \\v         | Vertical tab        | 0x0b                     |
+| \\nnn       | 3-digit octal value |                          |
+| \\xnn       | 2-digit hex value   |                          |
+| \\unnnn     | Unicode value       |                          |
+| \\Unnnnnnnn | Unicode value       |                          |
+
+Here are some examples of strings:
+
+ * `someText`
+ * `some\ text\ with\ spaces`
+ * `"some text with spaces"`
+ * `'some text with spaces'`
+ * `"some text which contains \"quotes,\" so to speak"`
