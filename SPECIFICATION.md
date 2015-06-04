@@ -98,10 +98,10 @@ Note that, within nested commands, a bare string cannot contain a `)`. If it doe
 
     # Bad! This code is not valid.
     puts (read filename_ending_in_parenthesis))
-    
+
     # Better, but still ugly.
     puts (read filename_ending_in_parenthesis\))
-    
+
     # Good!
     puts (read 'filename_ending_in_parenthesis)')
 
@@ -126,9 +126,13 @@ Note however that this code is valid and would print `string'string'`:
 
 This means that a bareword can contain double or single quotes as long as it does not begin with one.
 
+# Concise variable syntax
+
+Whenever a bare string begins with a $, it is not treated as a bare string. Instead, the interpreter treats something like `$xyz` as `(get xyz)` \(that is, as a nested command\). In a standard pragmash environment, `get` accesses a variable. Thus, the $ makes it easier to access variables.
+
 # Conditions
 
-A condition looks like a set of arguments but is evaluated to a boolean expression. Conditions are used in `if` blocks, `while` loops, and `for` loops. In addition, some commands may process their arguments as if the arguments were a condition.
+A condition looks like a set of arguments but is evaluated to a boolean expression. Conditions are used in `if` blocks and `while` loops. In addition, some commands may process their arguments as if the arguments were a condition.
 
 There are three types of conditions.
 
@@ -138,7 +142,7 @@ There are three types of conditions.
 
 # Control blocks: an overview
 
-In pragmash, certain keywords at the beginning of logical lines indicate that the line is not a command but rather the beginning of a control block. These keywords are `if`, `for`, `while`, `try` and `func`.
+In pragmash, certain keywords at the beginning of logical lines indicate that the line is not a command but rather the beginning of a control block. These keywords are `if`, `for`, `while`, `try` and `def`.
 
 # *if* blocks
 
@@ -147,7 +151,7 @@ An `if` block makes it possible to run different pieces of code depending on the
     if $name Alex {
       puts Hello.
     }
-    
+
     if $name Joe {
       puts Hi, joe old pal.
     } else {
@@ -169,7 +173,7 @@ A `while` block executes a piece of code again and again until a condition is fa
     while {
       puts This is an infinite loop!
     }
-    
+
     set a 0
     while (< $a 10) {
       puts This is a loop and the counter is is currently $a
@@ -207,7 +211,7 @@ The `continue` command skips to the next iteration of a loop. It takes an option
       }
       puts $a
     }
-    
+
     # This will print "hello" in a loop and never print "foo" or "bar".
     while {
       while {
@@ -246,7 +250,7 @@ Here are some examples of `try` blocks:
       puts Bar
     } catch {
     }
-    
+
     # This will print "Foo" and "Bar" but not "Baz".
     try {
       puts Foo
@@ -255,7 +259,7 @@ Here are some examples of `try` blocks:
     } catch e {
       puts $e
     }
-    
+
     # This is a real life example. You can capture both the context and the
     # error in a try block.
     try {
@@ -270,4 +274,66 @@ Here are some examples of `try` blocks:
 
 Strings are the only real datatype in pragmash. However, in certain contexts, a string can be treated as a newline-separated list. In these contexts, the string `"1\n2\n3\n4"` would represent the array `[1, 2, 3, 4]`. One unusual thing about newline-separated lists is that the empty string corresponds to the empty array, whereas one might expect it to correspond to an array with one empty string element.
 
-For practical purposes, newline-separated lists are acceptable and often very useful. In some rare cases, however, it might be necessary to store arrays of strings which contain newlines. In these cases, it is necessary to escape the elements of the list.
+In many situations, newline-separated lists are enough. In some rare cases, however, it might be necessary to store arrays of strings which contain newlines themselves. In these cases, it is necessary to escape the elements of the list.
+
+# *for* blocks
+
+The `for` block runs a block of code for each element in a newline-separated list. A for block can take one, two, or three arguments depending on how much information the block needs for each iteration.
+
+If a for block has one argument, that argument is treated as an array. The actual elements of the array are not relevant; all that matters is the length of the array:
+
+    for "1\n2\n3\n4" {
+      puts This will print out 4 times.
+    }
+
+If a for block has two arguments, the first argument is treated as a variable name and is re-assigned to the value of each element for each iteration:
+
+    puts Here are some fruits:
+    for fruitName "Pickels\nApples\nPeaches" {
+      puts $fruitName
+    }
+
+If a for block has three arguments, the first and second arguments are treated as variable names. The first argument is assigned the index for each iteration \(starting at zero\). The second argument is assigned the value of each element for each iteration:
+
+    for i fruitName "Pickels\nApples\nPeaches" {
+      puts Fruit number $i is $fruitName
+    }
+
+The `break` and `continue` keywords work the same for for blocks as they do for while blocks. Note that both for and while blocks count as "loops", so `break n` will break n loops regardless of whether those loops are while loops or for loops.
+
+# *def* blocks
+
+When the interpreter processes a script, it reads command definitions before executing any actual code. Command definitions create new commands for the script to use. Command definitions cannot be nested.
+
+Here is the syntax of a command definition:
+
+    def my_command {
+      # function body here.
+    }
+
+Within a command body, there is a special `return` command which exits the command body and sets the result of the command. The `return` command takes any number of arguments and joins them with spaces. Thus, if you don't pass any arguments to `return`, it will yield the empty string. As an example of the return command, this would print out "hello world":
+
+    def hello_text {
+      return hello world
+    }
+    print (hello_text)
+
+A command can take arguments. On the line of a command definition, tokens after the command name are treated as variable names to which arguments are bound. For example, this command takes two arguments:
+
+    def difference a b {
+      return (- $a $b)
+    }
+
+Calling `difference 1 2` would yield `-1`; calling `difference 5 2` would yield `3`.
+
+Some commands take a variable argument list \(commonly known as varargs\). This can be achieved using "..." \(ellipsis\) after the last argument's name like so:
+
+    def summation numbers... {
+      set sum 0
+      for number $numbers {
+        set sum (+ $sum $number)
+      }
+      return $sum
+    }
+
+Note that the varargs variable is a newline-separated list of arguments. This makes it impossible to distinguish an argument that was an array from an array of arguments. For practical purposes, this is fine.
