@@ -8,7 +8,7 @@ A pragmash script is encoded as UTF-8. The term "whitespace" refers to all the c
 
 # Lines
 
-There are two types of "lines" in a pragmash script. **Physical lines** are separated by newline characters and include all of the leading and trailing whitespace. A **logical line** is similar to a physical line, but leading and trailing whitespace is removed and it is possible to represent a logical line across multiple physical lines using backslashes at the end of each physical line. For example, this counts as one logical line but two physical lines:
+There are two types of "lines" in a pragmash script. **Physical lines** are separated by newline characters and include all of the leading and trailing whitespace. The only thing to note is that carriage returns at the ends of physical lines are ignored. A **logical line** is similar to a physical line, but leading and trailing whitespace is removed and it is possible to represent a logical line across multiple physical lines using backslashes at the end of each physical line. For example, this counts as one logical line but two physical lines:
 
     this is \
     one line of code
