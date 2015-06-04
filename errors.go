@@ -2,6 +2,6 @@ package pragmash
 
 import "errors"
 
-const (
+var (
 	ErrEOFAfterLineContinuation = errors.New("EOF after line continuation")
 )

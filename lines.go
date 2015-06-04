@@ -14,7 +14,7 @@ import (
 // the error will be non-nil and the other two return values should be ignored.
 // If the error is io.EOF, the LineReader has finished reading gracefully.
 type LineReader interface {
-	func ReadLine() (string, int, error)
+	ReadLine() (string, int, error)
 }
 
 // A PhysLineReader wraps an io.Reader and reads physical lines from it.
@@ -79,9 +79,9 @@ func (l LogicalLineReader) ReadLine() (string, int, error) {
 		if _, err := result.WriteString(line); err != nil {
 			return "", 0, err
 		}
-		if len(line) == 0 || line[len(line) - 1] != '\\' {
+		if len(line) == 0 || line[len(line)-1] != '\\' {
 			break
 		}
 	}
-	return strings.TrimSpace(result.String())
+	return strings.TrimSpace(result.String()), firstLineNum, nil
 }
