@@ -348,20 +348,57 @@ The `break` and `continue` keywords work the same for for blocks as they do for 
 
 # *def* blocks
 
-When the interpreter processes a script, it reads command definitions before executing any actual code. Command definitions create new commands for the script to use. Command definitions cannot be nested.
+A `def` block defines a new command or overrides an existing one.
 
-Here is the syntax of a command definition:
+Here is an example of the basic syntax to define a command which takes no arguments:
 
-    def my_command {
-      # function body here.
+    def foobar {
+      # Put the command body here.
     }
 
-Within a command body, there is a special `return` command which exits the command body and sets the result of the command. The `return` command takes any number of arguments and joins them with spaces. Thus, if you don't pass any arguments to `return`, it will yield the empty string. As an example of the return command, this would print out "hello world":
+`def` blocks may be nested within other blocks. For instance, it is possible to define a command within an `if` block:
+
+    if $name Alex {
+      def whoami {
+        puts alex
+      }
+    } else {
+      def whoami {
+        throw Invalid user.
+      }
+    }
+    whoami
+
+Within a command body, the `return` command exits the command and sets its result. The `return` command takes any number of arguments and joins them with spaces. If you don't pass any arguments to `return`, it will yield the empty string. To demonstrate, this code will print "hello world":
 
     def hello_text {
       return hello world
     }
     print (hello_text)
+
+The command's name is a regular token just like arguments to commands. For example, you can use a nested command as the command name:
+
+    def (get functionName) {
+        # Command body here.
+    }
+
+This example further highlights this feature:
+
+    # Note that "Name" is capitalized; this makes it a global variable.
+    set Name "hello"
+
+    # Define a new command called "hello"
+    def $Name {
+        puts $Name
+    }
+
+    # Print out "bonjour"
+    set Name bonjour
+    hello
+
+    # Print out "goodbye"
+    set Name goodbye
+    hello
 
 A command can take arguments. On the line of a command definition, tokens after the command name are treated as variable names to which arguments are bound. For example, this command takes two arguments:
 
@@ -369,7 +406,7 @@ A command can take arguments. On the line of a command definition, tokens after 
       return (- $a $b)
     }
 
-Calling `difference 1 2` would yield `-1`; calling `difference 5 2` would yield `3`.
+Calling `difference 1 2` would yield `-1`; calling `difference 5 2` would yield `3`. Calling the `difference` command with more or less than 2 arguments would trigger an error.
 
 Some commands take a variable argument list \(commonly known as varargs\). This can be achieved using "..." \(ellipsis\) after the last argument's name like so:
 
@@ -381,4 +418,34 @@ Some commands take a variable argument list \(commonly known as varargs\). This 
       return $sum
     }
 
-Note that the varargs variable is a newline-separated list of arguments. This makes it impossible to distinguish an argument that was an array from an array of arguments. For practical purposes, this is fine.
+Note that the varargs argument is a newline-separated list of arguments. Arguments in the varargs list are escaped by adding backslashes before backslashes and turning newlines into `\n` escape sequences.
+
+# Variable scope
+
+Variables which begin with a capital letter are global. All other variables are local to their context. Every time a command is called, it is given a new context which shares global variables with its parent context but has a completely new set of local variables.
+
+Note that code written directly inside a pragmash script outside of a command definition has its own local context. In essence, it is as if top-level code is within an invisible command definition.
+
+Keep in mind that nested commands do not share the same context. For instance, this will trigger a "variable not found" error:
+
+    def func1 {
+      set a 3
+      def func2 {
+        # The variable "a" is not defined within this context.
+        puts $a
+      }
+      func2
+    }
+
+This brief example demonstrates how variable scope works:
+
+    # If f1 didn't get a new context every time it was called, the variable
+    # "a" would be overwritten for each call.
+    def f1 a {
+      if (> $a 0) {
+        f1 (- $a 1)
+        puts $a
+      }
+    }
+    # This will print: "1\n2\n3"
+    f1 3
