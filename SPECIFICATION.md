@@ -79,6 +79,8 @@ Escapes can also be used to write out characters which a programmer cannot easil
 | \\(         | Parenthesis         | 0x28                       |
 | \\)         | Parenthesis         | 0x29                       |
 | \\?         | Question mark       | 0x3f                       |
+| \\'         | Single quote        | 0x27                       |
+| \\"         | Double quote        | 0x22                       |
 | \\a         | Bell                | 0x07                       |
 | \\b         | Backspace           | 0x08                       |
 | \\f         | New page            | 0x0c                       |

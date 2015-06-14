@@ -3,6 +3,7 @@ package pragmash
 import (
 	"bytes"
 	"errors"
+	"unicode"
 )
 
 var BlockInitiatingKeywords = []string{"if", "else", "while", "try", "for", "def"}
@@ -158,7 +159,39 @@ func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
 	return nil, errors.New("not yet implemented")
 }
 
-func readEscapeSequence(buffer *bytes.Buffer) (string, error) {
+func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
 	// TODO: this
-	return "", errors.New("not yet implemented")
+	firstRune, _, err := buffer.ReadRune()
+	if err != nil {
+		return 0, err
+	}
+	switch firstRune {
+	case '(', ')', '?', '\'', '"':
+		return firstRune, nil
+	case 'a':
+		return '\a', nil
+	case 'b':
+		return '\b', nil
+	case 'f':
+		return '\f', nil
+	case 'n':
+		return '\n', nil
+	case 'r':
+		return '\r', nil
+	case 't':
+		return '\t', nil
+	case 'v':
+		return '\v', nil
+	case 'x':
+		// TODO: two-digit hex value here
+	case 'u':
+		// TODO: unicode value here
+	case 'U':
+		// TODO: unicode value here
+	default:
+		if unicode.IsDigit(firstRune) && firstRune != '8' && firstRune != '9' {
+			// TODO: three digit octal value here
+		}
+	}
+	return 0, errors.New("invalid escape character: " + string(firstRune))
 }
