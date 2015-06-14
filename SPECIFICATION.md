@@ -166,6 +166,24 @@ An `if` block makes it possible to run different pieces of code depending on the
       puts I don't know exactly what it is.
     }
 
+An `else` branch can only appear as the last branch of the if statement. An `else if` branch can never appear as the first branch of an if statement.
+
+The not keyword can go directly after `if` or `else if` to negate the result of the expression before evaluating it. For instance, you can do this:
+
+    if not $name Alex {
+        puts You are not Alex
+    } else if not $age 18 {
+        puts If you were really alex, you would have known your own age.
+    }
+
+Since not is a special keyword, it musn't be in quotes and musn't be written in terms of escape sequences. This makes it possible for you to use the string "not" in a condition within an if statement:
+
+    if "not" $token {
+        puts 'The token was "not"'
+    }
+
+As long as the word "not" appears in quotes, it will not be mistaken for the not keyword.
+
 # *while* blocks
 
 A `while` block executes a piece of code again and again until a condition is false. Here are some examples of while blocks:
@@ -176,6 +194,14 @@ A `while` block executes a piece of code again and again until a condition is fa
 
     set a 0
     while (< $a 10) {
+      puts This is a loop and the counter is is currently $a
+      ++ a
+    }
+
+The `not` keyword can be placed directly after the `while` keyword to negate the result of the condition. This works very similarly to if statements:
+
+    set a 0
+    while not (>= 10 $a) {
       puts This is a loop and the counter is is currently $a
       ++ a
     }
