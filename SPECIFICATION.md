@@ -35,12 +35,31 @@ Using one physical line for every line of a comment makes it easier to tell that
 
 # Blocks
 
-The `{` and `}` tokens \(also known as curly braces\) are essential to pragmash because they define blocks of code. Note, however, that a piece of pragmash code may contain curly braces inside of strings, command names, or comments. In these cases, curly braces are treated as regular characters. Curly braces only denote blocks of code when they are situated correctly. In these cases, every `{` must be the last character on a logical line and every `}` must be the first character on a logical line. Blocks of code can also be nested, such as in this case:
+The `{` and `}` tokens \(also known as curly braces\) are used in pragmash to define blocks of code. Note, however, that a pragmash script may contain curly braces inside of strings, command names, or comments. In these cases, curly braces are treated as regular characters. Curly braces only denote blocks of code when they are situated correctly \(i.e. when they appear on lines in the proper places after the proper keywords\). In these cases, every `{` must be the last character on a logical line and every `}` must be the first character on a logical line. Blocks of code can be nested, such as in this case:
 
     if a {
       while b {
         # something here
       }
+    }
+
+If text comes after a `}` on a logical line, there must be at least one whitespace character before the text after the `}`. On a line which begins a block, the trailing `{` must be preceded by at least one whitespace character.
+
+Here are some examples of **invalid** block syntax:
+
+    # Invalid because no space before {
+    if $a{
+    }
+
+    # Invalid because no space after }
+    if $a {
+    }else {
+    }
+
+    # Invalid because { is on a different logical line than the if token.
+    if $a
+    {
+        puts hey
     }
 
 # Strings
