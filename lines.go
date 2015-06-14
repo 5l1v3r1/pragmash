@@ -73,10 +73,11 @@ func (l LogicalLineReader) ReadLine() (string, int, error) {
 		} else if err != nil {
 			return "", 0, err
 		}
-		if _, err := result.WriteString(line); err != nil {
+		useLine := strings.TrimSuffix(line, "\\")
+		if _, err := result.WriteString(useLine); err != nil {
 			return "", 0, err
 		}
-		if len(line) == 0 || line[len(line)-1] != '\\' {
+		if !strings.HasSuffix(line, "\\") {
 			break
 		}
 	}
