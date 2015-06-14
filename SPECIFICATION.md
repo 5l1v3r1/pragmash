@@ -149,6 +149,22 @@ This means that a bareword can contain double or single quotes as long as it doe
 
 Whenever a bare string begins with a $, it is not treated as a bare string. Instead, the interpreter treats something like `$xyz` as `(get xyz)` \(that is, as a nested command\). In a standard pragmash environment, `get` accesses a variable. Thus, the $ makes it easier to access variables.
 
+# Concise mutation syntax
+
+It is often helpful to modify the contents of an existing variable. For example, you may wish to add 3 to a counter, like so:
+
+    set a (+ $a 3)
+
+This code seems very verbose for such a simple operation. Luckily, you can also do this:
+
+    # This expands to set a (+ $a 3)
+    += a 3
+
+Whenever you execute a command whose name ends with "=", the command is rewritten according to a template. The call `command= y args...` is rewritten as `set y (command $y args...)`. This is not just syntactic sugar. This transformation occurs at runtime, so it is possible to use nested commands for the variable name and command name:
+
+    # This will be equivalent to doing set variableName (+ $variableName 3)
+    (echo +=) (echo variableName) 3
+
 # Conditions
 
 A condition looks like a set of arguments but is evaluated to a boolean expression. Conditions are used in `if` blocks and `while` loops. In addition, some commands may process their arguments as if the arguments were a condition.
