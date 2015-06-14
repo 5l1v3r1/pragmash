@@ -48,7 +48,7 @@ If text comes after a `}` on a logical line, there must be at least one whitespa
 Here are some examples of **invalid** block syntax:
 
     # Invalid because no space before {
-    if $a{
+    if (get a){
     }
 
     # Invalid because no space after }
@@ -68,7 +68,7 @@ Every argument to every command is a string. Variables contain strings and their
 
 But what exactly is a string? In pragmash, a string is an array of bytes. While strings can often be treated as a piece of UTF-8 text, they are not limited to that. Strings can also store binary data. The contents of a string does not have to be valid text in any character encoding.
 
-A string can be expressed without quotes, provided it has no unescaped whitespace. In some cases, however, it will be nicer to use quotations. Luckily, strings can be surrounded by `'` \(single quotes\) or `"` \(double quotes\). In these cases, unescaped whitespace can be present.
+A string can be expressed without quotes as long as it has no unescaped whitespace or special characters. It is also possible to surround strings with `'` \(single quotes\) or `"` \(double quotes\). In these cases, unescaped whitespace \(and some special characters\) can be present.
 
 An escaped character within a string begins with a backslash. To escape a space, use a backspace before it such as in `escaped\ whitespace`. To escape a backslash, use `\\`. Inside of single quotes, it is necessary to escape single quotes as `\'`. Likewise, you should use `\"` if you want to include quotes inside of a quoted string.
 
@@ -113,7 +113,7 @@ Commands can be nested so that the output of one command can be used as an input
  * `write file.txt (+ 1 (rand))`
  * `set x (+ $y 2)`
 
-Note that, within nested commands, a bare string cannot contain a `)`. If it does, the parser will mistake it for the end of the code block. There are two distinct ways of dealing with this:
+Note that a bare string cannot contain a `)`. If it does, the parser will mistake it for the end of the code block. There are two distinct ways of dealing with this:
 
     # Bad! This code is not valid.
     puts (read filename_ending_in_parenthesis))
