@@ -72,7 +72,7 @@ A string can be expressed without quotes as long as it has no unescaped whitespa
 
 An escaped character within a string begins with a backslash. To escape a space, use a backspace before it such as in `escaped\ whitespace`. To escape a backslash, use `\\`. Inside of single quotes, it is necessary to escape single quotes as `\'`. Likewise, you should use `\"` if you want to include quotes inside of a quoted string.
 
-Escapes can also be used to write out characters which a programmer cannot easily enter from their keyboard. These are the available escape sequences, not including the ones discussed above:
+Escapes can also be used to write out characters which a programmer cannot easily enter from their keyboard. These are the available escape sequences, including the ones discussed above:
 
 | Sequence    | Description         | Hex Code \(if applicable\) |
 |-------------|---------------------|----------------------------|
@@ -81,6 +81,8 @@ Escapes can also be used to write out characters which a programmer cannot easil
 | \\?         | Question mark       | 0x3f                       |
 | \\'         | Single quote        | 0x27                       |
 | \\"         | Double quote        | 0x22                       |
+| \\\\        | Backslash           | 0x5c                       |
+| \\\[space\] | Space               | 0x20                       |
 | \\a         | Bell                | 0x07                       |
 | \\b         | Backspace           | 0x08                       |
 | \\f         | New page            | 0x0c                       |

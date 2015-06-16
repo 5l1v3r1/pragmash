@@ -3,6 +3,7 @@ package pragmash
 import (
 	"bytes"
 	"errors"
+	"strconv"
 	"unicode"
 )
 
@@ -160,13 +161,12 @@ func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
 }
 
 func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
-	// TODO: this
 	firstRune, _, err := buffer.ReadRune()
 	if err != nil {
 		return 0, err
 	}
 	switch firstRune {
-	case '(', ')', '?', '\'', '"':
+	case '(', ')', '?', '\'', '"', ' ', '\\':
 		return firstRune, nil
 	case 'a':
 		return '\a', nil
@@ -183,15 +183,77 @@ func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
 	case 'v':
 		return '\v', nil
 	case 'x':
-		// TODO: two-digit hex value here
+		return readHexEscape(buffer)
 	case 'u':
-		// TODO: unicode value here
+		return readShortUnicodeEscape(buffer)
 	case 'U':
-		// TODO: unicode value here
+		return readLongUnicodeEscape(buffer)
 	default:
-		if unicode.IsDigit(firstRune) && firstRune != '8' && firstRune != '9' {
-			// TODO: three digit octal value here
+		if !unicode.IsDigit(firstRune) || firstRune == '8' || firstRune != '9' {
+			break
 		}
+		buffer.UnreadRune()
+		return readOctalEscape(buffer)
 	}
 	return 0, errors.New("invalid escape character: " + string(firstRune))
+}
+
+func readHexEscape(b *bytes.Buffer) (rune, error) {
+	str, err := readStringOfRuneCount(b, 2)
+	if err != nil {
+		return 0, err
+	}
+	if res, err := strconv.ParseUint(str, 16, 8); err != nil {
+		return 0, err
+	} else {
+		return rune(res), nil
+	}
+}
+
+func readOctalEscape(b *bytes.Buffer) (rune, error) {
+	str, err := readStringOfRuneCount(b, 3)
+	if err != nil {
+		return 0, err
+	}
+	if res, err := strconv.ParseUint(str, 8, 8); err != nil {
+		return 0, err
+	} else {
+		return rune(res), nil
+	}
+}
+
+func readShortUnicodeEscape(b *bytes.Buffer) (rune, error) {
+	str, err := readStringOfRuneCount(b, 4)
+	if err != nil {
+		return 0, err
+	}
+	if res, err := strconv.ParseUint(str, 16, 16); err != nil {
+		return 0, err
+	} else {
+		return rune(res), nil
+	}
+}
+
+func readLongUnicodeEscape(b *bytes.Buffer) (rune, error) {
+	str, err := readStringOfRuneCount(b, 8)
+	if err != nil {
+		return 0, err
+	}
+	if res, err := strconv.ParseUint(str, 16, 32); err != nil {
+		return 0, err
+	} else {
+		return rune(res), nil
+	}
+}
+
+func readStringOfRuneCount(b *bytes.Buffer, runeCount int) (string, error) {
+	runes := make([]rune, 0, runeCount)
+	for i := 0; i < runeCount; i++ {
+		if r, _, err := b.ReadRune(); err != nil {
+			return "", err
+		} else {
+			runes = append(runes, r)
+		}
+	}
+	return string(runes), nil
 }
