@@ -112,13 +112,13 @@ func readNextToken(buffer *bytes.Buffer) (*Token, error) {
 	}
 	switch firstRune {
 	case '"':
-		if str, err := readDoubleQuotedString(buffer); err != nil {
+		if str, err := readQuotedString(buffer, '"'); err != nil {
 			return nil, err
 		} else {
 			return &Token{nil, str, false}, nil
 		}
 	case '\'':
-		if str, err := readSingleQuotedString(buffer); err != nil {
+		if str, err := readQuotedString(buffer, '\''); err != nil {
 			return nil, err
 		} else {
 			return &Token{nil, str, false}, nil
@@ -141,19 +141,61 @@ func readNextToken(buffer *bytes.Buffer) (*Token, error) {
 	}
 }
 
-func readDoubleQuotedString(buffer *bytes.Buffer) (string, error) {
-	// TODO: this
-	return "", errors.New("not yet implemented")
-}
-
-func readSingleQuotedString(buffer *bytes.Buffer) (string, error) {
-	// TODO: this
-	return "", errors.New("not yet implemented")
+func readQuotedString(buffer *bytes.Buffer, quote rune) (string, error) {
+	str := &bytes.Buffer{}
+	for {
+		rune, _, err := buffer.ReadRune()
+		if err == io.EOF {
+			return "", ErrMissingEndQuote
+		} else if err != nil {
+			return "", err
+		} else if rune == quote {
+			break
+		} else if rune == '\\' {
+			if seq, err := readEscapeSequence(buffer); err != nil {
+				return "", err
+			} else {
+				if _, err := str.WriteRune(seq); err != nil {
+					return "", err
+				}
+			}
+		} else {
+			if _, err := str.WriteRune(rune); err != nil {
+				return "", err
+			}
+		}
+	}
+	return str.String(), nil
 }
 
 func readBareString(buffer *bytes.Buffer) (*Token, error) {
-	// TODO: this
-	return nil, errors.New("not yet implemented")
+	str := &bytes.Buffer{}
+	bare := true
+	for {
+		rune, _, err := buffer.ReadRune()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, err
+		} else if unicode.IsSpace(rune) || rune == ')' {
+			buffer.UnreadRune()
+			break
+		} else if rune == '\\' {
+			if seq, err := readEscapeSequence(buffer); err != nil {
+				return nil, err
+			} else {
+				if _, err := str.WriteRune(seq); err != nil {
+					return nil, err
+				}
+				bare = false
+			}
+		} else {
+			if _, err := str.WriteRune(rune); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return &Token{nil, str.String(), bare}, nil
 }
 
 func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
@@ -164,7 +206,7 @@ func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
 func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
 	firstRune, _, err := buffer.ReadRune()
 	if err != nil {
-		return 0, err
+		return 0, ErrEscapeCodeUnderflow
 	}
 	switch firstRune {
 	case '(', ')', '?', '\'', '"', ' ', '\\':
