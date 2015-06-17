@@ -146,6 +146,41 @@ func readNextToken(buffer *bytes.Buffer) (*Token, error) {
 	}
 }
 
+func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
+	tokens := []Token{}
+	readSpace(buffer)
+	for {
+		if token, err := readNextToken(buffer); err == ErrUnexpectedCloseParen {
+			break
+		} else if err == io.EOF {
+			return nil, ErrMissingCloseParen
+		} else if err != nil {
+			return nil, err
+		} else {
+			tokens = append(tokens, *token)
+		}
+
+		// We must check for a ')' before we attempt to read whitespace, since there needn't be any
+		// whitespace before the ')'.
+		if r, _, err := buffer.ReadRune(); err == nil {
+			if r == ')' {
+				break
+			}
+			buffer.UnreadRune()
+		}
+
+		if res, err := readSpace(buffer); err != nil {
+			return nil, err
+		} else if !res {
+			return nil, ErrMissingWhitespace
+		}
+	}
+	if len(tokens) == 0 {
+		return nil, ErrEmptyParens
+	}
+	return tokens, nil
+}
+
 func readQuotedString(buffer *bytes.Buffer, quote rune) (string, error) {
 	str := &bytes.Buffer{}
 	for {
@@ -199,11 +234,6 @@ func readBareString(buffer *bytes.Buffer) (*Token, error) {
 		}
 	}
 	return &Token{nil, str.String(), bare}, nil
-}
-
-func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
-	// TODO: this
-	return nil, errors.New("not yet implemented")
 }
 
 func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
@@ -301,6 +331,7 @@ func readSpace(b *bytes.Buffer) (bool, error) {
 		} else if unicode.IsSpace(r) {
 			gotSpace = true
 		} else {
+			b.UnreadRune()
 			break
 		}
 	}

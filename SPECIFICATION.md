@@ -149,6 +149,8 @@ Note however that this code is valid and would print `string'string'`:
 
 This means that a bareword can contain double or single quotes as long as it does not begin with one.
 
+A nested command cannot be empty. For instance, `()` is invalid. There must be at least one token within a pair of parentheses.
+
 # Concise variable syntax
 
 Whenever a bare string begins with a $, it is not treated as a bare string. Instead, the interpreter treats something like `$xyz` as `(get xyz)` \(that is, as a nested command\). In a standard pragmash environment, `get` accesses a variable. Thus, the $ makes it easier to access variables.
