@@ -16,6 +16,8 @@ func TestReadEscapeSequence(t *testing.T) {
 		"v":         '\v',
 		"x6a":       'j',
 		"x6A":       'j',
+		"0":         '\000',
+		"10":        '\010',
 		"123":       'S',
 		"u2702":     '\u2702',
 		"U0001F601": '\U0001F601',

@@ -3,6 +3,7 @@ package pragmash
 import (
 	"bytes"
 	"errors"
+	"io"
 	"strconv"
 	"unicode"
 )
@@ -183,11 +184,11 @@ func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
 	case 'v':
 		return '\v', nil
 	case 'x':
-		return readHexEscape(buffer)
+		return readNumericEscape(buffer, 2)
 	case 'u':
-		return readShortUnicodeEscape(buffer)
+		return readNumericEscape(buffer, 4)
 	case 'U':
-		return readLongUnicodeEscape(buffer)
+		return readNumericEscape(buffer, 8)
 	default:
 		if !unicode.IsDigit(firstRune) || firstRune == '8' || firstRune == '9' {
 			break
@@ -198,12 +199,20 @@ func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
 	return 0, errors.New("invalid escape character: " + string(firstRune))
 }
 
-func readHexEscape(b *bytes.Buffer) (rune, error) {
-	str, err := readStringOfRuneCount(b, 2)
-	if err != nil {
-		return 0, err
+func readNumericEscape(b *bytes.Buffer, charCount int) (rune, error) {
+	runes := make([]rune, 0, charCount)
+	for i := 0; i < charCount; i++ {
+		if r, _, err := b.ReadRune(); err != nil {
+			if err == io.EOF {
+				return 0, ErrEscapeCodeUnderflow
+			}
+			return 0, err
+		} else {
+			runes = append(runes, r)
+		}
 	}
-	if res, err := strconv.ParseUint(str, 16, 8); err != nil {
+	str := string(runes)
+	if res, err := strconv.ParseUint(str, 16, charCount*4); err != nil {
 		return 0, err
 	} else {
 		return rune(res), nil
@@ -211,49 +220,27 @@ func readHexEscape(b *bytes.Buffer) (rune, error) {
 }
 
 func readOctalEscape(b *bytes.Buffer) (rune, error) {
-	str, err := readStringOfRuneCount(b, 3)
-	if err != nil {
-		return 0, err
+	runes := make([]rune, 0, 3)
+	for i := 0; i < 3; i++ {
+		if r, _, err := b.ReadRune(); err != nil {
+			if err == io.EOF {
+				break
+			}
+			return 0, err
+		} else if r >= '0' && r < '8' {
+			runes = append(runes, r)
+		} else {
+			b.UnreadRune()
+			break
+		}
 	}
+	if len(runes) == 0 {
+		return 0, ErrEscapeCodeUnderflow
+	}
+	str := string(runes)
 	if res, err := strconv.ParseUint(str, 8, 8); err != nil {
 		return 0, err
 	} else {
 		return rune(res), nil
 	}
-}
-
-func readShortUnicodeEscape(b *bytes.Buffer) (rune, error) {
-	str, err := readStringOfRuneCount(b, 4)
-	if err != nil {
-		return 0, err
-	}
-	if res, err := strconv.ParseUint(str, 16, 16); err != nil {
-		return 0, err
-	} else {
-		return rune(res), nil
-	}
-}
-
-func readLongUnicodeEscape(b *bytes.Buffer) (rune, error) {
-	str, err := readStringOfRuneCount(b, 8)
-	if err != nil {
-		return 0, err
-	}
-	if res, err := strconv.ParseUint(str, 16, 32); err != nil {
-		return 0, err
-	} else {
-		return rune(res), nil
-	}
-}
-
-func readStringOfRuneCount(b *bytes.Buffer, runeCount int) (string, error) {
-	runes := make([]rune, 0, runeCount)
-	for i := 0; i < runeCount; i++ {
-		if r, _, err := b.ReadRune(); err != nil {
-			return "", err
-		} else {
-			runes = append(runes, r)
-		}
-	}
-	return string(runes), nil
 }
