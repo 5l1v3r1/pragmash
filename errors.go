@@ -8,4 +8,5 @@ var (
 	ErrUnexpectedCloseParen     = errors.New("unexpected ')'")
 	ErrEscapeCodeUnderflow      = errors.New("escape code is too short")
 	ErrMissingEndQuote          = errors.New("missing string terminator")
+	ErrMissingWhitespace        = errors.New("missing whitespace between tokens")
 )

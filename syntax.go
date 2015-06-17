@@ -71,6 +71,11 @@ func parseLine(text string, num int) (*SyntaxLine, error) {
 		} else {
 			line.Tokens = append(line.Tokens, *token)
 		}
+		if res, err := readSpace(buffer); err != nil {
+			return nil, err
+		} else if !res {
+			return nil, ErrMissingWhitespace
+		}
 	}
 	return processCurlyBraces(line)
 }
@@ -171,11 +176,9 @@ func readQuotedString(buffer *bytes.Buffer, quote rune) (string, error) {
 func readBareString(buffer *bytes.Buffer) (*Token, error) {
 	str := &bytes.Buffer{}
 	bare := true
-	for {
+	for buffer.Len() > 0 {
 		rune, _, err := buffer.ReadRune()
-		if err == io.EOF {
-			break
-		} else if err != nil {
+		if err != nil {
 			return nil, err
 		} else if unicode.IsSpace(rune) || rune == ')' {
 			buffer.UnreadRune()
@@ -285,4 +288,21 @@ func readOctalEscape(b *bytes.Buffer) (rune, error) {
 	} else {
 		return rune(res), nil
 	}
+}
+
+func readSpace(b *bytes.Buffer) (bool, error) {
+	if b.Len() == 0 {
+		return true, nil
+	}
+	gotSpace := false
+	for b.Len() > 0 {
+		if r, _, err := b.ReadRune(); err != nil {
+			return false, err
+		} else if unicode.IsSpace(r) {
+			gotSpace = true
+		} else {
+			break
+		}
+	}
+	return gotSpace, nil
 }
