@@ -189,7 +189,7 @@ func readEscapeSequence(buffer *bytes.Buffer) (rune, error) {
 	case 'U':
 		return readLongUnicodeEscape(buffer)
 	default:
-		if !unicode.IsDigit(firstRune) || firstRune == '8' || firstRune != '9' {
+		if !unicode.IsDigit(firstRune) || firstRune == '8' || firstRune == '9' {
 			break
 		}
 		buffer.UnreadRune()
