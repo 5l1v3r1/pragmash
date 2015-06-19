@@ -96,7 +96,7 @@ func TestReadLexicalLine(t *testing.T) {
 		"}": LexicalLine{Number: 1, BlockClose: true, Tokens: []Token{}},
 	}
 	for str, expected := range lines {
-		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(str))}}
+		reader := Lexer{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(str))}}
 		if actual, err := reader.ReadLexicalLine(); err != nil {
 			t.Error("got error", err, "for line", str)
 		} else if !actual.Equals(&expected) {
@@ -107,9 +107,10 @@ func TestReadLexicalLine(t *testing.T) {
 	errorLines := []string{
 		"\"b\"a", "'b'a", "(b)a", "( hey) )", "(hey)'hey'", "(hey)\"hey\"", "'a''b'", "a(hey)",
 		"if a{", "if a", "for a", "while a", "try", "else", "def",
+		"()",
 	}
 	for _, line := range errorLines {
-		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(line))}}
+		reader := Lexer{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(line))}}
 		if _, err := reader.ReadLexicalLine(); err == nil {
 			t.Error("expected error for:", line)
 		}

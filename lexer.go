@@ -72,15 +72,15 @@ func (s *LexicalLine) Equals(l *LexicalLine) bool {
 	return true
 }
 
-// A SyntaxParser reads logical lines one at a time and parses them.
+// A Lexer reads logical lines one at a time and parses them.
 // It will ignore empty or commented lines.
-type SyntaxParser struct {
+type Lexer struct {
 	Reader LogicalLineReader
 }
 
 // ReadLexicalLine reads and parses the next non-empty uncommented line.
 // An error is returned if the underlying reader fails or if a syntax error is encountered.
-func (s SyntaxParser) ReadLexicalLine() (*LexicalLine, error) {
+func (s Lexer) ReadLexicalLine() (*LexicalLine, error) {
 	for {
 		line, num, err := s.Reader.ReadLine()
 		if err != nil {
@@ -90,11 +90,11 @@ func (s SyntaxParser) ReadLexicalLine() (*LexicalLine, error) {
 		} else if line[0] == '#' {
 			continue
 		}
-		return parseLine(line, num)
+		return lexLine(line, num)
 	}
 }
 
-func parseLine(text string, num int) (*LexicalLine, error) {
+func lexLine(text string, num int) (*LexicalLine, error) {
 	line := &LexicalLine{false, false, []Token{}, num}
 	buffer := bytes.NewBufferString(text)
 	for buffer.Len() > 0 {
@@ -103,10 +103,8 @@ func parseLine(text string, num int) (*LexicalLine, error) {
 		} else {
 			line.Tokens = append(line.Tokens, *token)
 		}
-		if res, err := readSpace(buffer); err != nil {
+		if err := readSpaceOrEOF(buffer); err != nil {
 			return nil, err
-		} else if !res {
-			return nil, ErrMissingWhitespace
 		}
 	}
 	return processCurlyBraces(line)
@@ -180,7 +178,7 @@ func readNextToken(buffer *bytes.Buffer) (*Token, error) {
 
 func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
 	tokens := []Token{}
-	readSpace(buffer)
+	readSpaceInNestedCommand(buffer)
 	for {
 		if token, err := readNextToken(buffer); err == ErrUnexpectedCloseParen {
 			break
@@ -192,19 +190,8 @@ func readNestedCommand(buffer *bytes.Buffer) ([]Token, error) {
 			tokens = append(tokens, *token)
 		}
 
-		// We must check for a ')' before we attempt to read whitespace, since there needn't be any
-		// whitespace before the ')'.
-		if r, _, err := buffer.ReadRune(); err == nil {
-			if r == ')' {
-				break
-			}
-			buffer.UnreadRune()
-		}
-
-		if res, err := readSpace(buffer); err != nil {
+		if err := readSpaceInNestedCommand(buffer); err != nil {
 			return nil, err
-		} else if !res {
-			return nil, ErrMissingWhitespace
 		}
 	}
 	if len(tokens) == 0 {
@@ -352,14 +339,14 @@ func readOctalEscape(b *bytes.Buffer) (rune, error) {
 	}
 }
 
-func readSpace(b *bytes.Buffer) (bool, error) {
+func readSpaceOrEOF(b *bytes.Buffer) error {
 	if b.Len() == 0 {
-		return true, nil
+		return nil
 	}
 	gotSpace := false
 	for b.Len() > 0 {
 		if r, _, err := b.ReadRune(); err != nil {
-			return false, err
+			return err
 		} else if unicode.IsSpace(r) {
 			gotSpace = true
 		} else {
@@ -367,5 +354,32 @@ func readSpace(b *bytes.Buffer) (bool, error) {
 			break
 		}
 	}
-	return gotSpace, nil
+	if !gotSpace {
+		return ErrMissingWhitespace
+	}
+	return nil
+}
+
+func readSpaceInNestedCommand(b *bytes.Buffer) error {
+	if b.Len() == 0 {
+		return ErrMissingCloseParen
+	}
+	gotSpace := false
+	for {
+		if r, _, err := b.ReadRune(); err != nil {
+			return err
+		} else if r == ')' {
+			b.UnreadRune()
+			return nil
+		} else if unicode.IsSpace(r) {
+			gotSpace = true
+		} else {
+			b.UnreadRune()
+			break
+		}
+	}
+	if !gotSpace {
+		return ErrMissingWhitespace
+	}
+	return nil
 }
