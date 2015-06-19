@@ -43,18 +43,33 @@ func TestReadEscapeSequence(t *testing.T) {
 
 func TestReadSyntaxLine(t *testing.T) {
 	lines := map[string]SyntaxLine{
-		"a \\x62 c": SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", true}, {nil, "b", false},
-			{nil, "c", true}}},
+		"a \\x62 c": SyntaxLine{Number: 1, Tokens: []Token{
+			{nil, "a", true},
+			{nil, "b", false},
+			{nil, "c", true},
+		}},
 		"'a'":     SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", false}}},
 		"\"b\"":   SyntaxLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
 		" \"b\" ": SyntaxLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
-		" \\\" \\' a'b'c'd'": SyntaxLine{Number: 1, Tokens: []Token{{nil, "\"", false},
-			{nil, "'", false}, {nil, "a'b'c'd'", true}}},
-		"a (b 'c') d": SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", true},
-			{[]Token{{nil, "b", true}, {nil, "c", false}}, "", false}, {nil, "d", true}}},
-		"(hey )": SyntaxLine{Number: 1, Tokens: []Token{{[]Token{{nil, "hey", true}}, "", false}}},
-		"( \"test\")": SyntaxLine{Number: 1, Tokens: []Token{{[]Token{{nil, "test", false}}, "",
-			false}}},
+		" \\\" \\' a'b'c'd'": SyntaxLine{Number: 1, Tokens: []Token{
+			{nil, "\"", false},
+			{nil, "'", false},
+			{nil, "a'b'c'd'", true},
+		}},
+		"a (b 'c') d": SyntaxLine{Number: 1, Tokens: []Token{
+			{nil, "a", true},
+			{[]Token{
+				{nil, "b", true},
+				{nil, "c", false},
+			}, "", false},
+			{nil, "d", true},
+		}},
+		"(hey )": SyntaxLine{Number: 1, Tokens: []Token{
+			{[]Token{{nil, "hey", true}}, "", false},
+		}},
+		"( \"test\")": SyntaxLine{Number: 1, Tokens: []Token{
+			{[]Token{{nil, "test", false}}, "", false},
+		}},
 		"(+ (/ 2 \t3) 4)": SyntaxLine{Number: 1, Tokens: []Token{
 			{[]Token{
 				{nil, "+", true},
@@ -66,6 +81,19 @@ func TestReadSyntaxLine(t *testing.T) {
 				{nil, "4", true},
 			}, "", false},
 		}},
+		"if a {": SyntaxLine{Number: 1, BlockOpen: true, Tokens: []Token{
+			{nil, "if", true},
+			{nil, "a", true},
+		}},
+		"'if' a {": SyntaxLine{Number: 1, Tokens: []Token{
+			{nil, "if", false},
+			{nil, "a", true},
+			{nil, "{", true},
+		}},
+		"} catch {": SyntaxLine{Number: 1, BlockClose: true, BlockOpen: true, Tokens: []Token{
+			{nil, "catch", true},
+		}},
+		"}": SyntaxLine{Number: 1, BlockClose: true, Tokens: []Token{}},
 	}
 	for str, expected := range lines {
 		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(str))}}
@@ -78,6 +106,7 @@ func TestReadSyntaxLine(t *testing.T) {
 
 	errorLines := []string{
 		"\"b\"a", "'b'a", "(b)a", "( hey) )", "(hey)'hey'", "(hey)\"hey\"", "'a''b'", "a(hey)",
+		"if a{", "if a", "for a", "while a", "try", "else", "def",
 	}
 	for _, line := range errorLines {
 		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(line))}}

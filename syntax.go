@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-var BlockInitiatingKeywords = []string{"if", "else", "while", "try", "for", "def"}
+var BlockInitiatingKeywords = []string{"if", "else", "while", "try", "for", "def", "catch"}
 
 // A Token is either a nested command or a string literal.
 type Token struct {
