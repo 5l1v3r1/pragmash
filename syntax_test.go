@@ -30,7 +30,59 @@ func TestReadEscapeSequence(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		} else if actual != expected {
-			t.Error("bad result for", sequence)
+			t.Error("bad result for:", sequence)
+		}
+	}
+
+	for _, str := range []string{"x", "x6", "x6x", "u", "u123", "U123456", "777", "x"} {
+		if _, err := readEscapeSequence(bytes.NewBufferString(str)); err == nil {
+			t.Error("sequence should cause error:", str)
+		}
+	}
+}
+
+func TestReadSyntaxLine(t *testing.T) {
+	lines := map[string]SyntaxLine{
+		"a \\x62 c": SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", true}, {nil, "b", false},
+			{nil, "c", true}}},
+		"'a'":     SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", false}}},
+		"\"b\"":   SyntaxLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
+		" \"b\" ": SyntaxLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
+		" \\\" \\' a'b'c'd'": SyntaxLine{Number: 1, Tokens: []Token{{nil, "\"", false},
+			{nil, "'", false}, {nil, "a'b'c'd'", true}}},
+		"a (b 'c') d": SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", true},
+			{[]Token{{nil, "b", true}, {nil, "c", false}}, "", false}, {nil, "d", true}}},
+		"(hey )": SyntaxLine{Number: 1, Tokens: []Token{{[]Token{{nil, "hey", true}}, "", false}}},
+		"( \"test\")": SyntaxLine{Number: 1, Tokens: []Token{{[]Token{{nil, "test", false}}, "",
+			false}}},
+		"(+ (/ 2 \t3) 4)": SyntaxLine{Number: 1, Tokens: []Token{
+			{[]Token{
+				{nil, "+", true},
+				{[]Token{
+					{nil, "/", true},
+					{nil, "2", true},
+					{nil, "3", true},
+				}, "", false},
+				{nil, "4", true},
+			}, "", false},
+		}},
+	}
+	for str, expected := range lines {
+		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(str))}}
+		if actual, err := reader.ReadSyntaxLine(); err != nil {
+			t.Error("got error", err, "for line", str)
+		} else if !actual.Equals(&expected) {
+			t.Error("got", actual, "but expected", expected, "for line", str)
+		}
+	}
+
+	errorLines := []string{
+		"\"b\"a", "'b'a", "(b)a", "( hey) )", "(hey)'hey'", "(hey)\"hey\"", "'a''b'", "a(hey)",
+	}
+	for _, line := range errorLines {
+		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(line))}}
+		if _, err := reader.ReadSyntaxLine(); err == nil {
+			t.Error("expected error for:", line)
 		}
 	}
 }

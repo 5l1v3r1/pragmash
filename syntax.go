@@ -24,6 +24,22 @@ type Token struct {
 	Bare bool
 }
 
+// Equals performs a deep comparison on two tokens.
+func (t Token) Equals(t1 Token) bool {
+	if t.Command != nil {
+		if t1.Command == nil || len(t.Command) != len(t1.Command) {
+			return false
+		}
+		for i, x := range t.Command {
+			if !x.Equals(t1.Command[i]) {
+				return false
+			}
+		}
+		return true
+	}
+	return t.Text == t1.Text && t.Bare == t1.Bare
+}
+
 // A SyntaxLine is a logical line which has been parsed.
 type SyntaxLine struct {
 	// BlockOpen is true if the line ends with a { and begins with a block-initiating token.
@@ -38,6 +54,22 @@ type SyntaxLine struct {
 
 	// Number is a physical line number.
 	Number int
+}
+
+// Equals does a deep comparison on two syntax lines.
+func (s *SyntaxLine) Equals(l *SyntaxLine) bool {
+	if s.BlockOpen != l.BlockOpen || s.BlockClose != l.BlockClose || s.Number != l.Number {
+		return false
+	}
+	if len(s.Tokens) != len(l.Tokens) {
+		return false
+	}
+	for i, t := range s.Tokens {
+		if !t.Equals(l.Tokens[i]) {
+			return false
+		}
+	}
+	return true
 }
 
 // A SyntaxParser reads logical lines one at a time and parses them.
