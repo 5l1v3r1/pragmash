@@ -41,22 +41,22 @@ func TestReadEscapeSequence(t *testing.T) {
 	}
 }
 
-func TestReadSyntaxLine(t *testing.T) {
-	lines := map[string]SyntaxLine{
-		"a \\x62 c": SyntaxLine{Number: 1, Tokens: []Token{
+func TestReadLexicalLine(t *testing.T) {
+	lines := map[string]LexicalLine{
+		"a \\x62 c": LexicalLine{Number: 1, Tokens: []Token{
 			{nil, "a", true},
 			{nil, "b", false},
 			{nil, "c", true},
 		}},
-		"'a'":     SyntaxLine{Number: 1, Tokens: []Token{{nil, "a", false}}},
-		"\"b\"":   SyntaxLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
-		" \"b\" ": SyntaxLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
-		" \\\" \\' a'b'c'd'": SyntaxLine{Number: 1, Tokens: []Token{
+		"'a'":     LexicalLine{Number: 1, Tokens: []Token{{nil, "a", false}}},
+		"\"b\"":   LexicalLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
+		" \"b\" ": LexicalLine{Number: 1, Tokens: []Token{{nil, "b", false}}},
+		" \\\" \\' a'b'c'd'": LexicalLine{Number: 1, Tokens: []Token{
 			{nil, "\"", false},
 			{nil, "'", false},
 			{nil, "a'b'c'd'", true},
 		}},
-		"a (b 'c') d": SyntaxLine{Number: 1, Tokens: []Token{
+		"a (b 'c') d": LexicalLine{Number: 1, Tokens: []Token{
 			{nil, "a", true},
 			{[]Token{
 				{nil, "b", true},
@@ -64,13 +64,13 @@ func TestReadSyntaxLine(t *testing.T) {
 			}, "", false},
 			{nil, "d", true},
 		}},
-		"(hey )": SyntaxLine{Number: 1, Tokens: []Token{
+		"(hey )": LexicalLine{Number: 1, Tokens: []Token{
 			{[]Token{{nil, "hey", true}}, "", false},
 		}},
-		"( \"test\")": SyntaxLine{Number: 1, Tokens: []Token{
+		"( \"test\")": LexicalLine{Number: 1, Tokens: []Token{
 			{[]Token{{nil, "test", false}}, "", false},
 		}},
-		"(+ (/ 2 \t3) 4)": SyntaxLine{Number: 1, Tokens: []Token{
+		"(+ (/ 2 \t3) 4)": LexicalLine{Number: 1, Tokens: []Token{
 			{[]Token{
 				{nil, "+", true},
 				{[]Token{
@@ -81,23 +81,23 @@ func TestReadSyntaxLine(t *testing.T) {
 				{nil, "4", true},
 			}, "", false},
 		}},
-		"if a {": SyntaxLine{Number: 1, BlockOpen: true, Tokens: []Token{
+		"if a {": LexicalLine{Number: 1, BlockOpen: true, Tokens: []Token{
 			{nil, "if", true},
 			{nil, "a", true},
 		}},
-		"'if' a {": SyntaxLine{Number: 1, Tokens: []Token{
+		"'if' a {": LexicalLine{Number: 1, Tokens: []Token{
 			{nil, "if", false},
 			{nil, "a", true},
 			{nil, "{", true},
 		}},
-		"} catch {": SyntaxLine{Number: 1, BlockClose: true, BlockOpen: true, Tokens: []Token{
+		"} catch {": LexicalLine{Number: 1, BlockClose: true, BlockOpen: true, Tokens: []Token{
 			{nil, "catch", true},
 		}},
-		"}": SyntaxLine{Number: 1, BlockClose: true, Tokens: []Token{}},
+		"}": LexicalLine{Number: 1, BlockClose: true, Tokens: []Token{}},
 	}
 	for str, expected := range lines {
 		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(str))}}
-		if actual, err := reader.ReadSyntaxLine(); err != nil {
+		if actual, err := reader.ReadLexicalLine(); err != nil {
 			t.Error("got error", err, "for line", str)
 		} else if !actual.Equals(&expected) {
 			t.Error("got", actual, "but expected", expected, "for line", str)
@@ -110,7 +110,7 @@ func TestReadSyntaxLine(t *testing.T) {
 	}
 	for _, line := range errorLines {
 		reader := SyntaxParser{LogicalLineReader{NewPhysLineReader(bytes.NewBufferString(line))}}
-		if _, err := reader.ReadSyntaxLine(); err == nil {
+		if _, err := reader.ReadLexicalLine(); err == nil {
 			t.Error("expected error for:", line)
 		}
 	}

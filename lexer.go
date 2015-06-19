@@ -40,8 +40,8 @@ func (t Token) Equals(t1 Token) bool {
 	return t.Text == t1.Text && t.Bare == t1.Bare
 }
 
-// A SyntaxLine is a logical line which has been parsed.
-type SyntaxLine struct {
+// A LexicalLine is a logical line which has been parsed.
+type LexicalLine struct {
 	// BlockOpen is true if the line ends with a { and begins with a block-initiating token.
 	BlockOpen bool
 
@@ -57,7 +57,7 @@ type SyntaxLine struct {
 }
 
 // Equals does a deep comparison on two syntax lines.
-func (s *SyntaxLine) Equals(l *SyntaxLine) bool {
+func (s *LexicalLine) Equals(l *LexicalLine) bool {
 	if s.BlockOpen != l.BlockOpen || s.BlockClose != l.BlockClose || s.Number != l.Number {
 		return false
 	}
@@ -78,9 +78,9 @@ type SyntaxParser struct {
 	Reader LogicalLineReader
 }
 
-// ReadSyntaxLine reads and parses the next non-empty uncommented line.
+// ReadLexicalLine reads and parses the next non-empty uncommented line.
 // An error is returned if the underlying reader fails or if a syntax error is encountered.
-func (s SyntaxParser) ReadSyntaxLine() (*SyntaxLine, error) {
+func (s SyntaxParser) ReadLexicalLine() (*LexicalLine, error) {
 	for {
 		line, num, err := s.Reader.ReadLine()
 		if err != nil {
@@ -94,8 +94,8 @@ func (s SyntaxParser) ReadSyntaxLine() (*SyntaxLine, error) {
 	}
 }
 
-func parseLine(text string, num int) (*SyntaxLine, error) {
-	line := &SyntaxLine{false, false, []Token{}, num}
+func parseLine(text string, num int) (*LexicalLine, error) {
+	line := &LexicalLine{false, false, []Token{}, num}
 	buffer := bytes.NewBufferString(text)
 	for buffer.Len() > 0 {
 		if token, err := readNextToken(buffer); err != nil {
@@ -112,7 +112,7 @@ func parseLine(text string, num int) (*SyntaxLine, error) {
 	return processCurlyBraces(line)
 }
 
-func processCurlyBraces(l *SyntaxLine) (*SyntaxLine, error) {
+func processCurlyBraces(l *LexicalLine) (*LexicalLine, error) {
 	if len(l.Tokens) == 0 {
 		panic("there should always be tokens here")
 	}
