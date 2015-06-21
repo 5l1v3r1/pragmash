@@ -334,7 +334,7 @@ Here are some examples of `try` blocks:
       set b (read file2.txt)
       write files1and2.txt (join $a $b)
     } catch c e {
-      puts Error joining files: $e. Error was at: $c
+      puts Error joining files: $e. Backtrace: $c
     }
 
 # Lists
@@ -471,3 +471,5 @@ This brief example demonstrates how variable scope works:
     }
     # This will print: "1\n2\n3"
     f1 3
+
+Another note is that the `break` and `continue` commands cannot pass through variable scopes. So it is not possible to exit a user-defined command using `break` or `continue`.
