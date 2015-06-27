@@ -224,6 +224,10 @@ This throws an exception. It joins its arguments with spaces and uses the result
 
 This generates a newline-delimited list of strings which correspond to each character of the argument. Newline characters are encoded as the two-character "\\\\n" escape sequence. For example, `chars 12\n3` yields `"1\n2\n\\n\n3"`.
 
+### chr &lt;list&gt;
+
+This takes a list of numbers \(representing bytes\) and turns it into a string.
+
 ### echo \[string...\]
 
 This joins its arguments with spaces and returns the result.
@@ -272,6 +276,10 @@ This joins its arguments with spaces and converts the result to lower-case.
 This matches a string against a regular expression. It returns an array of matches. Each sub-match is its own element in the array.
 
 For example, `match "x([a-z])z" "abc xyz xwz xoz"` yields the array equivalent to `arr xyz y xwz w xoz o`.
+
+### ord &lt;string&gt;
+
+This returns a list of numeric bytes given a string.
 
 ### pad_zero &lt;length&gt; &lt;string&gt;
 

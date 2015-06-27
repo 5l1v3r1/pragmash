@@ -27,6 +27,15 @@ func (_ StdString) Chars(s string) []string {
 	return resArr
 }
 
+// Chr takes a list of numbers (representing bytes) and turns it into a string.
+func (_ StdString) Chr(list []int) string {
+	res := bytes.Buffer{}
+	for _, x := range list {
+		res.WriteByte(byte(x))
+	}
+	return res.String()
+}
+
 // Echo joins its arguments with spaces.
 func (_ StdString) Echo(args ...string) string {
 	return strings.Join(args, " ")
@@ -105,6 +114,15 @@ func (_ StdString) Match(expr, haystack string) ([]string, error) {
 		}
 	}
 	return list, nil
+}
+
+// Ord returns a list of numeric bytes given a string.
+func (_ StdString) Ord(str string) []int {
+	res := make([]int, len(str))
+	for i := 0; i < len(str); i++ {
+		res[i] = int(str[i])
+	}
+	return res
 }
 
 // PadZero pads a string with zeroes on the left until it's a certain length.
